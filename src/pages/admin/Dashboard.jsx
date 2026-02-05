@@ -14,10 +14,7 @@ const Dashboard = () => {
                     <h1 className="text-4xl font-black text-brand-primary tracking-tighter uppercase italic">Control Hub</h1>
                     <p className="text-brand-primary/60 font-bold text-sm tracking-wide">Monitoring your kitchen's digital pulse.</p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black text-brand-primary/30 uppercase tracking-[0.2em]">Nexus Active</span>
-                    <div className="w-2 h-2 bg-brand-accent rounded-full animate-pulse shadow-[0_0_10px_#DE9545]" />
-                </div>
+
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -27,10 +24,7 @@ const Dashboard = () => {
                             <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform duration-300`}>
                                 <stat.icon size={24} strokeWidth={3} />
                             </div>
-                            <div className={`flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-full ${stat.trend === 'up' ? 'text-brand-accent bg-brand-accent/10' : 'text-brand-primary/60 bg-brand-primary/5'}`}>
-                                {stat.change}
-                                {stat.trend === 'up' ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-                            </div>
+
                         </div>
                         <div>
                             <p className="text-xs font-black text-brand-primary/30 uppercase tracking-widest">{stat.label}</p>

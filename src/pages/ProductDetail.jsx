@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Zoom } from "swiper/modules";
-import { Heart, ShoppingCart, ArrowLeft, Truck, Shield, RotateCcw, Star } from "lucide-react";
+import { Heart, ShoppingCart, ArrowLeft, Truck, Shield, RotateCcw, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { products } from "../data/products";
+import ProductCard from "../components/ProductCard";
 
 // Import Swiper styles
 import "swiper/css";
@@ -11,347 +13,240 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/zoom";
 
-// Sample product data - replace with actual API call
-const PRODUCTS_DATA = {
-    "1": {
-        id: "1",
-        title: "Premium Stainless Steel Chef's Knife",
-        brand: "CULINARY PRO",
-        price: 2499,
-        oldPrice: 3499,
-        discount: 28,
-        rating: 4.8,
-        reviews: 324,
-        images: [
-            "https://images.unsplash.com/photo-1563618983-25f1c5108059?w=800&q=80",
-            "https://images.unsplash.com/photo-1563618983-25f1c5108059?w=800&q=80",
-            "https://images.unsplash.com/photo-1563618983-25f1c5108059?w=800&q=80",
-        ],
-        description: "Introducing our flagship Chef's Knife, meticulously crafted from high-grade German stainless steel. This professional-grade knife features an ergonomic handle designed for maximum comfort during extended use. The razor-sharp blade maintains its edge for longer, making it ideal for both professional chefs and home cooking enthusiasts.",
-        specifications: {
-            "Blade Length": "20 cm",
-            "Material": "German Stainless Steel",
-            "Handle": "Ergonomic Wooden Handle",
-            "Weight": "180g",
-            "Edge Type": "Razor Sharp",
-            "Warranty": "Lifetime"
-        },
-        features: [
-            "Premium German stainless steel construction",
-            "Ergonomic wooden handle for comfort",
-            "Razor-sharp blade edge",
-            "Dishwasher safe",
-            "Professional grade quality",
-            "Lifetime warranty included"
-        ],
-        inStock: true,
-        sku: "CKN-PRO-001"
-    },
-    "2": {
-        id: "2",
-        title: "Non-Stick Cookware Set - 8 Piece",
-        brand: "KITCHEN ESSENTIALS",
-        price: 4999,
-        oldPrice: 6999,
-        discount: 28,
-        rating: 4.6,
-        reviews: 215,
-        images: [
-            "https://images.unsplash.com/photo-1578500494198-246f612d03b3?w=800&q=80",
-            "https://images.unsplash.com/photo-1578500494198-246f612d03b3?w=800&q=80",
-            "https://images.unsplash.com/photo-1578500494198-246f612d03b3?w=800&q=80",
-        ],
-        description: "Complete your kitchen with our comprehensive 8-piece non-stick cookware set. Each piece is engineered with advanced non-stick coating technology and heat-resistant handles for safe and convenient cooking. Perfect for everyday cooking and special occasions alike.",
-        specifications: {
-            "Pieces": "8",
-            "Material": "Aluminum with Non-Stick Coating",
-            "Handle": "Heat-Resistant Silicone",
-            "Temperature Resistance": "Up to 400°F",
-            "Dishwasher Safe": "Yes",
-            "Warranty": "5 Years"
-        },
-        features: [
-            "Complete 8-piece cookware set",
-            "Advanced non-stick coating",
-            "Heat-resistant silicone handles",
-            "Oven safe up to 400°F",
-            "Dishwasher safe",
-            "Even heat distribution",
-            "5-year warranty"
-        ],
-        inStock: true,
-        sku: "CKW-SET-001"
-    }
-};
-
 const ProductDetail = () => {
     const { productId } = useParams();
     const navigate = useNavigate();
     const [isWishlisted, setIsWishlisted] = useState(false);
     const [quantity, setQuantity] = useState(1);
 
-    const product = PRODUCTS_DATA[productId];
+    const product = useMemo(() =>
+        products.find(p => p.id === parseInt(productId)),
+        [productId]
+    );
+
+    const relatedProducts = useMemo(() =>
+        products.filter(p => p.category === product?.category && p.id !== product?.id).slice(0, 3),
+        [product]
+    );
 
     if (!product) {
         return (
-            <div className="py-16 px-4 max-w-7xl mx-auto text-center">
-                <h1 className="text-4xl font-black text-brand-primary mb-4">Product Not Found</h1>
-                <p className="text-brand-primary/60 mb-8">The product you're looking for doesn't exist.</p>
+            <div className="min-h-screen flex flex-col items-center justify-center bg-brand-bg px-4">
+                <ChefHat size={80} className="text-brand-primary/10 mb-6" />
+                <h1 className="text-4xl font-black text-brand-primary mb-2">Product Not Found</h1>
+                <p className="text-brand-primary/60 mb-8 font-medium">The culinary tool you're looking for has moved.</p>
                 <Link
                     to="/menu"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-brand-primary text-white rounded-xl font-bold hover:bg-brand-accent transition-colors"
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-brand-primary text-brand-bg rounded-2xl font-black text-sm hover:bg-brand-accent transition-all shadow-xl shadow-brand-primary/20"
                 >
                     <ArrowLeft size={18} />
-                    Back to Menu
+                    EXPLORE COLLECTION
                 </Link>
             </div>
         );
     }
 
-    const { images, title, brand, price, oldPrice, discount, rating, reviews, description, specifications, features, inStock, sku } = product;
+    const { images, title, brand, price, oldPrice, discount, description, specs, features, category } = product;
 
     return (
-        <div className="relative overflow-hidden bg-brand-bg text-brand-primary">
-            {/* Decorative Background */}
-            <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[600px] h-[600px] bg-brand-primary rounded-full blur-3xl opacity-5 pointer-events-none" />
-
-            {/* Back Button */}
-            <div className="pt-8 px-4 max-w-7xl mx-auto">
-                <button
-                    onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-brand-primary hover:text-brand-accent transition-colors font-bold text-sm uppercase tracking-wider"
-                >
-                    <ArrowLeft size={18} />
-                    Back
-                </button>
+        <div className="bg-brand-bg min-h-screen text-brand-primary pb-20">
+            {/* Breadcrumb & Navigation */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+                <div className="flex items-center justify-between gap-4">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="flex items-center gap-2 text-[10px] font-black tracking-[0.2em] text-brand-primary/40 uppercase hover:text-brand-accent transition-colors py-2"
+                    >
+                        <ArrowLeft size={14} />
+                        Back to results
+                    </button>
+                    <nav className="hidden sm:flex items-center gap-2 text-[10px] font-black tracking-[0.2em] text-brand-primary/40 uppercase">
+                        <Link to="/" className="hover:text-brand-accent transition-colors">Home</Link>
+                        <ChevronRight size={12} />
+                        <Link to="/menu" className="hover:text-brand-accent transition-colors">{category}</Link>
+                        <ChevronRight size={12} />
+                        <span className="text-brand-primary">{title}</span>
+                    </nav>
+                </div>
             </div>
 
-            {/* Main Product Section */}
-            <div className="py-12 px-4 max-w-7xl mx-auto">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    {/* Image Gallery */}
-                    <div className="flex flex-col gap-4">
-                        <div className="relative bg-brand-bg rounded-2xl border border-brand-primary/10 overflow-hidden aspect-square">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+
+                    {/* Visual Highlights - Left Column */}
+                    <div className="lg:col-span-7 space-y-6">
+                        <div className="relative bg-white rounded-[48px] overflow-hidden border border-brand-primary/5 shadow-sm group">
                             <Swiper
                                 modules={[Navigation, Pagination, Zoom]}
-                                navigation
+                                navigation={{
+                                    prevEl: ".detail-prev",
+                                    nextEl: ".detail-next"
+                                }}
                                 pagination={{ clickable: true, dynamicBullets: true }}
                                 zoom
-                                className="h-full w-full"
+                                className="aspect-square w-full"
                                 loop={images.length > 1}
                             >
                                 {images.map((img, idx) => (
-                                    <SwiperSlide key={idx} className="flex items-center justify-center" zoom>
+                                    <SwiperSlide key={idx} className="flex items-center justify-center p-12" zoom>
                                         <img
                                             src={img}
                                             alt={`${title} - ${idx + 1}`}
-                                            className="h-full w-full object-contain p-8"
+                                            className="w-full h-full object-contain mix-blend-multiply"
                                         />
                                     </SwiperSlide>
                                 ))}
                             </Swiper>
 
-                            {/* Discount Badge */}
-                            {discount && (
-                                <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-sm font-black px-4 py-2 rounded-full shadow-lg">
-                                    {discount}% OFF
-                                </div>
-                            )}
+                            {/* Custom Navigation */}
+                            <button className="detail-prev absolute left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg text-brand-primary hover:bg-brand-primary hover:text-brand-bg transition-all opacity-0 group-hover:opacity-100">
+                                <ChevronLeft size={24} />
+                            </button>
+                            <button className="detail-next absolute right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg text-brand-primary hover:bg-brand-primary hover:text-brand-bg transition-all opacity-0 group-hover:opacity-100">
+                                <ChevronRight size={24} />
+                            </button>
+
+                            {/* Badges */}
+                            <div className="absolute top-8 left-8 z-10 flex flex-col gap-2">
+                                {discount && (
+                                    <div className="bg-red-500 text-white text-xs font-black px-4 py-2 rounded-full shadow-xl animate-bounce">
+                                        {discount} OFF
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
-                        {/* Wishlist Button */}
-                        <button
-                            onClick={() => setIsWishlisted(!isWishlisted)}
-                            className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 ${
-                                isWishlisted
-                                    ? "bg-red-50 text-red-500 border-2 border-red-500"
-                                    : "bg-white/50 text-brand-primary border-2 border-brand-primary/20 hover:border-red-500 hover:bg-red-50 hover:text-red-500"
-                            }`}
-                        >
-                            <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
-                            {isWishlisted ? "Added to Wishlist" : "Add to Wishlist"}
-                        </button>
+                        {/* Thumbnails or Secondary Info could go here */}
                     </div>
 
-                    {/* Product Details */}
-                    <div className="flex flex-col gap-6">
-                        {/* Header */}
-                        <div>
-                            <div className="flex items-center gap-3 mb-3">
-                                <span className="text-xs font-black text-brand-accent uppercase tracking-[0.2em]">{brand}</span>
-                                <span className="text-xs text-brand-primary/40">SKU: {sku}</span>
+                    {/* Product Selection - Right Column */}
+                    <div className="lg:col-span-5 space-y-10">
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <span className="px-3 py-1 bg-brand-accent/10 text-brand-accent text-[10px] font-black uppercase tracking-widest rounded-full">{brand}</span>
                             </div>
-                            <h1 className="text-4xl lg:text-5xl font-black text-brand-primary leading-tight tracking-tighter mb-4">
+                            <h1 className="text-2xl lg:text-3xl font-black text-brand-primary tracking-wide leading-tight uppercase">
                                 {title}
                             </h1>
-
-                            {/* Rating */}
-                            <div className="flex items-center gap-3">
-                                <div className="flex items-center gap-1">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star
-                                            key={i}
-                                            size={16}
-                                            className={i < Math.floor(rating) ? "fill-brand-accent text-brand-accent" : "text-gray-300"}
-                                        />
-                                    ))}
-                                </div>
-                                <span className="text-sm font-bold text-brand-primary">{rating}</span>
-                                <span className="text-xs text-brand-primary/60">({reviews} reviews)</span>
-                            </div>
                         </div>
 
-                        {/* Pricing */}
-                        <div className="pb-6 border-b-2 border-brand-primary/10">
-                            <div className="flex items-baseline gap-3">
-                                <span className="text-5xl font-black text-brand-primary tracking-tight tabular-nums">
-                                    Rs. {price}
-                                </span>
-                                {oldPrice && (
-                                    <span className="text-xl text-brand-primary/40 line-through tracking-tighter">
-                                        Rs. {oldPrice}
-                                    </span>
-                                )}
-                                {discount && (
-                                    <span className="text-sm font-black text-red-500 bg-red-50 px-3 py-1 rounded-lg">
-                                        Save Rs. {oldPrice - price}
-                                    </span>
-                                )}
+                        <div className="space-y-2">
+                            <p className="text-brand-primary/40 text-[10px] font-bold uppercase tracking-widest">Premium Price</p>
+                            <div className="flex items-baseline gap-4">
+                                <span className="text-5xl font-black tracking-tighter tabular-nums">Rs. {price}</span>
                             </div>
-                            <p className="text-sm text-green-600 font-bold mt-3">
-                                {inStock ? "✓ In Stock" : "Out of Stock"}
+                            {oldPrice && (
+                                <span className="text-2xl text-brand-primary/20 line-through tracking-tighter tabular-nums">Rs. {oldPrice}</span>
+                            )}
+                            <p className="text-green-600 text-xs font-bold uppercase tracking-widest pt-2 flex items-center gap-2">
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                In Stock & Ready to Ship
                             </p>
                         </div>
 
-                        {/* Description */}
-                        <p className="text-brand-primary/70 leading-relaxed">
-                            {description}
-                        </p>
+                        <div className="h-px bg-brand-primary/10" />
 
-                        {/* Quantity & Add to Cart */}
-                        <div className="flex gap-4">
-                            <div className="flex items-center border-2 border-brand-primary/20 rounded-xl overflow-hidden bg-white/50">
-                                <button
-                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                    className="px-4 py-3 text-brand-primary hover:bg-brand-primary/10 transition-colors font-bold"
-                                >
-                                    −
-                                </button>
-                                <span className="px-6 py-3 font-black text-brand-primary min-w-16 text-center">
-                                    {quantity}
-                                </span>
-                                <button
-                                    onClick={() => setQuantity(quantity + 1)}
-                                    className="px-4 py-3 text-brand-primary hover:bg-brand-primary/10 transition-colors font-bold"
-                                >
-                                    +
+                        <div className="space-y-6">
+                            <p className="text-brand-primary/60 font-medium leading-relaxed">
+                                {description}
+                            </p>
+
+                            <ul className="space-y-3">
+                                {features?.slice(0, 3).map((f, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm font-bold opacity-80">
+                                        <div className="w-1.5 h-1.5 bg-brand-accent rounded-full" />
+                                        {f}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="pt-4 space-y-4">
+                            <div className="flex gap-4">
+                                <div className="flex items-center bg-white border border-brand-primary/10 rounded-2xl p-1">
+                                    <button
+                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                        className="w-12 h-12 flex items-center justify-center hover:bg-brand-bg rounded-xl transition-colors font-black"
+                                    >
+                                        −
+                                    </button>
+                                    <span className="w-12 text-center font-black">{quantity}</span>
+                                    <button
+                                        onClick={() => setQuantity(quantity + 1)}
+                                        className="w-12 h-12 flex items-center justify-center hover:bg-brand-bg rounded-xl transition-colors font-black"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                                <button className="flex-1 bg-brand-primary text-brand-bg rounded-2xl font-black text-sm hover:bg-brand-accent hover:text-brand-primary transition-all shadow-xl shadow-brand-primary/20 flex items-center justify-center gap-3 uppercase tracking-widest group">
+                                    <ShoppingCart size={20} className="group-hover:scale-110 transition-transform" />
+                                    Add to Cart
                                 </button>
                             </div>
-                            <button className="flex-1 py-3 px-6 bg-brand-primary text-white rounded-xl font-black text-sm hover:bg-brand-accent transition-all duration-300 flex items-center justify-center gap-2 uppercase tracking-widest shadow-lg shadow-brand-primary/30 hover:scale-[1.02] active:scale-95">
-                                <ShoppingCart size={18} />
-                                Add to Cart
+
+                            <button
+                                onClick={() => setIsWishlisted(!isWishlisted)}
+                                className={`w-full py-4 rounded-2xl font-black text-[10px] tracking-widest uppercase transition-all flex items-center justify-center gap-2 ${isWishlisted
+                                    ? "bg-red-50 text-red-500 border border-red-100"
+                                    : "bg-white border border-brand-primary/10 text-brand-primary/60 hover:border-brand-accent hover:text-brand-accent"
+                                    }`}
+                            >
+                                <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} />
+                                {isWishlisted ? "Saved to Wishlist" : "Save for later"}
                             </button>
                         </div>
 
-                        {/* Trust Badges */}
-                        <div className="grid grid-cols-3 gap-4 pt-4">
-                            <div className="flex flex-col items-center gap-2 p-3 bg-brand-primary/5 rounded-xl border border-brand-primary/10">
-                                <Truck size={24} className="text-brand-accent" />
-                                <span className="text-xs font-bold text-center leading-tight">Free Shipping</span>
-                            </div>
-                            <div className="flex flex-col items-center gap-2 p-3 bg-brand-primary/5 rounded-xl border border-brand-primary/10">
-                                <RotateCcw size={24} className="text-brand-accent" />
-                                <span className="text-xs font-bold text-center leading-tight">Easy Returns</span>
-                            </div>
-                            <div className="flex flex-col items-center gap-2 p-3 bg-brand-primary/5 rounded-xl border border-brand-primary/10">
-                                <Shield size={24} className="text-brand-accent" />
-                                <span className="text-xs font-bold text-center leading-tight">Warranty</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Specifications & Features */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-20 pt-12 border-t-2 border-brand-primary/10">
-                    {/* Specifications */}
-                    <div>
-                        <h2 className="text-2xl font-black text-brand-primary mb-6 uppercase tracking-tight">
-                            Specifications
-                        </h2>
-                        <div className="space-y-3">
-                            {Object.entries(specifications).map(([key, value]) => (
-                                <div key={key} className="flex justify-between items-start p-4 bg-white/50 rounded-lg border border-brand-primary/10">
-                                    <span className="font-bold text-sm text-brand-primary/70">{key}</span>
-                                    <span className="font-black text-brand-primary text-right max-w-xs">{value}</span>
+                        {/* Quick Trust Badges */}
+                        <div className="grid grid-cols-2 gap-4 pt-4">
+                            <div className="p-4 bg-white/50 border border-brand-primary/5 rounded-2xl flex items-center gap-4">
+                                <Truck size={20} className="text-brand-accent" />
+                                <div className="leading-none">
+                                    <p className="text-[10px] font-black uppercase mb-1">Free Delivery</p>
+                                    <p className="text-[9px] font-bold opacity-40">Orders over ₹5,000</p>
                                 </div>
+                            </div>
+                            <div className="p-4 bg-white/50 border border-brand-primary/5 rounded-2xl flex items-center gap-4">
+                                <Shield size={20} className="text-brand-accent" />
+                                <div className="leading-none">
+                                    <p className="text-[10px] font-black uppercase mb-1">5 Year Warranty</p>
+                                    <p className="text-[9px] font-bold opacity-40">Full protection</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Technical Specifications */}
+                <div className="mt-32">
+                    <div className="flex items-center gap-8 mb-12">
+                        <h2 className="text-4xl font-black tracking-tighter uppercase shrink-0">Specifications</h2>
+                        <div className="h-px grow bg-brand-primary/10" />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {Object.entries(specs || {}).map(([key, value]) => (
+                            <div key={key} className="bg-white p-8 rounded-[32px] border border-brand-primary/5 shadow-xs hover:shadow-xl hover:shadow-brand-primary/5 transition-all">
+                                <p className="text-[10px] font-black text-brand-accent uppercase tracking-widest mb-2">{key}</p>
+                                <h3 className="text-xl font-black text-brand-primary">{value}</h3>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Similar Products */}
+                {relatedProducts.length > 0 && (
+                    <div className="mt-32">
+                        <div className="flex items-center gap-8 mb-12">
+                            <h2 className="text-4xl font-black tracking-tighter uppercase shrink-0">Similar Items</h2>
+                            <div className="h-px grow bg-brand-primary/10" />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {relatedProducts.map(prod => (
+                                <ProductCard key={prod.id} product={prod} />
                             ))}
                         </div>
                     </div>
-
-                    {/* Features */}
-                    <div>
-                        <h2 className="text-2xl font-black text-brand-primary mb-6 uppercase tracking-tight">
-                            Key Features
-                        </h2>
-                        <ul className="space-y-3">
-                            {features.map((feature, idx) => (
-                                <li
-                                    key={idx}
-                                    className="flex items-start gap-3 p-4 bg-white/50 rounded-lg border border-brand-primary/10"
-                                >
-                                    <span className="text-brand-accent font-black text-xl mt-1">✓</span>
-                                    <span className="font-bold text-brand-primary text-sm leading-relaxed">{feature}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
-
-                {/* Related Products Section */}
-                <div className="mt-20 pt-12 border-t-2 border-brand-primary/10">
-                    <h2 className="text-3xl font-black text-brand-primary mb-8 uppercase tracking-tight">
-                        Similar Products
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {Object.entries(PRODUCTS_DATA)
-                            .filter(([id]) => id !== productId)
-                            .map(([id, prod]) => (
-                                <Link
-                                    key={id}
-                                    to={`/product/${id}`}
-                                    className="group bg-white rounded-xl border border-gray-100 hover:border-brand-accent/20 transition-all duration-500 hover:shadow-lg overflow-hidden cursor-pointer"
-                                >
-                                    <div className="aspect-square bg-brand-bg overflow-hidden relative">
-                                        <img
-                                            src={prod.images[0]}
-                                            alt={prod.title}
-                                            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-                                        />
-                                        {prod.discount && (
-                                            <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-black px-2 py-1 rounded-full">
-                                                {prod.discount}% OFF
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="p-4">
-                                        <h3 className="font-bold text-sm text-brand-primary line-clamp-2 mb-2">
-                                            {prod.title}
-                                        </h3>
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-lg font-black text-brand-primary">
-                                                Rs. {prod.price}
-                                            </span>
-                                            {prod.oldPrice && (
-                                                <span className="text-xs text-gray-400 line-through">
-                                                    Rs. {prod.oldPrice}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))}
-                    </div>
-                </div>
+                )}
             </div>
         </div>
     );

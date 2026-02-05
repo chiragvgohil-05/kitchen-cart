@@ -1,8 +1,11 @@
 import { ArrowRight, Star, ChefHat, Timer, ShieldCheck, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
+import { products } from "../data/products";
 
 const Home = () => {
+    // Show first 3 products as featured
+    const featuredProducts = products.slice(0, 3);
     return (
         <div className="relative overflow-hidden bg-brand-bg text-brand-primary">
             {/* Decorative Background Elements */}
@@ -18,7 +21,7 @@ const Home = () => {
                                 <Star className="text-brand-accent fill-brand-accent" size={16} />
                                 <span className="text-xs font-black tracking-widest text-brand-accent uppercase italic">Premium Culinary Tools</span>
                             </div>
-                            <h1 className="text-6xl lg:text-8xl font-black text-brand-primary leading-[0.9] tracking-tighter">
+                            <h1 className="text-5xl lg:text-7xl font-black text-brand-primary leading-[0.9] tracking-tighter">
                                 EQUIP YOUR <br />
                                 <span className="text-brand-accent">DREAM</span> KITCHEN
                             </h1>
@@ -99,7 +102,7 @@ const Home = () => {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
                     <div className="space-y-4">
                         <div className="h-1 w-12 bg-brand-accent rounded-full" />
-                        <h2 className="text-[40px] md:text-[56px] font-black text-brand-primary leading-[1.1] tracking-tighter">
+                        <h2 className="text-3xl md:text-5xl font-black text-brand-primary leading-[1.1] tracking-tighter">
                             OUR BEST <br />
                             <span className="text-brand-accent uppercase italic">SELLERS</span>
                         </h2>
@@ -111,44 +114,7 @@ const Home = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {[
-                        {
-                            id: 1,
-                            title: "Professional Stand Mixer",
-                            brand: "KitchenAid",
-                            price: "24,900.00",
-                            oldPrice: "34,900.00",
-                            discount: "20%",
-                            images: [
-                                "https://images.unsplash.com/photo-1594385208974-2e75f9d8ad48?q=80&w=600&auto=format&fit=crop",
-                                "https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=600&auto=format&fit=crop"
-                            ]
-                        },
-                        {
-                            id: 2,
-                            title: "Nero 30 – 30 cm Built-in 2 Zone Induction Hob",
-                            brand: "Hafele",
-                            price: "33,140.00",
-                            oldPrice: "40,310.00",
-                            discount: "17%",
-                            images: [
-                                "https://images.unsplash.com/photo-1584990333939-7290082697ec?q=80&w=600&auto=format&fit=crop",
-                                "https://images.unsplash.com/photo-1521133573832-34c920bc6bc0?q=80&w=600&auto=format&fit=crop"
-                            ]
-                        },
-                        {
-                            id: 3,
-                            title: "Premium 7-Piece Cutlery Set",
-                            brand: "ChefMasters",
-                            price: "15,500.00",
-                            oldPrice: "19,900.00",
-                            discount: "22%",
-                            images: [
-                                "https://images.unsplash.com/photo-1593618998160-e34014e67546?q=80&w=600&auto=format&fit=crop",
-                                "https://images.unsplash.com/photo-1614362945742-d610bc9318a4?q=80&w=600&auto=format&fit=crop"
-                            ]
-                        }
-                    ].map(prod => (
+                    {featuredProducts.map(prod => (
                         <ProductCard key={prod.id} product={prod} />
                     ))}
                 </div>
@@ -159,7 +125,7 @@ const Home = () => {
                 <div className="relative bg-brand-primary rounded-[48px] p-12 lg:p-24 overflow-hidden text-center">
                     <div className="absolute inset-0 bg-linear-to-br from-brand-accent/20 to-transparent pointer-events-none" />
                     <div className="relative z-10 space-y-8">
-                        <h2 className="text-4xl lg:text-6xl font-black text-brand-bg max-w-3xl mx-auto leading-tight">
+                        <h2 className="text-3xl lg:text-5xl font-black text-brand-bg max-w-3xl mx-auto leading-tight">
                             READY TO TRANSFORM <br />YOUR COOKING?
                         </h2>
                         <p className="text-brand-bg/60 font-medium max-w-xl mx-auto text-lg">
