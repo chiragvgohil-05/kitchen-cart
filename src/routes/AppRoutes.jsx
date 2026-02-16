@@ -22,13 +22,21 @@ import Returns from "../pages/Returns";
 import Faqs from "../pages/Faqs";
 import OrderSuccess from "../pages/OrderSuccess";
 import UserOrders from "../pages/UserOrders";
+import Profile from "../pages/Profile";
 
 import ProductFormPage from "../pages/admin/ProductFormPage";
+import ProtectedRoute from "../components/ProtectedRoute";
+
+import UserRoute from "../components/UserRoute";
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <MainLayout />,
+        element: (
+            <UserRoute>
+                <MainLayout />
+            </UserRoute>
+        ),
         children: [
             {
                 index: true,
@@ -84,11 +92,27 @@ const router = createBrowserRouter([
             },
             {
                 path: "order-success",
-                element: <OrderSuccess />,
+                element: (
+                    <ProtectedRoute>
+                        <OrderSuccess />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: "user/orders",
-                element: <UserOrders />,
+                element: (
+                    <ProtectedRoute>
+                        <UserOrders />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "profile",
+                element: (
+                    <ProtectedRoute>
+                        <Profile />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: "*",
@@ -106,7 +130,11 @@ const router = createBrowserRouter([
     },
     {
         path: "/admin",
-        element: <AdminLayout />,
+        element: (
+            <ProtectedRoute allowedRoles={['admin']}>
+                <AdminLayout />
+            </ProtectedRoute>
+        ),
         children: [
             {
                 index: true,
@@ -132,6 +160,10 @@ const router = createBrowserRouter([
             {
                 path: "orders",
                 element: <Orders />,
+            },
+            {
+                path: "profile",
+                element: <Profile />,
             },
         ],
     },

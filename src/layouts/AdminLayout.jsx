@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { NavLink, Outlet, Link } from "react-router-dom";
+import { NavLink, Outlet, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import {
     LayoutDashboard,
     Package,
@@ -10,17 +11,26 @@ import {
     Settings,
     LogOut,
     Bell,
-    Search
+    Search,
+    User as UserIcon
 } from "lucide-react";
 import logo from "../assets/logo.png";
 
 const AdminLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate("/");
+    };
 
     const sidebarLinks = [
         { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
         { to: "/admin/products", label: "Products", icon: Package },
         { to: "/admin/orders", label: "Orders", icon: ShoppingCart },
+        { to: "/admin/profile", label: "Profile Settings", icon: UserIcon },
     ];
 
     return (
@@ -68,24 +78,22 @@ const AdminLayout = () => {
                     <div className="p-6 mt-auto">
                         <div className="bg-brand-primary/5 rounded-2xl p-4 border border-brand-primary/10 mb-6">
                             <div className="flex items-center gap-3 mb-3">
-                                <div className="w-10 h-10 rounded-full bg-brand-accent flex items-center justify-center text-brand-primary font-bold shadow-sm">AD</div>
+                                <div className="w-10 h-10 rounded-full bg-brand-accent flex items-center justify-center text-brand-primary font-bold shadow-sm">
+                                    {user?.name?.charAt(0).toUpperCase() || 'A'}
+                                </div>
                                 <div>
-                                    <p className="text-xs font-bold text-brand-primary">Administrator</p>
-                                    <p className="text-[10px] text-brand-primary/50 font-medium">Super User</p>
+                                    <p className="text-xs font-bold text-brand-primary">{user?.name || 'Administrator'}</p>
+                                    <p className="text-[10px] text-brand-primary/50 font-medium">{user?.role === 'admin' ? 'Super User' : 'User'}</p>
                                 </div>
                             </div>
-                            <button className="w-full flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-brand-primary/40 hover:text-brand-accent transition-colors py-2">
+                            <button
+                                onClick={handleLogout}
+                                className="w-full flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-brand-primary/40 hover:text-brand-accent transition-colors py-2"
+                            >
                                 <LogOut size={14} />
                                 Sign Out
                             </button>
                         </div>
-                        <Link
-                            to="/"
-                            className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-brand-primary/10 text-[10px] font-black uppercase tracking-widest text-brand-primary/40 hover:bg-brand-primary hover:text-brand-bg transition-all"
-                        >
-                            <ArrowLeft size={14} />
-                            Return to Website
-                        </Link>
                     </div>
                 </div>
             </aside>

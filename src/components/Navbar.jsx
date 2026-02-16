@@ -1,15 +1,30 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Menu, X, ShoppingCart, User, Heart, Search, ChevronDown, ChevronRight, LayoutGrid } from "lucide-react";
+import { Menu, X, ShoppingCart, User, Heart, Search, ChevronDown, ChevronRight, LayoutGrid, LogOut, Package, Settings } from "lucide-react";
 import { categories } from "../data/products";
+import { useAuth } from "../context/AuthContext";
 
 import logo from "../assets/Logo.png";
 
 const Navbar = () => {
+    const { user, logout } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const navigate = useNavigate();
+    const userMenuRef = useRef(null);
+
+    // Close user menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+                setIsUserMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -17,6 +32,12 @@ const Navbar = () => {
             navigate(`/menu?search=${encodeURIComponent(searchQuery)}`);
             setIsOpen(false);
         }
+    };
+
+    const handleLogout = () => {
+        logout();
+        setIsUserMenuOpen(false);
+        navigate("/");
     };
 
     const selectCategory = (cat) => {
@@ -45,7 +66,7 @@ const Navbar = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between gap-8">
                         {/* Logo */}
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                             <Link to="/" className="flex items-center">
                                 <img src={logo} alt="Kitchen Cart" className="h-20 md:h-12 w-auto object-contain" />
                             </Link>
@@ -69,12 +90,47 @@ const Navbar = () => {
 
                         {/* Icons */}
                         <div className="flex items-center space-x-2 md:space-x-4">
-                            <Link
-                                to="/login"
-                                className="p-2.5 text-brand-primary hover:bg-white rounded-2xl transition-all hover:shadow-lg hover:shadow-brand-primary/5 hidden sm:block"
-                            >
-                                <User className="h-6 w-6" strokeWidth={1.5} />
-                            </Link>
+                            {user && user.role !== 'admin' ? (
+                                <div className="relative" ref={userMenuRef}>
+                                    <button
+                                        onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                        className="sm:flex hidden items-center gap-2 p-1.5 pr-3 text-brand-primary hover:bg-white rounded-2xl transition-all hover:shadow-lg hover:shadow-brand-primary/5 border border-brand-primary/5"
+                                    >
+                                        <div className="w-8 h-8 bg-brand-primary text-brand-bg rounded-xl flex items-center justify-center font-black text-xs">
+                                            {user.name.charAt(0).toUpperCase()}
+                                        </div>
+                                        <span className="text-xs font-black uppercase tracking-widest hidden lg:block">{user.name.split(' ')[0]}</span>
+                                        <ChevronDown size={14} className={`transition-transform duration-300 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+
+                                    {/* User Dropdown */}
+                                    <div className={`absolute top-full right-0 mt-2 w-56 bg-white rounded-3xl shadow-2xl shadow-brand-primary/10 border border-brand-primary/5 py-3 transition-all duration-300 transform origin-top-right ${isUserMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                                        <div className="px-5 py-2 mb-2 border-b border-brand-primary/5">
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Signed in as</p>
+                                            <p className="text-xs font-black text-brand-primary truncate">{user.email}</p>
+                                        </div>
+                                        <Link to="/user/orders" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-5 py-2.5 text-xs font-bold text-brand-primary/70 hover:text-brand-accent hover:bg-brand-bg transition-all uppercase tracking-widest">
+                                            <Package size={16} />
+                                            My Orders
+                                        </Link>
+                                        <Link to="/profile" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-5 py-2.5 text-xs font-bold text-brand-primary/70 hover:text-brand-accent hover:bg-brand-bg transition-all uppercase tracking-widest">
+                                            <User size={16} />
+                                            Profile Settings
+                                        </Link>
+                                        <button onClick={handleLogout} className="flex items-center gap-3 w-full px-5 py-2.5 text-xs font-bold text-red-500 hover:bg-red-50 transition-all uppercase tracking-widest text-left">
+                                            <LogOut size={16} />
+                                            Sign Out
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : !user ? (
+                                <Link
+                                    to="/login"
+                                    className="p-2.5 text-brand-primary hover:bg-white rounded-2xl transition-all hover:shadow-lg hover:shadow-brand-primary/5 hidden sm:block border border-transparent hover:border-brand-primary/5"
+                                >
+                                    <User className="h-6 w-6" strokeWidth={1.5} />
+                                </Link>
+                            ) : null}
                             <Link
                                 to="/wishlist"
                                 className="p-2.5 text-brand-primary hover:bg-white rounded-2xl transition-all hover:shadow-lg hover:shadow-brand-primary/5"

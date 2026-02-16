@@ -1,18 +1,39 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, ArrowRight, Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
+    const { login, user } = useAuth();
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            if (user.role === 'admin') navigate("/admin");
+            else navigate("/");
+        }
+    }, [user, navigate]);
+
     const [formData, setFormData] = useState({
         email: "",
         password: "",
         rememberMe: false
     });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Login Attempt:", formData);
+        setLoading(true);
+        const loggedInUser = await login(formData.email, formData.password);
+        setLoading(false);
+        if (loggedInUser) {
+            if (loggedInUser.role === 'admin') {
+                navigate("/admin");
+            } else {
+                navigate("/");
+            }
+        }
     };
 
     return (
@@ -99,10 +120,11 @@ const Login = () => {
 
                     <button
                         type="submit"
-                        className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-2xl text-white bg-brand-primary hover:bg-brand-primary/95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary transition-all active:scale-[0.98] shadow-lg shadow-brand-primary/20"
+                        disabled={loading}
+                        className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-2xl text-white bg-brand-primary hover:bg-brand-primary/95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary transition-all active:scale-[0.98] shadow-lg shadow-brand-primary/20 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                        Sign in
-                        <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                        {loading ? "Signing in..." : "Sign in"}
+                        {!loading && <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />}
                     </button>
 
                     <div className="text-center">
