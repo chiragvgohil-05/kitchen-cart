@@ -12,7 +12,8 @@ import {
     LogOut,
     Bell,
     Search,
-    User as UserIcon
+    User as UserIcon,
+    LayoutGrid
 } from "lucide-react";
 import logo from "../assets/logo.png";
 
@@ -28,6 +29,7 @@ const AdminLayout = () => {
 
     const sidebarLinks = [
         { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
+        { to: "/admin/categories", label: "Categories", icon: LayoutGrid },
         { to: "/admin/products", label: "Products", icon: Package },
         { to: "/admin/orders", label: "Orders", icon: ShoppingCart },
         { to: "/admin/profile", label: "Profile Settings", icon: UserIcon },

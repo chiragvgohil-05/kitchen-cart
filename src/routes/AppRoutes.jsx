@@ -25,6 +25,8 @@ import UserOrders from "../pages/UserOrders";
 import Profile from "../pages/Profile";
 
 import ProductFormPage from "../pages/admin/ProductFormPage";
+import Categories from "../pages/admin/Categories";
+import CategoryFormPage from "../pages/admin/CategoryFormPage";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 import UserRoute from "../components/UserRoute";
@@ -139,6 +141,23 @@ const router = createBrowserRouter([
             {
                 index: true,
                 element: <Dashboard />,
+            },
+            {
+                path: "categories",
+                children: [
+                    {
+                        index: true,
+                        element: <Categories />,
+                    },
+                    {
+                        path: "create",
+                        element: <CategoryFormPage />,
+                    },
+                    {
+                        path: "edit/:id",
+                        element: <CategoryFormPage />,
+                    },
+                ]
             },
             {
                 path: "products",
