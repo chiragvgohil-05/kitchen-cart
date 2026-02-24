@@ -1,11 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Zoom } from "swiper/modules";
-import { Heart, ShoppingCart, ArrowLeft, Truck, Shield, RotateCcw, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Heart, ShoppingCart, ArrowLeft, Truck, Shield, RotateCcw, Star, ChevronLeft, ChevronRight, ChefHat } from "lucide-react";
 import { Link } from "react-router-dom";
-import { products } from "../data/products";
+import { useShop } from "../context/ShopContext";
 import ProductCard from "../components/ProductCard";
+import { getProductImageUrl } from "../utils/mediaUrl";
+import api from "../utils/api";
 
 // Import Swiper styles
 import "swiper/css";
@@ -16,18 +18,49 @@ import "swiper/css/zoom";
 const ProductDetail = () => {
     const { productId } = useParams();
     const navigate = useNavigate();
-    const [isWishlisted, setIsWishlisted] = useState(false);
+    const { addToCart, wishlist, toggleWishlist } = useShop(); // Added wishlist/toggleWishlist from previous task
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [relatedProducts, setRelatedProducts] = useState([]);
     const [quantity, setQuantity] = useState(1);
 
-    const product = useMemo(() =>
-        products.find(p => p.id === parseInt(productId)),
-        [productId]
-    );
+    const isWishlisted = wishlist.some(item => item._id === productId);
 
-    const relatedProducts = useMemo(() =>
-        products.filter(p => p.category === product?.category && p.id !== product?.id).slice(0, 3),
-        [product]
-    );
+    useEffect(() => {
+        const fetchProductData = async () => {
+            try {
+                setLoading(true);
+                const response = await api.get(`/products/${productId}`);
+                if (response.data.success) {
+                    const productData = response.data.data;
+                    setProduct(productData);
+
+                    // Fetch related products (same category)
+                    if (productData.category?._id) {
+                        const relatedRes = await api.get(`/products?category=${productData.category._id}&limit=4`);
+                        if (relatedRes.data.success) {
+                            setRelatedProducts(relatedRes.data.data.products.filter(p => p._id !== productId).slice(0, 3));
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching product detail:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProductData();
+        window.scrollTo(0, 0); // Scroll to top on ID change
+    }, [productId]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-brand-bg">
+                <div className="animate-spin w-12 h-12 border-4 border-brand-accent border-t-transparent rounded-full" />
+            </div>
+        );
+    }
 
     if (!product) {
         return (
@@ -46,7 +79,8 @@ const ProductDetail = () => {
         );
     }
 
-    const { images, title, brand, price, oldPrice, discount, description, specs, features, category } = product;
+    const { images, name, brand, sellingPrice, mrp, description, technicalSpecs, keyFeatures, category, stock } = product;
+    const discount = mrp > sellingPrice ? Math.round(((mrp - sellingPrice) / mrp) * 100) : 0;
 
     return (
         <div className="bg-brand-bg min-h-screen text-brand-primary pb-20">
@@ -63,9 +97,9 @@ const ProductDetail = () => {
                     <nav className="hidden sm:flex items-center gap-2 text-[10px] font-black tracking-[0.2em] text-brand-primary/40 uppercase">
                         <Link to="/" className="hover:text-brand-accent transition-colors">Home</Link>
                         <ChevronRight size={12} />
-                        <Link to="/menu" className="hover:text-brand-accent transition-colors">{category}</Link>
+                        <Link to="/menu" className="hover:text-brand-accent transition-colors">{category?.name || 'Category'}</Link>
                         <ChevronRight size={12} />
-                        <span className="text-brand-primary">{title}</span>
+                        <span className="text-brand-primary">{name}</span>
                     </nav>
                 </div>
             </div>
@@ -90,8 +124,8 @@ const ProductDetail = () => {
                                 {images.map((img, idx) => (
                                     <SwiperSlide key={idx} className="flex items-center justify-center p-12" zoom>
                                         <img
-                                            src={img}
-                                            alt={`${title} - ${idx + 1}`}
+                                            src={getProductImageUrl(img)}
+                                            alt={`${name} - ${idx + 1}`}
                                             className="w-full h-full object-contain mix-blend-multiply"
                                         />
                                     </SwiperSlide>
@@ -108,9 +142,9 @@ const ProductDetail = () => {
 
                             {/* Badges */}
                             <div className="absolute top-8 left-8 z-10 flex flex-col gap-2">
-                                {discount && (
+                                {discount > 0 && (
                                     <div className="bg-red-500 text-white text-xs font-black px-4 py-2 rounded-full shadow-xl animate-bounce">
-                                        {discount} OFF
+                                        {discount}% OFF
                                     </div>
                                 )}
                             </div>
@@ -123,25 +157,32 @@ const ProductDetail = () => {
                     <div className="lg:col-span-5 space-y-10">
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
-                                <span className="px-3 py-1 bg-brand-accent/10 text-brand-accent text-[10px] font-black uppercase tracking-widest rounded-full">{brand}</span>
+                                <span className="px-3 py-1 bg-brand-accent/10 text-brand-accent text-[10px] font-black uppercase tracking-widest rounded-full">{category?.name || brand}</span>
                             </div>
                             <h1 className="text-2xl lg:text-3xl font-black text-brand-primary tracking-wide leading-tight uppercase">
-                                {title}
+                                {name}
                             </h1>
                         </div>
 
                         <div className="space-y-2">
                             <p className="text-brand-primary/40 text-[10px] font-bold uppercase tracking-widest">Premium Price</p>
                             <div className="flex items-baseline gap-4">
-                                <span className="text-5xl font-black tracking-tighter tabular-nums">Rs. {price}</span>
+                                <span className="text-5xl font-black tracking-tighter tabular-nums">₹ {sellingPrice}</span>
                             </div>
-                            {oldPrice && (
-                                <span className="text-2xl text-brand-primary/20 line-through tracking-tighter tabular-nums">Rs. {oldPrice}</span>
+                            {mrp && mrp > sellingPrice && (
+                                <span className="text-2xl text-brand-primary/20 line-through tracking-tighter tabular-nums">₹ {mrp}</span>
                             )}
-                            <p className="text-green-600 text-xs font-bold uppercase tracking-widest pt-2 flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                                In Stock & Ready to Ship
-                            </p>
+                            {stock > 0 ? (
+                                <p className="text-green-600 text-xs font-bold uppercase tracking-widest pt-2 flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                    In Stock & Ready to Ship ({stock} units)
+                                </p>
+                            ) : (
+                                <p className="text-red-500 text-xs font-bold uppercase tracking-widest pt-2 flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-red-500 rounded-full" />
+                                    Temporarily Out of Stock
+                                </p>
+                            )}
                         </div>
 
                         <div className="h-px bg-brand-primary/10" />
@@ -152,7 +193,7 @@ const ProductDetail = () => {
                             </p>
 
                             <ul className="space-y-3">
-                                {features?.slice(0, 3).map((f, i) => (
+                                {keyFeatures?.map((f, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm font-bold opacity-80">
                                         <div className="w-1.5 h-1.5 bg-brand-accent rounded-full" />
                                         {f}
@@ -178,14 +219,14 @@ const ProductDetail = () => {
                                         +
                                     </button>
                                 </div>
-                                <button className="flex-1 bg-brand-primary text-brand-bg rounded-2xl font-black text-sm hover:bg-brand-accent hover:text-brand-primary transition-all shadow-xl shadow-brand-primary/20 flex items-center justify-center gap-3 uppercase tracking-widest group">
+                                <button onClick={() => addToCart(product, quantity)} className="flex-1 bg-brand-primary text-brand-bg rounded-2xl font-black text-sm hover:bg-brand-accent hover:text-brand-primary transition-all shadow-xl shadow-brand-primary/20 flex items-center justify-center gap-3 uppercase tracking-widest group">
                                     <ShoppingCart size={20} className="group-hover:scale-110 transition-transform" />
                                     Add to Cart
                                 </button>
                             </div>
 
                             <button
-                                onClick={() => setIsWishlisted(!isWishlisted)}
+                                onClick={() => toggleWishlist(product)}
                                 className={`w-full py-4 rounded-2xl font-black text-[10px] tracking-widest uppercase transition-all flex items-center justify-center gap-2 ${isWishlisted
                                     ? "bg-red-50 text-red-500 border border-red-100"
                                     : "bg-white border border-brand-primary/10 text-brand-primary/60 hover:border-brand-accent hover:text-brand-accent"
@@ -224,7 +265,7 @@ const ProductDetail = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {Object.entries(specs || {}).map(([key, value]) => (
+                        {Object.entries(technicalSpecs || {}).map(([key, value]) => (
                             <div key={key} className="bg-white p-8 rounded-[32px] border border-brand-primary/5 shadow-xs hover:shadow-xl hover:shadow-brand-primary/5 transition-all">
                                 <p className="text-[10px] font-black text-brand-accent uppercase tracking-widest mb-2">{key}</p>
                                 <h3 className="text-xl font-black text-brand-primary">{value}</h3>
@@ -242,7 +283,7 @@ const ProductDetail = () => {
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                             {relatedProducts.map(prod => (
-                                <ProductCard key={prod.id} product={prod} />
+                                <ProductCard key={prod._id} product={prod} />
                             ))}
                         </div>
                     </div>

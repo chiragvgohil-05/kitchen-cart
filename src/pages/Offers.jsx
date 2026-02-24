@@ -1,11 +1,12 @@
 import { ArrowRight, Tag, Percent, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
-import { products } from "../data/products";
+import { useShop } from "../context/ShopContext";
 
 const Offers = () => {
+    const { products } = useShop();
     // Show products with discounts
-    const discountedProducts = products.filter(p => p.discount).slice(0, 4);
+    const discountedProducts = (products || []).filter(p => Number(p.mrp) > Number(p.sellingPrice)).slice(0, 4);
 
     return (
         <>
@@ -67,7 +68,7 @@ const Offers = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {discountedProducts.map(prod => (
-                        <ProductCard key={prod.id} product={prod} />
+                        <ProductCard key={prod._id} product={prod} />
                     ))}
                 </div>
 

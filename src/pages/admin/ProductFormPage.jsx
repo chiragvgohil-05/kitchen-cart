@@ -13,6 +13,8 @@ import {
     CheckCircle2
 } from "lucide-react";
 import api from "../../utils/api";
+import { getProductImageUrl } from "../../utils/mediaUrl";
+import { calculateDiscountPercentage } from "../../utils/pricing";
 import toast from "react-hot-toast";
 
 const ProductFormPage = () => {
@@ -48,14 +50,8 @@ const ProductFormPage = () => {
 
     // Auto-calculate discount
     useEffect(() => {
-        if (formData.mrp && formData.sellingPrice) {
-            const mrp = parseFloat(formData.mrp);
-            const selling = parseFloat(formData.sellingPrice);
-            if (mrp > 0) {
-                const disc = Math.round(((mrp - selling) / mrp) * 100);
-                setFormData(prev => ({ ...prev, discount: disc > 0 ? disc : 0 }));
-            }
-        }
+        const discount = calculateDiscountPercentage(formData.mrp, formData.sellingPrice);
+        setFormData(prev => ({ ...prev, discount }));
     }, [formData.mrp, formData.sellingPrice]);
 
     const fetchCategories = async () => {
@@ -86,7 +82,7 @@ const ProductFormPage = () => {
                 description: product.description,
                 mrp: product.mrp,
                 sellingPrice: product.sellingPrice,
-                discount: product.discount,
+                discount: calculateDiscountPercentage(product.mrp, product.sellingPrice),
                 category: product.category._id || product.category,
                 stock: product.stock,
                 keyFeatures: product.keyFeatures?.length > 0 ? product.keyFeatures : [""],
@@ -178,11 +174,29 @@ const ProductFormPage = () => {
 
         setLoading(true);
 
+        const mrpValue = Number(formData.mrp);
+        const sellingPriceValue = Number(formData.sellingPrice);
+        if (!Number.isFinite(mrpValue) || mrpValue <= 0) {
+            toast.error("MRP must be greater than 0");
+            setLoading(false);
+            return;
+        }
+        if (!Number.isFinite(sellingPriceValue) || sellingPriceValue < 0) {
+            toast.error("Selling price must be 0 or greater");
+            setLoading(false);
+            return;
+        }
+        if (sellingPriceValue > mrpValue) {
+            toast.error("Selling price cannot be greater than MRP");
+            setLoading(false);
+            return;
+        }
+
         const data = new FormData();
         data.append("name", formData.name);
         data.append("description", formData.description);
-        data.append("mrp", formData.mrp);
-        data.append("sellingPrice", formData.sellingPrice);
+        data.append("mrp", mrpValue.toString());
+        data.append("sellingPrice", sellingPriceValue.toString());
         data.append("category", formData.category);
         data.append("stock", formData.stock);
 
@@ -210,20 +224,26 @@ const ProductFormPage = () => {
 
         try {
             if (isEdit) {
-                await api.put(`/products/${id}`, data, {
+                const response = await api.put(`/products/${id}`, data, {
                     headers: { "Content-Type": "multipart/form-data" }
                 });
+                if (response.status !== 200 || !response.data?.success) {
+                    throw new Error(response.data?.message || "Unexpected response while updating product");
+                }
                 toast.success("Product updated successfully");
             } else {
-                await api.post("/products", data, {
+                const response = await api.post("/products", data, {
                     headers: { "Content-Type": "multipart/form-data" }
                 });
+                if (response.status !== 201 || !response.data?.success) {
+                    throw new Error(response.data?.message || "Unexpected response while creating product");
+                }
                 toast.success("Product created successfully");
             }
             navigate("/admin/products");
         } catch (error) {
             console.error("Error saving product:", error);
-            toast.error(error.response?.data?.message || "Failed to save product");
+            toast.error(error.response?.data?.errors || error.response?.data?.message || error.message || "Failed to save product");
         } finally {
             setLoading(false);
         }
@@ -440,7 +460,7 @@ const ProductFormPage = () => {
                             {/* Existing Saved Images */}
                             {existingImages.map((url, index) => (
                                 <div key={`existing-${index}`} className="aspect-square bg-brand-bg rounded-2xl overflow-hidden relative group border border-brand-primary/5 shadow-sm">
-                                    <img src={`http://localhost:5000${url}`} alt="Product" className="w-full h-full object-cover" />
+                                    <img src={getProductImageUrl(url)} alt="Product" className="w-full h-full object-cover" />
                                     <button
                                         type="button"
                                         onClick={() => removeExistingImage(index)}

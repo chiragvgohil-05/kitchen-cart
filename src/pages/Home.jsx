@@ -1,11 +1,12 @@
 import { ArrowRight, Star, ChefHat, Timer, ShieldCheck, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
-import { products } from "../data/products";
+import { useShop } from "../context/ShopContext";
 
 const Home = () => {
+    const { products } = useShop();
     // Show first 3 products as featured
-    const featuredProducts = products.slice(0, 3);
+    const featuredProducts = products?.slice(0, 3) || [];
     return (
         <div className="relative overflow-hidden bg-brand-bg text-brand-primary">
             {/* Decorative Background Elements */}
@@ -115,7 +116,7 @@ const Home = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {featuredProducts.map(prod => (
-                        <ProductCard key={prod.id} product={prod} />
+                        <ProductCard key={prod._id} product={prod} />
                     ))}
                 </div>
             </section>

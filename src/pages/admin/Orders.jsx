@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Search,
     Filter,
@@ -9,13 +9,48 @@ import {
     Clock,
     XCircle,
     Download,
-    ExternalLink
+    ExternalLink,
+    AlertCircle
 } from "lucide-react";
-import { orders } from "../../data/orders";
+import api from "../../utils/api";
+import toast from "react-hot-toast";
 
 const AdminOrders = () => {
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
+
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
+    const fetchOrders = async () => {
+        setLoading(true);
+        try {
+            const res = await api.get('/orders/admin');
+            if (res.data.success) {
+                setOrders(res.data.data);
+            }
+        } catch (error) {
+            console.error("Fetch orders error:", error);
+            toast.error("Failed to fetch orders");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleStatusUpdate = async (orderId, newStatus) => {
+        try {
+            const res = await api.put(`/orders/${orderId}`, { status: newStatus });
+            if (res.data.success) {
+                toast.success("Order status updated");
+                fetchOrders(); // Refresh
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to update status");
+        }
+    };
 
     const getStatusStyles = (status) => {
         switch (status) {
@@ -27,6 +62,8 @@ const AdminOrders = () => {
                 return "bg-amber-50 text-amber-600 border-amber-100";
             case "Cancelled":
                 return "bg-red-50 text-red-600 border-red-100";
+            case "Pending":
+                return "bg-gray-50 text-gray-600 border-gray-100";
             default:
                 return "bg-gray-50 text-gray-600 border-gray-100";
         }
@@ -44,11 +81,22 @@ const AdminOrders = () => {
 
     const filteredOrders = orders.filter(order => {
         const matchesSearch =
-            order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            order.customer.name.toLowerCase().includes(searchTerm.toLowerCase());
+            order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order.user?.name.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === "All" || order.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
+
+    if (loading) {
+        return (
+            <div className="min-h-[60vh] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-brand-primary/10 border-t-brand-accent rounded-full animate-spin" />
+                    <p className="font-black text-brand-primary uppercase tracking-[0.2em] text-[10px]">Loading Orders...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8 pb-12">
@@ -58,14 +106,13 @@ const AdminOrders = () => {
                     <h1 className="text-3xl font-black text-brand-primary tracking-tight uppercase">Orders</h1>
                     <p className="text-sm font-medium text-brand-primary/40">Track, manage and fulfill customer purchases.</p>
                 </div>
-
             </div>
 
             {/* Filters and Stats Summary */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                 {[
                     { label: "Total Orders", value: orders.length, color: "text-brand-primary" },
-                    { label: "Pending", value: orders.filter(o => o.status === "Processing").length, color: "text-amber-500" },
+                    { label: "Processing", value: orders.filter(o => o.status === "Processing").length, color: "text-amber-500" },
                     { label: "Shipped", value: orders.filter(o => o.status === "Shipped").length, color: "text-blue-500" },
                     { label: "Delivered", value: orders.filter(o => o.status === "Delivered").length, color: "text-green-500" }
                 ].map((stat, i) => (
@@ -95,6 +142,7 @@ const AdminOrders = () => {
                         className="px-6 py-4 bg-white border border-brand-primary/5 rounded-2xl text-brand-primary font-bold focus:outline-none focus:ring-2 focus:ring-brand-accent/20 transition-all appearance-none cursor-pointer shadow-sm min-w-[160px]"
                     >
                         <option value="All">All Status</option>
+                        <option value="Pending">Pending</option>
                         <option value="Processing">Processing</option>
                         <option value="Shipped">Shipped</option>
                         <option value="Delivered">Delivered</option>
@@ -118,21 +166,21 @@ const AdminOrders = () => {
                     </thead>
                     <tbody className="divide-y divide-brand-primary/5">
                         {filteredOrders.map((order) => (
-                            <tr key={order.id} className="hover:bg-brand-primary/5 transition-colors group">
+                            <tr key={order._id} className="hover:bg-brand-primary/5 transition-colors group">
                                 <td className="px-6 py-5">
                                     <div className="space-y-1">
-                                        <p className="font-black text-brand-primary leading-none text-sm">{order.id}</p>
-                                        <p className="text-[10px] font-medium text-brand-primary/40 tracking-wider uppercase">{new Date(order.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                        <p className="font-black text-brand-primary leading-none text-sm">{order._id.slice(-8).toUpperCase()}</p>
+                                        <p className="text-[10px] font-medium text-brand-primary/40 tracking-wider uppercase">{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                                     </div>
                                 </td>
                                 <td className="px-6 py-5">
                                     <div className="space-y-0.5">
-                                        <p className="font-bold text-brand-primary text-sm">{order.customer.name}</p>
-                                        <p className="text-[10px] font-medium text-brand-primary/40">{order.customer.email}</p>
+                                        <p className="font-bold text-brand-primary text-sm">{order.user?.name || "N/A"}</p>
+                                        <p className="text-[10px] font-medium text-brand-primary/40">{order.user?.email || "N/A"}</p>
                                     </div>
                                 </td>
                                 <td className="px-6 py-5">
-                                    <p className="font-black text-brand-primary">₹ {order.total}</p>
+                                    <p className="font-black text-brand-primary">₹ {order.totalAmount.toLocaleString('en-IN')}</p>
                                     <p className="text-[10px] font-medium text-brand-primary/40 uppercase tracking-widest">{order.items.length} items</p>
                                 </td>
                                 <td className="px-6 py-5">
@@ -143,18 +191,23 @@ const AdminOrders = () => {
                                 </td>
                                 <td className="px-6 py-5">
                                     <div className="space-y-0.5">
-                                        <p className="text-[10px] font-black text-brand-primary uppercase tracking-widest">{order.paymentStatus}</p>
-                                        <p className="text-[10px] font-medium text-brand-primary/40">{order.method}</p>
+                                        <p className="text-[10px] font-black text-brand-primary uppercase tracking-widest">{order.paymentResult?.status || "Pending"}</p>
+                                        <p className="text-[10px] font-medium text-brand-primary/40">{order.paymentResult?.status === 'COD' ? 'Cash on Delivery' : 'Online Payment'}</p>
                                     </div>
                                 </td>
-                                <td className="px-6 py-5">
+                                <td className="px-6 py-5 text-right">
                                     <div className="flex items-center justify-end gap-2">
-                                        <button className="p-3 bg-brand-bg text-brand-primary rounded-xl hover:bg-brand-primary hover:text-brand-bg transition-all shadow-sm">
-                                            <Eye size={18} />
-                                        </button>
-                                        <button className="p-3 bg-brand-bg text-brand-primary rounded-xl hover:bg-brand-primary hover:text-brand-bg transition-all shadow-sm">
-                                            <MoreVertical size={18} />
-                                        </button>
+                                        <select
+                                            onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
+                                            value={order.status}
+                                            className="text-[10px] font-black uppercase bg-brand-bg px-3 py-2 rounded-lg border border-brand-primary/5 outline-none cursor-pointer"
+                                        >
+                                            <option value="Pending">Pending</option>
+                                            <option value="Processing">Processing</option>
+                                            <option value="Shipped">Shipped</option>
+                                            <option value="Delivered">Delivered</option>
+                                            <option value="Cancelled">Cancelled</option>
+                                        </select>
                                     </div>
                                 </td>
                             </tr>
@@ -173,3 +226,4 @@ const AdminOrders = () => {
 };
 
 export default AdminOrders;
+

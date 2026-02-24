@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Menu, X, ShoppingCart, User, Heart, Search, ChevronDown, ChevronRight, LayoutGrid, LogOut, Package, Settings } from "lucide-react";
-import { categories } from "../data/products";
 import { useAuth } from "../context/AuthContext";
+import { useShop } from "../context/ShopContext";
 
 import logo from "../assets/Logo.png";
 
 const Navbar = () => {
     const { user, logout } = useAuth();
+    const { categories, cart, wishlist } = useShop();
     const [isOpen, setIsOpen] = useState(false);
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -133,18 +134,25 @@ const Navbar = () => {
                             ) : null}
                             <Link
                                 to="/wishlist"
-                                className="p-2.5 text-brand-primary hover:bg-white rounded-2xl transition-all hover:shadow-lg hover:shadow-brand-primary/5"
+                                className="p-2.5 text-brand-primary hover:bg-white rounded-2xl transition-all hover:shadow-lg hover:shadow-brand-primary/5 relative"
                             >
                                 <Heart className="h-6 w-6" strokeWidth={1.5} />
+                                {wishlist.length > 0 && (
+                                    <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-brand-accent text-[9px] font-black text-white ring-2 ring-white">
+                                        {wishlist.length}
+                                    </span>
+                                )}
                             </Link>
                             <Link
                                 to="/cart"
                                 className="p-2.5 text-brand-primary hover:bg-white rounded-2xl transition-all hover:shadow-lg hover:shadow-brand-primary/5 relative"
                             >
                                 <ShoppingCart className="h-6 w-6" strokeWidth={1.5} />
-                                <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-brand-accent text-[9px] font-black text-white ring-2 ring-white">
-                                    2
-                                </span>
+                                {cart.length > 0 && (
+                                    <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-brand-accent text-[9px] font-black text-white ring-2 ring-white">
+                                        {cart.reduce((total, item) => total + item.quantity, 0)}
+                                    </span>
+                                )}
                             </Link>
 
                             <div className="flex items-center md:hidden">
@@ -181,11 +189,11 @@ const Navbar = () => {
                                 <div className={`absolute top-full left-0 w-64 bg-white rounded-b-3xl shadow-2xl shadow-brand-primary/10 border border-brand-primary/5 py-4 transition-all duration-300 transform origin-top ${isCategoryOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-0 -translate-y-2 pointer-events-none'}`}>
                                     {categories.map((cat) => (
                                         <button
-                                            key={cat}
-                                            onClick={() => selectCategory(cat)}
+                                            key={cat._id || cat.name}
+                                            onClick={() => selectCategory(cat.name)}
                                             className="flex items-center justify-between w-full px-6 py-3 text-xs font-bold text-brand-primary/70 hover:text-brand-accent hover:bg-brand-bg transition-all text-left uppercase tracking-widest"
                                         >
-                                            {cat}
+                                            {cat.name}
                                             <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
                                         </button>
                                     ))}
@@ -248,11 +256,11 @@ const Navbar = () => {
                         <div className="grid grid-cols-1 gap-1">
                             {categories.map((cat) => (
                                 <button
-                                    key={cat}
-                                    onClick={() => selectCategory(cat)}
+                                    key={cat._id || cat.name}
+                                    onClick={() => selectCategory(cat.name)}
                                     className="flex items-center justify-between w-full px-4 py-3 rounded-xl text-brand-primary font-bold hover:bg-brand-bg transition-all"
                                 >
-                                    {cat}
+                                    {cat.name}
                                     <ChevronRight size={18} className="text-brand-primary/20" />
                                 </button>
                             ))}

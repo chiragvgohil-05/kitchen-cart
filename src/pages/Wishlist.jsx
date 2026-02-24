@@ -1,22 +1,13 @@
 import { Heart, ChevronRight, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductCard from "../components/ProductCard";
-import { products } from "../data/products";
+import { useShop } from "../context/ShopContext";
 
 const Wishlist = () => {
-    // Mock wishlist items by filtering curated list from dummy data
-    const [wishlistItems, setWishlistItems] = useState([
-        products[0], // Stand Mixer
-        products[2], // Cutlery Set
-        products[3]  // Espresso Machine
-    ]);
+    const { wishlist } = useShop();
 
-    const removeItem = (id) => {
-        setWishlistItems(prev => prev.filter(item => item.id !== id));
-    };
-
-    if (wishlistItems.length === 0) {
+    if (wishlist.length === 0) {
         return (
             <div className="min-h-[70vh] flex flex-col items-center justify-center bg-brand-bg px-4">
                 <div className="w-24 h-24 bg-brand-primary/5 rounded-full flex items-center justify-center text-brand-primary mb-6">
@@ -50,13 +41,13 @@ const Wishlist = () => {
                         </h1>
                     </div>
                     <p className="text-sm font-bold text-brand-primary/40 uppercase tracking-widest bg-white/50 px-4 py-2 rounded-full border border-brand-primary/5">
-                        {wishlistItems.length} {wishlistItems.length === 1 ? 'SAVED ITEM' : 'SAVED ITEMS'}
+                        {wishlist.length} {wishlist.length === 1 ? 'SAVED ITEM' : 'SAVED ITEMS'}
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    {wishlistItems.map((prod) => (
-                        <ProductCard key={prod.id} product={prod} />
+                    {wishlist.map((prod) => (
+                        <ProductCard key={prod._id} product={prod} />
                     ))}
                 </div>
 

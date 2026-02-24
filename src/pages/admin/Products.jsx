@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Plus, Search, Edit2, Trash2, SlidersHorizontal, Image as ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "../../utils/api";
+import { getProductImageUrl } from "../../utils/mediaUrl";
+import { calculateDiscountPercentage } from "../../utils/pricing";
 import DeleteModal from "../../components/admin/DeleteModal";
 import toast from "react-hot-toast";
 
@@ -18,12 +20,16 @@ const AdminProducts = () => {
 
     const fetchProducts = async () => {
         try {
+            setLoading(true);
             const response = await api.get("/products");
+            if (response.status !== 200 || !response.data?.success) {
+                throw new Error(response.data?.message || "Unexpected response while fetching products");
+            }
             setProducts(response.data.data.products);
             setLoading(false);
         } catch (error) {
             console.error("Error fetching products:", error);
-            toast.error("Failed to fetch products");
+            toast.error(error.response?.data?.message || error.message || "Failed to fetch products");
             setLoading(false);
         }
     };
@@ -40,14 +46,17 @@ const AdminProducts = () => {
 
     const confirmDelete = async () => {
         try {
-            await api.delete(`/products/${selectedProduct._id}`);
+            const response = await api.delete(`/products/${selectedProduct._id}`);
+            if (response.status !== 204) {
+                throw new Error(response.data?.message || "Unexpected response while deleting product");
+            }
             toast.success("Product deleted successfully");
             fetchProducts();
             setIsDeleteOpen(false);
             setSelectedProduct(null);
         } catch (error) {
             console.error("Error deleting product:", error);
-            toast.error("Failed to delete product");
+            toast.error(error.response?.data?.message || error.message || "Failed to delete product");
             setIsDeleteOpen(false);
         }
     };
@@ -103,13 +112,16 @@ const AdminProducts = () => {
                         </thead>
                         <tbody className="divide-y divide-brand-primary/5">
                             {filteredProducts.length > 0 ? (
-                                filteredProducts.map((product) => (
+                                filteredProducts.map((product) => {
+                                    const discount = calculateDiscountPercentage(product.mrp, product.sellingPrice);
+
+                                    return (
                                     <tr key={product._id} className="hover:bg-brand-primary/5 transition-colors group">
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-14 h-14 bg-brand-bg rounded-xl overflow-hidden ring-1 ring-brand-primary/5 shrink-0">
                                                     {product.images?.[0] ? (
-                                                        <img src={`http://localhost:5000${product.images[0]}`} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                                        <img src={getProductImageUrl(product.images[0])} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center text-brand-primary/10">
                                                             <ImageIcon size={24} />
@@ -131,8 +143,8 @@ const AdminProducts = () => {
                                                 <p className="font-black text-brand-primary">₹{product.sellingPrice}</p>
                                                 <div className="flex items-center gap-2">
                                                     <p className="text-[10px] text-brand-primary/30 line-through">₹{product.mrp}</p>
-                                                    {product.discount > 0 && (
-                                                        <span className="text-[10px] font-black text-brand-accent italic">-{product.discount}%</span>
+                                                    {discount > 0 && (
+                                                        <span className="text-[10px] font-black text-brand-accent italic">-{discount}%</span>
                                                     )}
                                                 </div>
                                             </div>
@@ -164,7 +176,8 @@ const AdminProducts = () => {
                                             </div>
                                         </td>
                                     </tr>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <tr>
                                     <td colSpan="5" className="px-6 py-20 text-center">

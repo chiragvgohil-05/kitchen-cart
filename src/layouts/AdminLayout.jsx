@@ -120,16 +120,6 @@ const AdminLayout = () => {
                             />
                         </div>
                     </div>
-
-                    <div className="flex items-center gap-3 lg:gap-6">
-                        <button className="p-2.5 text-brand-primary/40 hover:text-brand-primary hover:bg-brand-primary/5 rounded-full transition-all relative">
-                            <Bell size={20} />
-                            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-brand-accent rounded-full border-2 border-brand-bg" />
-                        </button>
-                        <button className="p-2.5 text-brand-primary/40 hover:text-brand-primary hover:bg-brand-primary/5 rounded-full transition-all">
-                            <Settings size={20} />
-                        </button>
-                    </div>
                 </header>
 
                 {/* Content */}

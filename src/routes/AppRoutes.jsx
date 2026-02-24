@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import AdminLayout from "../layouts/AdminLayout";
 import Home from "../pages/Home";
@@ -28,161 +28,173 @@ import ProductFormPage from "../pages/admin/ProductFormPage";
 import Categories from "../pages/admin/Categories";
 import CategoryFormPage from "../pages/admin/CategoryFormPage";
 import ProtectedRoute from "../components/ProtectedRoute";
-
 import UserRoute from "../components/UserRoute";
+import { ShopProvider } from "../context/ShopContext";
+
+// Root layout: wraps everything in ShopProvider so useNavigate works inside ShopContext
+const RootLayout = () => (
+    <ShopProvider>
+        <Outlet />
+    </ShopProvider>
+);
 
 const router = createBrowserRouter([
     {
-        path: "/",
-        element: (
-            <UserRoute>
-                <MainLayout />
-            </UserRoute>
-        ),
+        element: <RootLayout />,
         children: [
             {
-                index: true,
-                element: <Home />,
-            },
-            {
-                path: "menu",
-                element: <Menu />,
-            },
-            {
-                path: "about",
-                element: <About />,
-            },
-            {
-                path: "search",
-                element: <Search />,
-            },
-            {
-                path: "product/:productId",
-                element: <ProductDetail />,
-            },
-            {
-                path: "cart",
-                element: <Cart />,
-            },
-            {
-                path: "wishlist",
-                element: <Wishlist />,
-            },
-            {
-                path: "offers",
-                element: <Offers />,
-            },
-            {
-                path: "new-arrivals",
-                element: <NewArrivals />,
-            },
-            {
-                path: "contact",
-                element: <Contact />,
-            },
-            {
-                path: "shipping",
-                element: <Shipping />,
-            },
-            {
-                path: "returns",
-                element: <Returns />,
-            },
-            {
-                path: "faqs",
-                element: <Faqs />,
-            },
-            {
-                path: "order-success",
+                path: "/",
                 element: (
-                    <ProtectedRoute>
-                        <OrderSuccess />
-                    </ProtectedRoute>
+                    <UserRoute>
+                        <MainLayout />
+                    </UserRoute>
                 ),
-            },
-            {
-                path: "user/orders",
-                element: (
-                    <ProtectedRoute>
-                        <UserOrders />
-                    </ProtectedRoute>
-                ),
-            },
-            {
-                path: "profile",
-                element: (
-                    <ProtectedRoute>
-                        <Profile />
-                    </ProtectedRoute>
-                ),
-            },
-            {
-                path: "*",
-                element: <NotFound />,
-            },
-        ],
-    },
-    {
-        path: "/login",
-        element: <Login />,
-    },
-    {
-        path: "/register",
-        element: <Register />,
-    },
-    {
-        path: "/admin",
-        element: (
-            <ProtectedRoute allowedRoles={['admin']}>
-                <AdminLayout />
-            </ProtectedRoute>
-        ),
-        children: [
-            {
-                index: true,
-                element: <Dashboard />,
-            },
-            {
-                path: "categories",
                 children: [
                     {
                         index: true,
-                        element: <Categories />,
+                        element: <Home />,
                     },
                     {
-                        path: "create",
-                        element: <CategoryFormPage />,
+                        path: "menu",
+                        element: <Menu />,
                     },
                     {
-                        path: "edit/:id",
-                        element: <CategoryFormPage />,
+                        path: "about",
+                        element: <About />,
                     },
-                ]
+                    {
+                        path: "search",
+                        element: <Search />,
+                    },
+                    {
+                        path: "product/:productId",
+                        element: <ProductDetail />,
+                    },
+                    {
+                        path: "cart",
+                        element: <Cart />,
+                    },
+                    {
+                        path: "wishlist",
+                        element: <Wishlist />,
+                    },
+                    {
+                        path: "offers",
+                        element: <Offers />,
+                    },
+                    {
+                        path: "new-arrivals",
+                        element: <NewArrivals />,
+                    },
+                    {
+                        path: "contact",
+                        element: <Contact />,
+                    },
+                    {
+                        path: "shipping",
+                        element: <Shipping />,
+                    },
+                    {
+                        path: "returns",
+                        element: <Returns />,
+                    },
+                    {
+                        path: "faqs",
+                        element: <Faqs />,
+                    },
+                    {
+                        path: "order-success",
+                        element: (
+                            <ProtectedRoute>
+                                <OrderSuccess />
+                            </ProtectedRoute>
+                        ),
+                    },
+                    {
+                        path: "user/orders",
+                        element: (
+                            <ProtectedRoute>
+                                <UserOrders />
+                            </ProtectedRoute>
+                        ),
+                    },
+                    {
+                        path: "profile",
+                        element: (
+                            <ProtectedRoute>
+                                <Profile />
+                            </ProtectedRoute>
+                        ),
+                    },
+                    {
+                        path: "*",
+                        element: <NotFound />,
+                    },
+                ],
             },
             {
-                path: "products",
+                path: "/login",
+                element: <Login />,
+            },
+            {
+                path: "/register",
+                element: <Register />,
+            },
+            {
+                path: "/admin",
+                element: (
+                    <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminLayout />
+                    </ProtectedRoute>
+                ),
                 children: [
                     {
                         index: true,
-                        element: <Products />,
+                        element: <Dashboard />,
                     },
                     {
-                        path: "create",
-                        element: <ProductFormPage />,
+                        path: "categories",
+                        children: [
+                            {
+                                index: true,
+                                element: <Categories />,
+                            },
+                            {
+                                path: "create",
+                                element: <CategoryFormPage />,
+                            },
+                            {
+                                path: "edit/:id",
+                                element: <CategoryFormPage />,
+                            },
+                        ]
                     },
                     {
-                        path: "edit/:id",
-                        element: <ProductFormPage />,
+                        path: "products",
+                        children: [
+                            {
+                                index: true,
+                                element: <Products />,
+                            },
+                            {
+                                path: "create",
+                                element: <ProductFormPage />,
+                            },
+                            {
+                                path: "edit/:id",
+                                element: <ProductFormPage />,
+                            },
+                        ]
                     },
-                ]
-            },
-            {
-                path: "orders",
-                element: <Orders />,
-            },
-            {
-                path: "profile",
-                element: <Profile />,
+                    {
+                        path: "orders",
+                        element: <Orders />,
+                    },
+                    {
+                        path: "profile",
+                        element: <Profile />,
+                    },
+                ],
             },
         ],
     },

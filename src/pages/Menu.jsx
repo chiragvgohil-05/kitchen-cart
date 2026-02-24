@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { products, categories } from "../data/products";
 import ProductCard from "../components/ProductCard";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
+import { useShop } from "../context/ShopContext";
 
 const Menu = () => {
+    const { products, categories } = useShop();
     const [searchParams, setSearchParams] = useSearchParams();
     const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "All");
     const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
@@ -21,11 +22,19 @@ const Menu = () => {
     }, [searchParams]);
 
     const filteredProducts = products.filter(product => {
-        const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
-        const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            product.brand.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = selectedCategory === "All" ||
+            (product.category && product.category.name && product.category.name === selectedCategory) ||
+            product.category === selectedCategory; // Fallback
+
+        const searchLower = searchQuery.toLowerCase();
+        const matchesSearch = product.name?.toLowerCase().includes(searchLower) ||
+            product.brand?.toLowerCase().includes(searchLower);
+
         return matchesCategory && matchesSearch;
     });
+
+    // Create an "All" category representation
+    const displayCategories = [{ _id: 'all', name: 'All' }, ...categories];
 
     return (
         <div className="bg-brand-bg min-h-screen py-16 px-4 sm:px-6 lg:px-8">
@@ -50,28 +59,24 @@ const Menu = () => {
                                 className="w-full pl-12 pr-4 py-4 bg-white border border-brand-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent/20 focus:border-brand-accent/40 transition-all font-medium text-brand-primary shadow-sm"
                             />
                         </div>
-                        <button className="flex items-center justify-center gap-2 px-6 py-4 bg-white border border-brand-primary/5 rounded-2xl text-brand-primary font-bold hover:bg-brand-primary hover:text-brand-bg transition-all shadow-sm">
-                            <SlidersHorizontal size={20} />
-                            Filters
-                        </button>
                     </div>
                 </div>
 
                 {/* Categories Bar */}
                 <div className="flex flex-wrap gap-2 mb-12">
-                    {categories.map((cat) => (
+                    {displayCategories.map((cat) => (
                         <button
-                            key={cat}
+                            key={cat._id}
                             onClick={() => {
-                                setSelectedCategory(cat);
-                                setSearchParams({ category: cat });
+                                setSelectedCategory(cat.name);
+                                setSearchParams({ category: cat.name });
                             }}
-                            className={`px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${selectedCategory === cat
+                            className={`px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${selectedCategory === cat.name
                                 ? "bg-brand-primary text-brand-bg shadow-xl shadow-brand-primary/20 scale-105"
                                 : "bg-white text-brand-primary/60 hover:bg-brand-primary/5"
                                 }`}
                         >
-                            {cat}
+                            {cat.name}
                         </button>
                     ))}
                 </div>
@@ -80,7 +85,7 @@ const Menu = () => {
                 {filteredProducts.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                         {filteredProducts.map((product) => (
-                            <ProductCard key={product.id} product={product} />
+                            <ProductCard key={product._id} product={product} />
                         ))}
                     </div>
                 ) : (

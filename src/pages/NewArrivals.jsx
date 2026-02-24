@@ -1,16 +1,17 @@
 import { Star, Sparkles, ChefHat } from "lucide-react";
 import ProductCard from "../components/ProductCard";
-import { products } from "../data/products";
+import { useShop } from "../context/ShopContext";
 
 const NewArrivals = () => {
+    const { products } = useShop();
     // Show most recent products (simulated by last 4)
-    const newItems = products.slice(-4).reverse();
+    const newItems = products ? [...products].slice(-4).reverse() : [];
 
     return (
         <div className="bg-[#fcfcfb] min-h-screen pb-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
                 {/* Visual Accent */}
-                <div className="relative mb-12 rounded-[64px] overflow-hidden aspect-[21/9] bg-brand-primary text-brand-bg px-12 flex flex-col justify-center items-start shadow-2xl">
+                <div className="relative mb-12 rounded-[64px] overflow-hidden aspect-21/9 bg-brand-primary text-brand-bg px-12 flex flex-col justify-center items-start shadow-2xl">
                     <div className="absolute inset-0 bg-linear-to-r from-brand-primary to-transparent" />
                     <img
                         src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=1200&auto=format&fit=crop"
@@ -36,7 +37,7 @@ const NewArrivals = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {newItems.map(prod => (
-                        <ProductCard key={prod.id} product={prod} />
+                        <ProductCard key={prod._id} product={prod} />
                     ))}
                 </div>
             </div>
