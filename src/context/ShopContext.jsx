@@ -194,14 +194,11 @@ export const ShopProvider = ({ children }) => {
 
     const placeOrder = async (orderData) => {
         try {
-            const payload = {
-                items: cart.map(item => ({ product: item._id, quantity: item.quantity })),
-                totalPrice: cart.reduce((acc, item) => acc + (item.sellingPrice * item.quantity), 0),
-                ...orderData
-            };
-            const response = await api.post('/orders', payload);
+            const response = await api.post('/orders', orderData);
             if (response.data.success) {
-                clearCart();
+                if (orderData.paymentMethod !== 'Razorpay') {
+                    clearCart();
+                }
                 return response.data;
             }
         } catch (error) {
@@ -211,10 +208,26 @@ export const ShopProvider = ({ children }) => {
         }
     };
 
+    const verifyRazorpayPayment = async (paymentData) => {
+        try {
+            const response = await api.post('/orders/verify', paymentData);
+            if (response.data.success) {
+                clearCart();
+                return response.data;
+            }
+        } catch (error) {
+            console.error("Payment verification failed", error);
+            toast.error(error.response?.data?.message || "Payment verification failed");
+            return false;
+        }
+
+        return false;
+    };
+
     return (
         <ShopContext.Provider value={{
             products, categories, loadingProducts, loadingCategories,
-            cart, wishlist, addToCart, toggleWishlist, removeFromCart, updateCartQuantity, clearCart, placeOrder
+            cart, wishlist, addToCart, toggleWishlist, removeFromCart, updateCartQuantity, clearCart, placeOrder, verifyRazorpayPayment
         }}>
             {children}
         </ShopContext.Provider>

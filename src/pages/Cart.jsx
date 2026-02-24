@@ -2,12 +2,37 @@ import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ChevronRight, CreditCard,
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useShop } from "../context/ShopContext";
+import { useAuth } from "../context/AuthContext";
 import { getProductImageUrl } from "../utils/mediaUrl";
 import toast from "react-hot-toast";
 
+const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+        if (window.Razorpay) {
+            resolve(true);
+            return;
+        }
+
+        const existingScript = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+        if (existingScript) {
+            existingScript.addEventListener('load', () => resolve(true));
+            existingScript.addEventListener('error', () => resolve(false));
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.async = true;
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+    });
+};
+
 const Cart = () => {
     const navigate = useNavigate();
-    const { cart, updateCartQuantity, removeFromCart, placeOrder } = useShop();
+    const { user } = useAuth();
+    const { cart, updateCartQuantity, removeFromCart, placeOrder, verifyRazorpayPayment } = useShop();
     const [isOrdering, setIsOrdering] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState("COD"); // Default to COD
 
@@ -15,18 +40,118 @@ const Cart = () => {
     const shipping = subtotal > 0 ? 500 : 0;
     const total = subtotal + shipping;
 
+    const hasCompleteProfileAddress = () => {
+        const address = user?.address || {};
+        const requiredFields = ['street', 'city', 'state', 'zipCode', 'country'];
+        return requiredFields.every((field) => {
+            const value = address[field];
+            return typeof value === "string" && value.trim().length > 0;
+        });
+    };
+
+    const openRazorpayCheckout = async ({ razorpayOrder, order, razorpayKeyId }) => {
+        const sdkLoaded = await loadRazorpayScript();
+        if (!sdkLoaded) {
+            toast.error("Unable to load Razorpay checkout");
+            return false;
+        }
+
+        if (!razorpayKeyId) {
+            toast.error("Missing Razorpay key on server response");
+            return false;
+        }
+
+        return new Promise((resolve) => {
+            let settled = false;
+            const finish = (value) => {
+                if (settled) return;
+                settled = true;
+                resolve(value);
+            };
+
+            const options = {
+                key: razorpayKeyId,
+                amount: razorpayOrder.amount,
+                currency: razorpayOrder.currency,
+                name: "Kitchen Cart",
+                description: `Order ${order._id}`,
+                order_id: razorpayOrder.id,
+                handler: async (response) => {
+                    setIsOrdering(true);
+                    const verification = await verifyRazorpayPayment({
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature,
+                        orderId: order._id
+                    });
+                    setIsOrdering(false);
+
+                    if (verification) {
+                        toast.success("Payment successful! Order placed.");
+                        navigate('/order-success');
+                        finish(true);
+                        return;
+                    }
+
+                    finish(false);
+                },
+                modal: {
+                    ondismiss: () => {
+                        toast.error("Payment cancelled");
+                        finish(false);
+                    }
+                },
+                theme: {
+                    color: "#1f2937"
+                }
+            };
+
+            const razorpay = new window.Razorpay(options);
+            razorpay.on('payment.failed', () => {
+                toast.error("Payment failed. Please try again.");
+                finish(false);
+            });
+            razorpay.open();
+        });
+    };
+
     const handleCheckout = async () => {
+        if (!hasCompleteProfileAddress()) {
+            toast.error("Please add your complete address in profile before placing order");
+            navigate('/profile');
+            return;
+        }
+
         setIsOrdering(true);
         const result = await placeOrder({
-            shippingAddress: "Default Shipping Address", // Extendable address input
             paymentMethod: paymentMethod
         });
 
-        setIsOrdering(false);
-        if (result) {
-            toast.success(paymentMethod === "COD" ? "Order Placed Successfully!" : "Razorpay order created! (Complete payment in next step)");
-            navigate('/order-success');
+        if (!result) {
+            setIsOrdering(false);
+            return;
         }
+
+        if (paymentMethod === "COD") {
+            setIsOrdering(false);
+            toast.success("Order Placed Successfully!");
+            navigate('/order-success');
+            return;
+        }
+
+        const orderPayload = result?.data || {};
+        if (!orderPayload.order || !orderPayload.razorpayOrder) {
+            setIsOrdering(false);
+            toast.error("Invalid Razorpay order response");
+            return;
+        }
+
+        setIsOrdering(false);
+        await openRazorpayCheckout({
+            order: orderPayload.order,
+            razorpayOrder: orderPayload.razorpayOrder,
+            razorpayKeyId: orderPayload.razorpayKeyId
+        });
     };
 
     if (cart.length === 0) {
@@ -180,4 +305,3 @@ const Cart = () => {
 };
 
 export default Cart;
-

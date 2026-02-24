@@ -1,16 +1,11 @@
 import { useState, useEffect } from "react";
 import {
     Search,
-    Filter,
-    MoreVertical,
-    Eye,
     Truck,
     CheckCircle2,
     Clock,
     XCircle,
-    Download,
-    ExternalLink,
-    AlertCircle
+    Download
 } from "lucide-react";
 import api from "../../utils/api";
 import toast from "react-hot-toast";
@@ -20,6 +15,7 @@ const AdminOrders = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
+    const [downloadingInvoiceId, setDownloadingInvoiceId] = useState(null);
 
     useEffect(() => {
         fetchOrders();
@@ -30,7 +26,10 @@ const AdminOrders = () => {
         try {
             const res = await api.get('/orders/admin');
             if (res.data.success) {
-                setOrders(res.data.data);
+                const sortedOrders = [...(res.data.data || [])].sort(
+                    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+                );
+                setOrders(sortedOrders);
             }
         } catch (error) {
             console.error("Fetch orders error:", error);
@@ -45,10 +44,39 @@ const AdminOrders = () => {
             const res = await api.put(`/orders/${orderId}`, { status: newStatus });
             if (res.data.success) {
                 toast.success("Order status updated");
-                fetchOrders(); // Refresh
+                setOrders(prev =>
+                    prev.map(order =>
+                        order._id === orderId ? { ...order, status: newStatus } : order
+                    )
+                );
             }
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to update status");
+        }
+    };
+
+    const handleInvoiceDownload = async (orderId) => {
+        try {
+            setDownloadingInvoiceId(orderId);
+            const response = await api.get(`/orders/${orderId}/invoice`, {
+                responseType: "blob"
+            });
+
+            const blob = new Blob([response.data], { type: "application/pdf" });
+            const url = window.URL.createObjectURL(blob);
+            const anchor = document.createElement("a");
+            anchor.href = url;
+            anchor.download = `invoice_${orderId}.pdf`;
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+            window.URL.revokeObjectURL(url);
+            toast.success("Invoice downloaded");
+        } catch (error) {
+            console.error("Invoice download error:", error);
+            toast.error(error.response?.data?.message || "Failed to download invoice");
+        } finally {
+            setDownloadingInvoiceId(null);
         }
     };
 
@@ -80,9 +108,10 @@ const AdminOrders = () => {
     };
 
     const filteredOrders = orders.filter(order => {
+        const customerName = order.user?.name || "";
         const matchesSearch =
             order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            order.user?.name.toLowerCase().includes(searchTerm.toLowerCase());
+            customerName.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === "All" || order.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
@@ -197,6 +226,19 @@ const AdminOrders = () => {
                                 </td>
                                 <td className="px-6 py-5 text-right">
                                     <div className="flex items-center justify-end gap-2">
+                                        <button
+                                            onClick={() => handleInvoiceDownload(order._id)}
+                                            disabled={downloadingInvoiceId === order._id}
+                                            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-black uppercase tracking-widest transition-all ${
+                                                downloadingInvoiceId === order._id
+                                                    ? "bg-brand-primary/10 text-brand-primary/40 border-brand-primary/10 cursor-not-allowed"
+                                                    : "bg-brand-primary text-brand-bg border-brand-primary hover:bg-brand-primary/90"
+                                            }`}
+                                            title="Download invoice"
+                                        >
+                                            <Download size={12} />
+                                            Invoice
+                                        </button>
                                         <select
                                             onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
                                             value={order.status}
@@ -226,4 +268,3 @@ const AdminOrders = () => {
 };
 
 export default AdminOrders;
-
