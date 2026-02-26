@@ -27,6 +27,7 @@ import Profile from "../pages/Profile";
 import ProductFormPage from "../pages/admin/ProductFormPage";
 import Categories from "../pages/admin/Categories";
 import CategoryFormPage from "../pages/admin/CategoryFormPage";
+import AdminUsers from "../pages/admin/Users";
 import ProtectedRoute from "../components/ProtectedRoute";
 import UserRoute from "../components/UserRoute";
 import { ShopProvider } from "../context/ShopContext";
@@ -189,6 +190,10 @@ const router = createBrowserRouter([
                     {
                         path: "orders",
                         element: <Orders />,
+                    },
+                    {
+                        path: "users",
+                        element: <AdminUsers />,
                     },
                     {
                         path: "profile",

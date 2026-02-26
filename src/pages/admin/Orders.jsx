@@ -141,6 +141,7 @@ const AdminOrders = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                 {[
                     { label: "Total Orders", value: orders.length, color: "text-brand-primary" },
+                    { label: "Pending", value: orders.filter(o => o.status === "Pending").length, color: "text-red-500" },
                     { label: "Processing", value: orders.filter(o => o.status === "Processing").length, color: "text-amber-500" },
                     { label: "Shipped", value: orders.filter(o => o.status === "Shipped").length, color: "text-blue-500" },
                     { label: "Delivered", value: orders.filter(o => o.status === "Delivered").length, color: "text-green-500" }
@@ -220,8 +221,12 @@ const AdminOrders = () => {
                                 </td>
                                 <td className="px-6 py-5">
                                     <div className="space-y-0.5">
-                                        <p className="text-[10px] font-black text-brand-primary uppercase tracking-widest">{order.paymentResult?.status || "Pending"}</p>
-                                        <p className="text-[10px] font-medium text-brand-primary/40">{order.paymentResult?.status === 'COD' ? 'Cash on Delivery' : 'Online Payment'}</p>
+                                        <p className={`text-[10px] font-black uppercase tracking-widest ${order.status === 'Pending' && order.paymentResult?.status !== 'COD' ? 'text-red-500 animate-pulse' : 'text-brand-primary'}`}>
+                                            {order.paymentResult?.status || "Pending"}
+                                        </p>
+                                        <p className="text-[10px] font-medium text-brand-primary/40">
+                                            {order.paymentResult?.status === 'COD' ? 'Cash on Delivery' : 'Online Payment'}
+                                        </p>
                                     </div>
                                 </td>
                                 <td className="px-6 py-5 text-right">
@@ -229,11 +234,10 @@ const AdminOrders = () => {
                                         <button
                                             onClick={() => handleInvoiceDownload(order._id)}
                                             disabled={downloadingInvoiceId === order._id}
-                                            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-black uppercase tracking-widest transition-all ${
-                                                downloadingInvoiceId === order._id
+                                            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-black uppercase tracking-widest transition-all ${downloadingInvoiceId === order._id
                                                     ? "bg-brand-primary/10 text-brand-primary/40 border-brand-primary/10 cursor-not-allowed"
                                                     : "bg-brand-primary text-brand-bg border-brand-primary hover:bg-brand-primary/90"
-                                            }`}
+                                                }`}
                                             title="Download invoice"
                                         >
                                             <Download size={12} />

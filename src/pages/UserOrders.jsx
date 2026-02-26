@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Package, Download, XCircle } from "lucide-react";
+import { Package, Download, XCircle, CreditCard } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
 import toast from "react-hot-toast";
 import { getProductImageUrl } from "../utils/mediaUrl";
+import { useShop } from "../context/ShopContext";
+import { loadRazorpayScript } from "../utils/razorpay";
 
 const UserOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [downloadingInvoiceId, setDownloadingInvoiceId] = useState(null);
     const [cancellingOrderId, setCancellingOrderId] = useState(null);
+    const [retryingOrderId, setRetryingOrderId] = useState(null);
+    const { retryPayment, verifyRazorpayPayment } = useShop();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -54,6 +60,60 @@ const UserOrders = () => {
             toast.error(error.response?.data?.message || "Failed to download invoice");
         } finally {
             setDownloadingInvoiceId(null);
+        }
+    };
+
+    const handleRetryPayment = async (orderId) => {
+        try {
+            setRetryingOrderId(orderId);
+            const result = await retryPayment(orderId);
+            if (!result) return;
+
+            const { razorpayOrder, order, razorpayKeyId } = result.data;
+
+            const sdkLoaded = await loadRazorpayScript();
+            if (!sdkLoaded) {
+                toast.error("Unable to load Razorpay checkout");
+                return;
+            }
+
+            const options = {
+                key: razorpayKeyId,
+                amount: razorpayOrder.amount,
+                currency: razorpayOrder.currency,
+                name: "Kitchen Cart",
+                description: `Retry Payment for Order ${order._id}`,
+                order_id: razorpayOrder.id,
+                handler: async (response) => {
+                    const verification = await verifyRazorpayPayment({
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature,
+                        orderId: order._id
+                    });
+
+                    if (verification) {
+                        toast.success("Payment successful!");
+                        navigate('/order-success');
+                    }
+                },
+                modal: {
+                    ondismiss: () => {
+                        toast.error("Payment cancelled");
+                    }
+                },
+                theme: {
+                    color: "#1f2937"
+                }
+            };
+
+            const razorpay = new window.Razorpay(options);
+            razorpay.open();
+        } catch (error) {
+            console.error("Retry payment error:", error);
+            toast.error("Failed to re-initialize payment");
+        } finally {
+            setRetryingOrderId(null);
         }
     };
 
@@ -202,15 +262,27 @@ const UserOrders = () => {
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-2">
+                                        {order.status === "Pending" && order.paymentResult?.status !== "COD" && (
+                                            <button
+                                                onClick={() => handleRetryPayment(order._id)}
+                                                disabled={retryingOrderId === order._id}
+                                                className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${retryingOrderId === order._id
+                                                    ? "bg-brand-accent/50 text-brand-primary/40 border-brand-accent/20 cursor-not-allowed"
+                                                    : "bg-brand-accent text-brand-primary border-brand-accent hover:bg-brand-accent/90"
+                                                    }`}
+                                            >
+                                                <CreditCard size={14} />
+                                                {retryingOrderId === order._id ? "Processing..." : "Pay Now"}
+                                            </button>
+                                        )}
                                         {isCancellable(order.status) && (
                                             <button
                                                 onClick={() => handleCancelOrder(order._id)}
                                                 disabled={cancellingOrderId === order._id}
-                                                className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
-                                                    cancellingOrderId === order._id
-                                                        ? "bg-red-50 text-red-300 border-red-100 cursor-not-allowed"
-                                                        : "bg-white text-red-500 border-red-200 hover:bg-red-500 hover:text-white"
-                                                }`}
+                                                className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${cancellingOrderId === order._id
+                                                    ? "bg-red-50 text-red-300 border-red-100 cursor-not-allowed"
+                                                    : "bg-white text-red-500 border-red-200 hover:bg-red-500 hover:text-white"
+                                                    }`}
                                             >
                                                 <XCircle size={14} />
                                                 {cancellingOrderId === order._id ? "Cancelling..." : "Cancel Order"}
@@ -219,11 +291,10 @@ const UserOrders = () => {
                                         <button
                                             onClick={() => handleDownloadInvoice(order._id)}
                                             disabled={downloadingInvoiceId === order._id}
-                                            className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
-                                                downloadingInvoiceId === order._id
-                                                    ? "bg-brand-primary/10 text-brand-primary/40 border-brand-primary/10 cursor-not-allowed"
-                                                    : "bg-brand-primary text-brand-bg border-brand-primary hover:bg-brand-primary/90"
-                                            }`}
+                                            className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${downloadingInvoiceId === order._id
+                                                ? "bg-brand-primary/10 text-brand-primary/40 border-brand-primary/10 cursor-not-allowed"
+                                                : "bg-brand-primary text-brand-bg border-brand-primary hover:bg-brand-primary/90"
+                                                }`}
                                         >
                                             <Download size={14} />
                                             {downloadingInvoiceId === order._id ? "Downloading..." : "Download Invoice"}

@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
 import toast from "react-hot-toast";
-
+import { useAuth } from "./AuthContext";
 
 const ShopContext = createContext();
 
@@ -14,6 +14,7 @@ export const ShopProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [wishlist, setWishlist] = useState([]);
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     // Helper: check if user is logged in
     const isLoggedIn = () => !!localStorage.getItem('token');
@@ -77,6 +78,22 @@ export const ShopProvider = ({ children }) => {
                     if (wishRes.data.success) {
                         setWishlist(wishRes.data.data.products || []);
                     }
+                } else {
+                    // If no token (logged out), clear current state or restore guest cart
+                    const savedCart = localStorage.getItem('kitchenCart');
+                    const savedWishlist = localStorage.getItem('kitchenWishlist');
+
+                    if (savedCart) {
+                        try { setCart(JSON.parse(savedCart)); } catch (e) { setCart([]); }
+                    } else {
+                        setCart([]);
+                    }
+
+                    if (savedWishlist) {
+                        try { setWishlist(JSON.parse(savedWishlist)); } catch (e) { setWishlist([]); }
+                    } else {
+                        setWishlist([]);
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching shop data:", error);
@@ -90,7 +107,7 @@ export const ShopProvider = ({ children }) => {
         };
 
         fetchData();
-    }, []);
+    }, [user]);
 
     const addToCart = async (product, quantity = 1) => {
         if (isLoggedIn()) {
@@ -220,14 +237,27 @@ export const ShopProvider = ({ children }) => {
             toast.error(error.response?.data?.message || "Payment verification failed");
             return false;
         }
+        return false;
+    };
 
+    const retryPayment = async (orderId) => {
+        try {
+            const response = await api.get(`/orders/${orderId}/retry-payment`);
+            if (response.data.success) {
+                return response.data;
+            }
+        } catch (error) {
+            console.error("Retry payment failed", error);
+            toast.error(error.response?.data?.message || "Failed to initialize payment");
+            return false;
+        }
         return false;
     };
 
     return (
         <ShopContext.Provider value={{
             products, categories, loadingProducts, loadingCategories,
-            cart, wishlist, addToCart, toggleWishlist, removeFromCart, updateCartQuantity, clearCart, placeOrder, verifyRazorpayPayment
+            cart, wishlist, addToCart, toggleWishlist, removeFromCart, updateCartQuantity, clearCart, placeOrder, verifyRazorpayPayment, retryPayment
         }}>
             {children}
         </ShopContext.Provider>

@@ -66,6 +66,8 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('kitchenCart');
+        localStorage.removeItem('kitchenWishlist');
         setUser(null);
         toast.success('Logged out successfully');
     };

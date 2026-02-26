@@ -25,7 +25,7 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, itemName }) => {
                         <Trash2 size={32} />
                     </div>
 
-                    <h2 className="text-2xl font-black text-brand-primary tracking-tight mb-2 uppercase">Delete Product</h2>
+                    <h2 className="text-2xl font-black text-brand-primary tracking-tight mb-2 uppercase">Confirm Deletion</h2>
                     <p className="text-brand-primary/60 font-medium">
                         Are you sure you want to delete <span className="text-brand-primary font-black">"{itemName}"</span>? This action cannot be undone.
                     </p>

@@ -32,7 +32,8 @@ const AdminLayout = () => {
         { to: "/admin/categories", label: "Categories", icon: LayoutGrid },
         { to: "/admin/products", label: "Products", icon: Package },
         { to: "/admin/orders", label: "Orders", icon: ShoppingCart },
-        { to: "/admin/profile", label: "Profile Settings", icon: UserIcon },
+        { to: "/admin/users", label: "Users", icon: UserIcon },
+        { to: "/admin/profile", label: "Profile Settings", icon: Settings },
     ];
 
     return (
