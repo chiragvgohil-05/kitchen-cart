@@ -8,27 +8,31 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const checkUserLoggedIn = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const response = await api.get('/auth/me');
-                    if (response.data.success) {
-                        setUser(response.data.data);
-                    } else {
-                        localStorage.removeItem('token');
-                    }
-                } catch (error) {
-                    console.error('Auth check failed:', error);
+    const checkUserLoggedIn = async () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const response = await api.get('/auth/me');
+                if (response.data.success) {
+                    setUser(response.data.data);
+                } else {
                     localStorage.removeItem('token');
                 }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                localStorage.removeItem('token');
             }
-            setLoading(false);
-        };
+        }
+        setLoading(false);
+    };
 
+    useEffect(() => {
         checkUserLoggedIn();
     }, []);
+
+    const reloadUser = async () => {
+        await checkUserLoggedIn();
+    };
 
     const login = async (email, password) => {
         try {
@@ -88,7 +92,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile }}>
+        <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile, reloadUser }}>
             {children}
         </AuthContext.Provider>
     );

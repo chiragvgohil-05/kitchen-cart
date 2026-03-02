@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Menu, X, ShoppingCart, User, Heart, Search, ChevronDown, ChevronRight, LayoutGrid, LogOut, Package, Settings } from "lucide-react";
+import { Menu, X, ShoppingCart, User, Heart, Search, ChevronDown, ChevronRight, LayoutGrid, LogOut, Package, Settings, Wallet } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useShop } from "../context/ShopContext";
 
@@ -109,6 +109,13 @@ const Navbar = () => {
                                         <div className="px-5 py-2 mb-2 border-b border-brand-primary/5">
                                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Signed in as</p>
                                             <p className="text-xs font-black text-brand-primary truncate">{user.email}</p>
+                                        </div>
+                                        <div className="px-5 py-2 mb-2 border-b border-brand-primary/5">
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Wallet Balance</p>
+                                            <p className="text-xs font-black text-brand-accent mt-1 flex items-center gap-1.5">
+                                                <Wallet size={14} />
+                                                {user.walletBalance || 0} Coins
+                                            </p>
                                         </div>
                                         <Link to="/user/orders" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-5 py-2.5 text-xs font-bold text-brand-primary/70 hover:text-brand-accent hover:bg-brand-bg transition-all uppercase tracking-widest">
                                             <Package size={16} />

@@ -213,7 +213,10 @@ export const ShopProvider = ({ children }) => {
         try {
             const response = await api.post('/orders', orderData);
             if (response.data.success) {
-                if (orderData.paymentMethod !== 'Razorpay') {
+                const payload = response.data?.data || {};
+                const hasPendingGatewayPayment = Boolean(payload.razorpayOrder || payload.stripePaymentIntent);
+
+                if (!hasPendingGatewayPayment) {
                     clearCart();
                 }
                 return response.data;

@@ -1,7 +1,14 @@
 import { CheckCircle2, ShoppingBag, ArrowRight, Package, Home as HomeIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const OrderSuccess = () => {
+    const { reloadUser } = useAuth();
+
+    useEffect(() => {
+        reloadUser();
+    }, []);
     return (
         <div className="min-h-screen bg-brand-bg flex items-center justify-center px-4 py-20 uppercase tracking-tighter">
             <div className="max-w-xl w-full text-center space-y-10 animate-in fade-in zoom-in-95 duration-700">

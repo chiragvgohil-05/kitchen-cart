@@ -1,4 +1,4 @@
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ChevronRight, CreditCard, Banknote } from "lucide-react";
+import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ChevronRight, CreditCard, Banknote, Wallet } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useShop } from "../context/ShopContext";
@@ -16,7 +16,7 @@ const Cart = () => {
     const [paymentMethod, setPaymentMethod] = useState("COD"); // Default to COD
 
     const subtotal = cart.reduce((acc, item) => acc + (item.sellingPrice * item.quantity), 0);
-    const shipping = subtotal > 0 ? 500 : 0;
+    const shipping = subtotal > 0 ? 100 : 0;
     const total = subtotal + shipping;
 
     const hasCompleteProfileAddress = () => {
@@ -119,6 +119,20 @@ const Cart = () => {
         }
 
         const orderPayload = result?.data || {};
+
+        const isWalletOnlyOrder = Boolean(
+            orderPayload.order
+            && !orderPayload.razorpayOrder
+            && !orderPayload.stripePaymentIntent
+        );
+
+        if (isWalletOnlyOrder) {
+            setIsOrdering(false);
+            toast.success("Order placed successfully using wallet balance!");
+            navigate('/order-success');
+            return;
+        }
+
         if (!orderPayload.order || !orderPayload.razorpayOrder) {
             setIsOrdering(false);
             toast.error("Invalid Razorpay order response");
@@ -210,6 +224,22 @@ const Cart = () => {
                     <div className="lg:sticky lg:top-32 space-y-6">
                         <div className="bg-white rounded-[40px] p-8 border border-brand-primary/5 shadow-xl shadow-brand-primary/5">
                             <h2 className="text-xl font-black mb-6 tracking-tight uppercase">Payment Method</h2>
+                            {user && (
+                                <div className="flex items-center justify-between p-4 mb-4 bg-brand-primary/5 rounded-2xl border border-brand-primary/10">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-brand-accent/20 text-brand-accent flex items-center justify-center">
+                                            <Wallet size={20} />
+                                        </div>
+                                        <div>
+                                            <p className="font-black text-sm text-brand-primary">Wallet Balance</p>
+                                            <p className="text-[10px] font-medium text-brand-primary/40 uppercase tracking-wider">Available Coins</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-black text-brand-accent text-lg">{user.walletBalance || 0} Coins</p>
+                                    </div>
+                                </div>
+                            )}
                             <div className="grid grid-cols-1 gap-3">
                                 <button
                                     onClick={() => setPaymentMethod("COD")}

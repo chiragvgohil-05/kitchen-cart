@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { User, Mail, MapPin, Save, ArrowLeft, Building, Globe, Send } from "lucide-react";
+import { User, Mail, MapPin, Save, ArrowLeft, Building, Globe, Send, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
@@ -77,7 +77,11 @@ const Profile = () => {
                                 </div>
                                 <div>
                                     <p className="font-black text-brand-primary uppercase tracking-wider">{user?.name}</p>
-                                    <p className="text-xs font-bold text-brand-accent uppercase tracking-tighter">{user?.role}</p>
+                                    <p className="text-xs font-bold text-brand-accent uppercase tracking-tighter mb-1.5">{user?.role}</p>
+                                    <div className="flex items-center gap-1.5 text-xs font-black text-brand-primary/70 bg-white px-2.5 py-1 rounded-lg w-fit border border-brand-primary/5 shadow-sm">
+                                        <Wallet size={12} className="text-brand-accent" />
+                                        <span>{user?.walletBalance || 0} Coins</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
