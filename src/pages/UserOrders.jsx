@@ -6,6 +6,7 @@ import api from "../utils/api";
 import toast from "react-hot-toast";
 import { getProductImageUrl } from "../utils/mediaUrl";
 import { useShop } from "../context/ShopContext";
+import { useAuth } from "../context/AuthContext";
 import { loadRazorpayScript } from "../utils/razorpay";
 
 const UserOrders = () => {
@@ -14,7 +15,9 @@ const UserOrders = () => {
     const [downloadingInvoiceId, setDownloadingInvoiceId] = useState(null);
     const [cancellingOrderId, setCancellingOrderId] = useState(null);
     const [retryingOrderId, setRetryingOrderId] = useState(null);
+    const [confirmCancelOrderId, setConfirmCancelOrderId] = useState(null);
     const { retryPayment, verifyRazorpayPayment } = useShop();
+    const { reloadUser } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -120,9 +123,6 @@ const UserOrders = () => {
     const isCancellable = (status) => ["Pending", "Processing"].includes(status);
 
     const handleCancelOrder = async (orderId) => {
-        if (!window.confirm("Are you sure you want to cancel this order?")) {
-            return;
-        }
 
         try {
             setCancellingOrderId(orderId);
@@ -138,6 +138,7 @@ const UserOrders = () => {
             }
 
             toast.success(response.data?.message || "Order cancelled");
+            await reloadUser();
         } catch (error) {
             console.error("Cancel order error:", error);
             toast.error(error.response?.data?.message || "Failed to cancel order");
@@ -214,9 +215,18 @@ const UserOrders = () => {
                                             <h2 className="font-black text-brand-primary">{order._id}</h2>
                                         </div>
                                     </div>
-                                    <span className={`px-4 py-2 rounded-xl border text-[10px] font-black uppercase tracking-widest ${getStatusStyles(order.status)}`}>
-                                        {order.status}
-                                    </span>
+                                    <div className="flex items-center gap-4">
+                                        <div className="hidden sm:flex flex-col items-end">
+                                            <p className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5">Payment</p>
+                                            <div className="flex items-center gap-1.5 font-bold text-brand-primary text-[10px] uppercase tracking-widest">
+                                                <span>{order.paymentMethod || 'COD'}</span>
+                                                <span className={`w-1.5 h-1.5 rounded-full ${order.paymentStatus === 'paid' ? 'bg-green-500' : (order.paymentStatus === 'failed' ? 'bg-red-500' : 'bg-amber-500')}`} title={order.paymentStatus}></span>
+                                            </div>
+                                        </div>
+                                        <span className={`px-4 py-2 rounded-xl border text-[10px] font-black uppercase tracking-widest ${getStatusStyles(order.status)}`}>
+                                            {order.status}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div className="p-8 space-y-6">
@@ -277,7 +287,7 @@ const UserOrders = () => {
                                         )}
                                         {isCancellable(order.status) && (
                                             <button
-                                                onClick={() => handleCancelOrder(order._id)}
+                                                onClick={() => setConfirmCancelOrderId(order._id)}
                                                 disabled={cancellingOrderId === order._id}
                                                 className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${cancellingOrderId === order._id
                                                     ? "bg-red-50 text-red-300 border-red-100 cursor-not-allowed"
@@ -303,6 +313,38 @@ const UserOrders = () => {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                )}
+
+                {/* Cancel Confirmation Modal */}
+                {confirmCancelOrderId && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-primary/20 backdrop-blur-sm transition-all duration-300">
+                        <div className="bg-white rounded-[32px] p-8 max-w-sm w-full shadow-[0_20px_50px_rgba(56,84,77,0.15)] border border-brand-primary/5 animate-in fade-in zoom-in duration-200">
+                            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mb-6 border border-red-100">
+                                <XCircle size={32} />
+                            </div>
+                            <h3 className="text-2xl font-black text-brand-primary uppercase tracking-tighter mb-2">Cancel Order?</h3>
+                            <p className="text-brand-primary/60 font-medium mb-8 text-sm">
+                                Are you sure you want to cancel this order? This action cannot be undone. If you already paid, the refund will be credited to your Kitchen Cart wallet automatically.
+                            </p>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() => setConfirmCancelOrderId(null)}
+                                    className="flex-1 py-4 px-4 rounded-2xl font-black text-[10px] uppercase tracking-widest text-brand-primary hover:bg-brand-bg transition-colors border border-transparent hover:border-brand-primary/10"
+                                >
+                                    Keep Order
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        handleCancelOrder(confirmCancelOrderId);
+                                        setConfirmCancelOrderId(null);
+                                    }}
+                                    className="flex-1 py-4 px-4 rounded-2xl bg-red-50 text-red-500 border border-red-100 hover:bg-red-500 hover:text-white font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-red-500/10"
+                                >
+                                    Cancel It
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 )}
 

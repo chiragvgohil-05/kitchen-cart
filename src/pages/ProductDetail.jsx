@@ -204,24 +204,34 @@ const ProductDetail = () => {
 
                         <div className="pt-4 space-y-4">
                             <div className="flex gap-4">
-                                <div className="flex items-center bg-white border border-brand-primary/10 rounded-2xl p-1">
+                                <div className={`flex items-center bg-white border border-brand-primary/10 rounded-2xl p-1 ${stock <= 0 ? 'opacity-50 pointer-events-none' : ''}`}>
                                     <button
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                        disabled={stock <= 0}
                                         className="w-12 h-12 flex items-center justify-center hover:bg-brand-bg rounded-xl transition-colors font-black"
                                     >
                                         −
                                     </button>
                                     <span className="w-12 text-center font-black">{quantity}</span>
                                     <button
-                                        onClick={() => setQuantity(quantity + 1)}
-                                        className="w-12 h-12 flex items-center justify-center hover:bg-brand-bg rounded-xl transition-colors font-black"
+                                        onClick={() => setQuantity(Math.min(stock > 0 ? stock : 1, quantity + 1))}
+                                        disabled={stock <= 0 || quantity >= stock}
+                                        className="w-12 h-12 flex items-center justify-center hover:bg-brand-bg rounded-xl transition-colors font-black disabled:opacity-50"
                                     >
                                         +
                                     </button>
                                 </div>
-                                <button onClick={() => addToCart(product, quantity)} className="flex-1 bg-brand-primary text-brand-bg rounded-2xl font-black text-sm hover:bg-brand-accent hover:text-brand-primary transition-all shadow-xl shadow-brand-primary/20 flex items-center justify-center gap-3 uppercase tracking-widest group">
-                                    <ShoppingCart size={20} className="group-hover:scale-110 transition-transform" />
-                                    Add to Cart
+                                <button 
+                                    onClick={() => addToCart(product, quantity)}
+                                    disabled={stock <= 0}
+                                    className={`flex-1 rounded-2xl font-black text-sm flex items-center justify-center gap-3 uppercase tracking-widest transition-all group ${
+                                        stock > 0
+                                            ? 'bg-brand-primary text-brand-bg hover:bg-brand-accent hover:text-brand-primary shadow-xl shadow-brand-primary/20'
+                                            : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                    }`}
+                                >
+                                    <ShoppingCart size={20} className={stock > 0 ? "group-hover:scale-110 transition-transform" : ""} />
+                                    {stock > 0 ? 'Add to Cart' : 'Out of Stock'}
                                 </button>
                             </div>
 

@@ -13,7 +13,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 const ProductCard = ({ product }) => {
-    const { _id, images, name, brand, sellingPrice, mrp } = product;
+    const { _id, images, name, brand, sellingPrice, mrp, stock } = product;
     const [isHovered, setIsHovered] = useState(false);
     const { addToCart, wishlist, toggleWishlist } = useShop();
 
@@ -96,9 +96,17 @@ const ProductCard = ({ product }) => {
 
                     {/* Interactive Add to Cart Button */}
                     <div className={`absolute bottom-4 left-4 right-4 z-20 transition-all duration-500 transform ${isHovered ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
-                        <button onClick={handleAddToCart} className="w-full py-3.5 bg-brand-primary text-white font-black text-[10px] rounded-xl hover:bg-brand-accent transition-all duration-300 flex items-center justify-center gap-2 shadow-2xl shadow-brand-primary/20 hover:scale-[1.02] active:scale-95 uppercase tracking-widest leading-none">
+                        <button 
+                            onClick={handleAddToCart}
+                            disabled={stock <= 0}
+                            className={`w-full py-3.5 font-black text-[10px] rounded-xl transition-all duration-300 flex items-center justify-center gap-2 uppercase tracking-widest leading-none ${
+                                stock > 0
+                                    ? 'bg-brand-primary text-white hover:bg-brand-accent shadow-2xl shadow-brand-primary/20 hover:scale-[1.02] active:scale-95'
+                                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                            }`}
+                        >
                             <ShoppingCart size={14} />
-                            Add to cart
+                            {stock > 0 ? 'Add to cart' : 'Out of stock'}
                         </button>
                     </div>
                 </div>

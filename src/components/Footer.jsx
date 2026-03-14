@@ -52,7 +52,7 @@ const Footer = () => {
                                 { name: "Our Menu", href: "/menu" },
                                 { name: "Offer Zone", href: "/offers" },
                                 { name: "New Arrivals", href: "/new-arrivals" },
-                                { name: "Search", href: "/search" },
+                                { name: "Search", href: "/menu" },
                             ].map((item) => (
                                 <li key={item.name}>
                                     <Link to={item.href} className="text-brand-primary/50 hover:text-brand-accent text-sm font-bold transition-all hover:translate-x-1 inline-block">
@@ -88,7 +88,6 @@ const Footer = () => {
                                     { name: "Shipping", href: "/shipping" },
                                     { name: "Returns", href: "/returns" },
                                     { name: "FAQs", href: "/faqs" },
-                                    { name: "Admin", href: "/admin" },
                                 ].map((item) => (
                                     <li key={item.name}>
                                         <Link to={item.href} className="text-brand-primary/50 hover:text-brand-accent text-sm font-bold transition-all hover:translate-x-1 inline-block">

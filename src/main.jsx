@@ -23,9 +23,11 @@ createRoot(document.getElementById("root")).render(
 
           return (
             <div
-              className={`${t.visible ? 'animate-in fade-in zoom-in slide-in-from-right-4' : 'animate-out fade-out zoom-out slide-out-to-right-4'
-                } max-w-sm w-full bg-white shadow-2xl rounded-2xl pointer-events-auto flex ring-1 ring-black ring-opacity-5 overflow-hidden border ${isError ? 'border-red-100 bg-red-50' : isSuccess ? 'border-green-100 bg-green-50' : 'border-brand-primary/5'
-                }`}
+              className={`transition-all duration-300 ease-in-out ${
+                t.visible ? 'opacity-100 scale-100 translate-x-0' : 'opacity-0 scale-95 translate-x-8'
+              } max-w-sm w-full bg-white shadow-2xl rounded-2xl pointer-events-auto flex ring-1 ring-black ring-opacity-5 overflow-hidden border ${
+                isError ? 'border-red-100 bg-red-50' : isSuccess ? 'border-green-100 bg-green-50' : 'border-brand-primary/5'
+              }`}
             >
               <div className="flex-1 w-0 p-4">
                 <div className="flex items-center">
@@ -39,8 +41,9 @@ createRoot(document.getElementById("root")).render(
                     )}
                   </div>
                   <div className="ml-3 flex-1">
-                    <p className={`text-sm font-black uppercase tracking-tight ${isError ? 'text-red-600' : isSuccess ? 'text-green-600' : 'text-brand-primary'
-                      }`}>
+                    <p className={`text-sm font-black uppercase tracking-tight ${
+                      isError ? 'text-red-600' : isSuccess ? 'text-green-600' : 'text-brand-primary'
+                    }`}>
                       {resolveValue(t.message, t)}
                     </p>
                   </div>
@@ -48,13 +51,15 @@ createRoot(document.getElementById("root")).render(
               </div>
               <div className={`flex border-l ${isError ? 'border-red-100' : isSuccess ? 'border-green-100' : 'border-gray-100'}`}>
                 <button
-                  onClick={() => toast.dismiss(t.id)}
-                  className={`w-full border border-transparent rounded-none rounded-r-2xl px-4 flex items-center justify-center transition-all focus:outline-none ${isError
-                    ? 'text-red-400 hover:text-red-600 hover:bg-red-100'
-                    : isSuccess
-                      ? 'text-green-400 hover:text-green-600 hover:bg-green-100'
-                      : 'text-gray-400 hover:text-brand-primary hover:bg-gray-50'
-                    }`}
+                  type="button"
+                  onClick={() => toast.remove(t.id)}
+                  className={`w-full border border-transparent rounded-none rounded-r-2xl px-4 flex items-center justify-center transition-all focus:outline-none ${
+                    isError
+                      ? 'text-red-400 hover:text-red-600 hover:bg-red-100'
+                      : isSuccess
+                        ? 'text-green-400 hover:text-green-600 hover:bg-green-100'
+                        : 'text-gray-400 hover:text-brand-primary hover:bg-gray-50'
+                  }`}
                 >
                   <X size={18} strokeWidth={3} />
                 </button>
