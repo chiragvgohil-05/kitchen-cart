@@ -5,7 +5,6 @@ import Home from "../pages/Home";
 import Menu from "../pages/Menu";
 import About from "../pages/About";
 import NotFound from "../pages/NotFound";
-import Search from "../pages/Search";
 import ProductDetail from "../pages/ProductDetail";
 import Dashboard from "../pages/admin/Dashboard";
 import Products from "../pages/admin/Products";
@@ -62,10 +61,6 @@ const router = createBrowserRouter([
                     {
                         path: "about",
                         element: <About />,
-                    },
-                    {
-                        path: "search",
-                        element: <Search />,
                     },
                     {
                         path: "product/:productId",
