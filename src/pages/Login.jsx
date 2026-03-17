@@ -12,6 +12,7 @@ const Login = () => {
     useEffect(() => {
         if (user) {
             if (user.role === 'admin') navigate("/admin");
+            else if (user.role === 'staff') navigate("/staff");
             else navigate("/");
         }
     }, [user, navigate]);
@@ -30,6 +31,8 @@ const Login = () => {
         if (loggedInUser) {
             if (loggedInUser.role === 'admin') {
                 navigate("/admin");
+            } else if (loggedInUser.role === 'staff') {
+                navigate("/staff");
             } else {
                 navigate("/");
             }

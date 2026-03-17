@@ -17,6 +17,11 @@ const UserRoute = ({ children }) => {
         return <Navigate to="/admin" replace />;
     }
 
+    if (user && user.role === 'staff') {
+        // Redirect staff to kitchen panel if they try to access user side
+        return <Navigate to="/staff" replace />;
+    }
+
     return children;
 };
 

@@ -1,6 +1,7 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import AdminLayout from "../layouts/AdminLayout";
+import StaffLayout from "../layouts/StaffLayout";
 import Home from "../pages/Home";
 import Menu from "../pages/Menu";
 import About from "../pages/About";
@@ -22,6 +23,7 @@ import Faqs from "../pages/Faqs";
 import OrderSuccess from "../pages/OrderSuccess";
 import UserOrders from "../pages/UserOrders";
 import Profile from "../pages/Profile";
+import KitchenPanel from "../pages/staff/KitchenPanel";
 
 import ProductFormPage from "../pages/admin/ProductFormPage";
 import Categories from "../pages/admin/Categories";
@@ -193,6 +195,24 @@ const router = createBrowserRouter([
                     {
                         path: "profile",
                         element: <Profile />,
+                    },
+                ],
+            },
+            {
+                path: "/staff",
+                element: (
+                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                        <StaffLayout />
+                    </ProtectedRoute>
+                ),
+                children: [
+                    {
+                        index: true,
+                        element: <KitchenPanel />,
+                    },
+                    {
+                        path: "orders",
+                        element: <KitchenPanel />,
                     },
                 ],
             },
