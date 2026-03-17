@@ -12,7 +12,7 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, itemName }) => {
             ></div>
 
             {/* Modal */}
-            <div className="relative bg-white rounded-[32px] w-full max-w-md p-8 shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="relative bg-white rounded-xl w-full max-w-md p-8 shadow-2xl animate-in zoom-in-95 duration-300">
                 <button
                     onClick={onClose}
                     className="absolute top-6 right-6 p-2 rounded-xl bg-gray-50 text-gray-400 hover:text-brand-primary transition-colors"
@@ -25,21 +25,21 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, itemName }) => {
                         <Trash2 size={32} />
                     </div>
 
-                    <h2 className="text-2xl font-black text-brand-primary tracking-tight mb-2 uppercase">Confirm Deletion</h2>
+                    <h2 className="text-2xl font-bold text-brand-primary tracking-tight mb-2">Confirm Deletion</h2>
                     <p className="text-brand-primary/60 font-medium">
-                        Are you sure you want to delete <span className="text-brand-primary font-black">"{itemName}"</span>? This action cannot be undone.
+                        Are you sure you want to delete <span className="text-brand-primary font-bold">"{itemName}"</span>? This action cannot be undone.
                     </p>
 
                     <div className="grid grid-cols-2 gap-4 w-full mt-8">
                         <button
                             onClick={onClose}
-                            className="py-4 bg-brand-bg text-brand-primary rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-100 transition-all"
+                            className="py-4 bg-brand-bg text-brand-primary rounded-2xl font-bold text-xs tracking-widest hover:bg-gray-100 transition-all"
                         >
                             Cancel
                         </button>
                         <button
                             onClick={onConfirm}
-                            className="py-4 bg-red-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-600 shadow-xl shadow-red-500/20 transition-all"
+                            className="py-4 bg-red-500 text-white rounded-2xl font-bold text-xs tracking-widest hover:bg-red-600 shadow-xl shadow-red-500/20 transition-all"
                         >
                             Delete
                         </button>

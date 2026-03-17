@@ -6,7 +6,7 @@ const Footer = () => {
     return (
         <footer className="bg-brand-bg/80 border-t border-brand-primary pt-16 pb-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                     {/* Brand Section */}
                     <div className="space-y-8">
                         <Link to="/" className="inline-block transform hover:scale-105 transition-transform">
@@ -20,13 +20,13 @@ const Footer = () => {
                                 <div className="w-10 h-10 rounded-xl bg-brand-primary/5 flex items-center justify-center">
                                     <Phone size={16} />
                                 </div>
-                                <span className="text-sm font-black tracking-tight">+91 (800) 123-4567</span>
+                                <span className="text-sm font-bold tracking-tight">+91 (800) 123-4567</span>
                             </div>
                             <div className="flex items-center gap-4 text-brand-primary">
                                 <div className="w-10 h-10 rounded-xl bg-brand-primary/5 flex items-center justify-center">
                                     <Mail size={16} />
                                 </div>
-                                <span className="text-sm font-black tracking-tight uppercase">concierge@kitchencart.com</span>
+                                <span className="text-sm font-bold tracking-tight">concierge@kitchencart.com</span>
                             </div>
                         </div>
                         <div className="flex items-center gap-4 pt-2">
@@ -44,7 +44,7 @@ const Footer = () => {
 
                     {/* Quick Links */}
                     <div className="lg:pl-12">
-                        <h3 className="text-brand-primary font-black text-xs uppercase tracking-[0.2em] mb-8">
+                        <h3 className="text-brand-primary font-bold text-xs tracking-wide mb-8">
                             Collections
                         </h3>
                         <ul className="space-y-4">
@@ -65,10 +65,10 @@ const Footer = () => {
 
                     {/* Support & Account */}
                     <div>
-                        <h3 className="text-brand-primary font-black text-xs uppercase tracking-[0.2em] mb-8">
+                        <h3 className="text-brand-primary font-bold text-xs tracking-wide mb-8">
                             Support & Account
                         </h3>
-                        <div className="grid grid-cols-2 gap-8 lg:gap-12 text-nowrap">
+                        <div className="grid grid-cols-2 gap-8 lg:gap-6 text-nowrap">
                             <ul className="space-y-4">
                                 {[
                                     { name: "My Orders", href: "/user/orders" },
@@ -102,12 +102,12 @@ const Footer = () => {
 
                 {/* Bottom Bar */}
                 <div className="mt-20 pt-10 border-t border-brand-primary/5 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <p className="text-brand-primary/30 text-[10px] font-black uppercase tracking-widest">
+                    <p className="text-brand-primary/30 text-sm font-bold tracking-widest">
                         &copy; {new Date().getFullYear()} KITCHEN CART. ALL RIGHTS RESERVED.
                     </p>
                     <div className="flex items-center gap-8">
-                        <Link to="#" className="text-brand-primary/30 hover:text-brand-primary text-[10px] font-black uppercase tracking-widest transition-colors">Privacy Policy</Link>
-                        <Link to="#" className="text-brand-primary/30 hover:text-brand-primary text-[10px] font-black uppercase tracking-widest transition-colors">Terms of Service</Link>
+                        <Link to="#" className="text-brand-primary/30 hover:text-brand-primary text-sm font-bold tracking-widest transition-colors">Privacy Policy</Link>
+                        <Link to="#" className="text-brand-primary/30 hover:text-brand-primary text-sm font-bold tracking-widest transition-colors">Terms of Service</Link>
                     </div>
                 </div>
             </div>

@@ -8,31 +8,33 @@ const NewArrivals = () => {
     const newItems = products ? [...products].slice(-4).reverse() : [];
 
     return (
-        <div className="bg-[#fcfcfb] min-h-screen pb-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+        <div className="bg-cream min-h-screen pb-32 animate-fade-in">
+            <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-6 pt-16">
                 {/* Visual Accent */}
-                <div className="relative mb-12 rounded-[64px] overflow-hidden aspect-21/9 bg-brand-primary text-brand-bg px-12 flex flex-col justify-center items-start shadow-2xl">
-                    <div className="absolute inset-0 bg-linear-to-r from-brand-primary to-transparent" />
+                <div className="relative mb-24 rounded-[80px] overflow-hidden aspect-[21/9] bg-coffee-brown text-white px-16 flex flex-col justify-center items-start shadow-2xl group cursor-default">
+                    <div className="absolute inset-0 bg-linear-to-r from-coffee-brown via-coffee-brown/80 to-transparent z-10" />
                     <img
-                        src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=1200&auto=format&fit=crop"
-                        className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-40"
-                        alt="Cooking"
+                        src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1200&auto=format&fit=crop"
+                        className="absolute inset-0 w-full h-full object-cover grayscale opacity-40 transition-transform duration-[3s] group-hover:scale-110"
+                        alt="Fine Coffee Ceremony"
                     />
-                    <div className="relative z-10 space-y-4 max-w-lg">
-                        <div className="flex items-center gap-2 text-brand-accent">
-                            <Star size={20} fill="currentColor" />
-                            <span className="text-xs font-black uppercase tracking-widest">Premium Selection</span>
+                    <div className="relative z-20 space-y-8 max-w-xl">
+                        <div className="flex items-center gap-3 text-accent-gold">
+                            <Sparkles size={20} className="animate-pulse" />
+                            <span className="text-sm font-bold tracking-wide">The Premier Descent</span>
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-black tracking-tighter leading-none">THE MASTER <br />SERIES 2026</h2>
-                        <p className="text-brand-bg/60 font-medium">Precision, durability, and elegance in every detail. Built for the modern home chef.</p>
-                        <button className="px-10 py-4 bg-brand-accent text-brand-primary rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform">EXPLORE NOW</button>
+                        <h2 className="text-3xl md:text-4xl font-bold tracking-tighter leading-[0.85]">THE <br /><span className="text-accent-gold not-">HARVEST 2026</span></h2>
+                        <p className="text-white/40 font-bold text-sm tracking-wide leading-relaxed">Purity, tradition, and transcendence in every brew. <br />Engineered for the discerning connoisseur.</p>
+                        <button className="px-6 py-3 bg-accent-gold text-white rounded-full font-bold text-sm tracking-wide hover:bg-white hover:text-coffee-brown transition-all shadow-2xl shadow-accent-gold/20 transform hover:-translate-y-1">EXPLORE COLLECTION</button>
                     </div>
-                    <ChefHat size={300} className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/4 text-white opacity-5" />
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/4 text-white opacity-[0.03] z-10 transition-transform group-hover:rotate-12 duration-[5s]">
+                        <Coffee size={400} strokeWidth={1} />
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-8 mb-12">
-                    <h2 className="text-4xl font-black tracking-tighter uppercase shrink-0">Fresh Arrivals</h2>
-                    <div className="h-px grow bg-brand-primary/10" />
+                <div className="flex items-center gap-6 mb-16">
+                    <h2 className="text-2xl font-bold tracking-tighter text-coffee-brown shrink-0">Fresh Arrivals</h2>
+                    <div className="h-px grow bg-coffee-brown/10" />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">

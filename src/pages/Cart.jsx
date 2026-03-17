@@ -13,10 +13,10 @@ const Cart = () => {
     const { user } = useAuth();
     const { cart, updateCartQuantity, removeFromCart, placeOrder, verifyRazorpayPayment } = useShop();
     const [isOrdering, setIsOrdering] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState("COD"); // Default to COD
+    const [paymentMethod, setPaymentMethod] = useState("COD");
 
     const subtotal = cart.reduce((acc, item) => acc + (item.sellingPrice * item.quantity), 0);
-    const shipping = subtotal > 0 ? 100 : 0;
+    const shipping = subtotal > 0 ? (subtotal > 5000 ? 0 : 100) : 0;
     const total = subtotal + shipping;
 
     const hasCompleteProfileAddress = () => {
@@ -52,7 +52,7 @@ const Cart = () => {
                 key: razorpayKeyId,
                 amount: razorpayOrder.amount,
                 currency: razorpayOrder.currency,
-                name: "Kitchen Cart",
+                name: "Our Store Cafe",
                 description: `Order ${order._id}`,
                 order_id: razorpayOrder.id,
                 handler: async (response) => {
@@ -66,7 +66,7 @@ const Cart = () => {
                     setIsOrdering(false);
 
                     if (verification) {
-                        toast.success("Payment successful! Order placed.");
+                        toast.success("Payment Received. Your Store harvest begins.");
                         navigate('/order-success');
                         finish(true);
                         return;
@@ -76,18 +76,18 @@ const Cart = () => {
                 },
                 modal: {
                     ondismiss: () => {
-                        toast.error("Payment cancelled");
+                        toast.error("Store payment cancelled");
                         finish(false);
                     }
                 },
                 theme: {
-                    color: "#1f2937"
+                    color: "#4E342E"
                 }
             };
 
             const razorpay = new window.Razorpay(options);
             razorpay.on('payment.failed', () => {
-                toast.error("Payment failed. Please try again.");
+                toast.error("Payment sync failed. Try again.");
                 finish(false);
             });
             razorpay.open();
@@ -96,7 +96,7 @@ const Cart = () => {
 
     const handleCheckout = async () => {
         if (!hasCompleteProfileAddress()) {
-            toast.error("Please add your complete address in profile before placing order");
+            toast.error("Please synchronize your address in profile before harvest");
             navigate('/profile');
             return;
         }
@@ -113,7 +113,7 @@ const Cart = () => {
 
         if (paymentMethod === "COD") {
             setIsOrdering(false);
-            toast.success("Order Placed Successfully!");
+            toast.success("Order Sealed! Harvest is on the way.");
             navigate('/order-success');
             return;
         }
@@ -128,14 +128,14 @@ const Cart = () => {
 
         if (isWalletOnlyOrder) {
             setIsOrdering(false);
-            toast.success("Order placed successfully using wallet balance!");
+            toast.success("Order sealed using Store Aura balance!");
             navigate('/order-success');
             return;
         }
 
         if (!orderPayload.order || !orderPayload.razorpayOrder) {
             setIsOrdering(false);
-            toast.error("Invalid Razorpay order response");
+            toast.error("Store sync error: Invalid response");
             return;
         }
 
@@ -149,71 +149,73 @@ const Cart = () => {
 
     if (cart.length === 0) {
         return (
-            <div className="min-h-[70vh] flex flex-col items-center justify-center bg-brand-bg px-4">
-                <div className="w-24 h-24 bg-brand-primary/5 rounded-full flex items-center justify-center text-brand-primary mb-6">
-                    <ShoppingBag size={48} strokeWidth={1} />
+            <div className="min-h-[70vh] flex flex-col items-center justify-center bg-cream px-4">
+                <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center text-coffee-brown shadow-inner mb-8">
+                    <ShoppingBag size={56} strokeWidth={1.5} className="opacity-10" />
                 </div>
-                <h2 className="text-3xl font-black text-brand-primary mb-2">Your cart is empty</h2>
-                <p className="text-brand-primary/60 font-medium mb-8 text-center max-w-sm">Looks like you haven't added any premium tools to your kitchen yet.</p>
-                <Link to="/menu" className="px-10 py-4 bg-brand-primary text-brand-bg rounded-2xl font-black text-sm hover:bg-brand-primary/90 transition-all shadow-xl shadow-brand-primary/20">
-                    RETURN TO SHOP
+                <h2 className="text-2xl font-bold text-coffee-brown mb-3 tracking-tighter">Your Store is Empty</h2>
+                <p className="text-coffee-brown/40 font-bold tracking-wide mb-10 text-center max-w-sm text-xs">Begin your sensory journey by selecting from our premium menu.</p>
+                <Link to="/menu" className="px-6 py-3 bg-coffee-brown text-white rounded-full font-bold text-sm tracking-wide hover:bg-accent-gold transition-all shadow-2xl shadow-coffee-brown/20 transform hover:-translate-y-1">
+                    RETURN TO COLLECTION
                 </Link>
             </div>
         );
     }
 
     return (
-        <div className="bg-brand-bg min-h-screen text-brand-primary py-12 lg:py-20">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-cream min-h-screen text-coffee-brown py-16 lg:py-24 animate-fade-in">
+            <div className="max-w-7xl mx-auto px-6 lg:px-6">
                 {/* Breadcrumb */}
-                <nav className="flex items-center gap-2 text-[10px] font-black tracking-[0.2em] text-brand-primary/40 uppercase mb-8">
-                    <Link to="/" className="hover:text-brand-accent transition-colors">Home</Link>
+                <nav className="flex items-center gap-3 text-sm font-bold tracking-wide text-coffee-brown/40 mb-12">
+                    <Link to="/" className="hover:text-accent-gold transition-colors">Home</Link>
                     <ChevronRight size={12} />
-                    <span className="text-brand-primary">Shopping Bag</span>
+                    <span className="text-coffee-brown">Selected Brews</span>
                 </nav>
 
-                <h1 className="text-3xl lg:text-4xl font-black tracking-tighter mb-12">
-                    YOUR <span className="text-brand-accent italic uppercase">CART</span>
+                <h1 className="text-3xl lg:text-4xl font-bold tracking-tighter mb-16">
+                    YOUR <span className="text-accent-gold not-">SELECTION</span>
                 </h1>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                     {/* Cart Items List */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="lg:col-span-8 space-y-8">
                         {cart.map((item) => (
-                            <div key={item._id} className="group bg-white rounded-[32px] p-4 sm:p-6 flex flex-col sm:flex-row gap-6 border border-brand-primary/5 hover:border-brand-accent/20 transition-all shadow-sm hover:shadow-xl hover:shadow-brand-primary/5">
-                                <div className="w-full sm:w-32 h-32 bg-brand-bg rounded-2xl overflow-hidden shrink-0">
-                                    <img src={getProductImageUrl(item.images?.[0])} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                            <div key={item._id} className="group bg-white rounded-[48px] p-6 sm:p-8 flex flex-col sm:flex-row gap-8 border border-coffee-brown/5 hover:border-accent-gold/20 transition-all shadow-2xl shadow-coffee-brown/5 hover:shadow-accent-gold/5">
+                                <div className="w-full sm:w-40 h-40 bg-cream rounded-3xl overflow-hidden shrink-0 ring-4 ring-cream shadow-inner group-hover:scale-105 transition-transform duration-700">
+                                    <img src={getProductImageUrl(item.images?.[0])} alt={item.name} className="w-full h-full object-cover mix-blend-multiply" />
                                 </div>
-                                <div className="flex-1 flex flex-col justify-between py-1">
-                                    <div className="flex justify-between gap-4">
+                                <div className="flex-1 flex flex-col justify-between py-2">
+                                    <div className="flex justify-between gap-6">
                                         <div>
-                                            <p className="text-[10px] font-black text-brand-accent uppercase tracking-widest mb-1">{item.brand}</p>
-                                            <h3 className="text-lg font-black leading-tight mb-2">{item.name}</h3>
+                                            <p className="text-sm font-bold text-accent-gold tracking-wide mb-3">{item.category?.name || 'Provenance'}</p>
+                                            <h3 className="text-2xl font-bold text-coffee-brown leading-none mb-4 group-hover:text-accent-gold transition-colors">{item.name}</h3>
+                                            <p className="text-sm font-bold text-coffee-brown/20 tracking-widest">SKU: {item._id.slice(-6).toUpperCase()}</p>
                                         </div>
                                         <button
                                             onClick={() => removeFromCart(item._id)}
-                                            className="text-brand-primary/20 hover:text-red-500 transition-colors h-fit p-2 hover:bg-red-50 rounded-xl"
+                                            className="text-coffee-brown/10 hover:text-red-400 transition-all h-fit p-3 bg-cream rounded-2xl hover:bg-red-50"
+                                            title="Retire from selection"
                                         >
-                                            <Trash2 size={20} />
+                                            <Trash2 size={22} />
                                         </button>
                                     </div>
-                                    <div className="flex items-end justify-between gap-4 mt-4">
-                                        <div className="flex items-center gap-4 bg-brand-bg rounded-xl p-1 shrink-0">
+                                    <div className="flex items-end justify-between gap-6 mt-8">
+                                        <div className="flex items-center gap-6 bg-cream rounded-[24px] p-2 shrink-0 border border-coffee-brown/5 shadow-inner">
                                             <button
                                                 onClick={() => updateCartQuantity(item._id, -1)}
-                                                className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-colors text-brand-primary/60 hover:text-brand-primary"
+                                                className="w-10 h-10 flex items-center justify-center hover:bg-white rounded-xl transition-all text-coffee-brown/40 hover:text-coffee-brown active:scale-90"
                                             >
-                                                <Minus size={16} />
+                                                <Minus size={18} />
                                             </button>
-                                            <span className="font-black text-sm w-4 text-center">{item.quantity}</span>
+                                            <span className="font-bold text-xl w-6 text-center tabular-nums">{item.quantity}</span>
                                             <button
                                                 onClick={() => updateCartQuantity(item._id, 1)}
-                                                className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-colors text-brand-primary/60 hover:text-brand-primary"
+                                                className="w-10 h-10 flex items-center justify-center hover:bg-white rounded-xl transition-all text-coffee-brown/40 hover:text-coffee-brown active:scale-90"
                                             >
-                                                <Plus size={16} />
+                                                <Plus size={18} />
                                             </button>
                                         </div>
-                                        <p className="text-xl font-black">₹ {(item.sellingPrice * item.quantity).toLocaleString('en-IN')}</p>
+                                        <p className="text-3xl font-bold text-coffee-brown tracking-tighter tabular-nums">₹{(item.sellingPrice * item.quantity).toLocaleString('en-IN')}</p>
                                     </div>
                                 </div>
                             </div>
@@ -221,89 +223,90 @@ const Cart = () => {
                     </div>
 
                     {/* Order Summary & Payment Method */}
-                    <div className="lg:sticky lg:top-32 space-y-6">
-                        <div className="bg-white rounded-[40px] p-8 border border-brand-primary/5 shadow-xl shadow-brand-primary/5">
-                            <h2 className="text-xl font-black mb-6 tracking-tight uppercase">Payment Method</h2>
+                    <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-8">
+                        <div className="bg-white rounded-[56px] p-6 border border-coffee-brown/5 shadow-2xl shadow-coffee-brown/5">
+                            <h2 className="text-xl font-bold text-coffee-brown mb-8 tracking-tighter">Payment <span className="text-accent-gold">Synchrony</span></h2>
                             {user && (
-                                <div className="flex items-center justify-between p-4 mb-4 bg-brand-primary/5 rounded-2xl border border-brand-primary/10">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-brand-accent/20 text-brand-accent flex items-center justify-center">
-                                            <Wallet size={20} />
+                                <div className="flex items-center justify-between p-6 mb-8 bg-cream/50 rounded-xl border border-coffee-brown/5 shadow-inner">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-2xl bg-accent-gold text-white flex items-center justify-center shadow-lg shadow-accent-gold/20">
+                                            <Wallet size={24} />
                                         </div>
                                         <div>
-                                            <p className="font-black text-sm text-brand-primary">Wallet Balance</p>
-                                            <p className="text-[10px] font-medium text-brand-primary/40 uppercase tracking-wider">Available Coins</p>
+                                            <p className="font-bold text-xs text-coffee-brown tracking-widest">Store Aura</p>
+                                            <p className="text-sm font-bold text-coffee-brown/30 tracking-tighter">Loyalty Balance</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="font-black text-brand-accent text-lg">{user.walletBalance || 0} Coins</p>
+                                        <p className="font-bold text-accent-gold text-2xl tracking-tighter tabular-nums">{user.walletBalance || 0}</p>
                                     </div>
                                 </div>
                             )}
-                            <div className="grid grid-cols-1 gap-3">
+                            <div className="grid grid-cols-1 gap-4">
                                 <button
                                     onClick={() => setPaymentMethod("COD")}
-                                    className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${paymentMethod === "COD"
-                                        ? "border-brand-accent bg-brand-accent/5"
-                                        : "border-brand-primary/5 hover:border-brand-primary/10"
+                                    className={`group flex items-center gap-5 p-5 rounded-xl border-2 transition-all text-left ${paymentMethod === "COD"
+                                        ? "border-accent-gold bg-accent-gold/5"
+                                        : "border-coffee-brown/5 hover:border-accent-gold/20"
                                         }`}
                                 >
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${paymentMethod === "COD" ? "bg-brand-accent text-brand-primary" : "bg-brand-primary/5 text-brand-primary/40"}`}>
-                                        <Banknote size={20} />
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${paymentMethod === "COD" ? "bg-accent-gold text-white shadow-lg" : "bg-cream text-coffee-brown/20"}`}>
+                                        <Banknote size={24} />
                                     </div>
                                     <div>
-                                        <p className="font-black text-sm">Cash on Delivery</p>
-                                        <p className="text-[10px] font-medium text-brand-primary/40 uppercase tracking-wider">Pay when you receive</p>
+                                        <p className="font-bold text-sm text-coffee-brown tracking-wider">Store Upon Arrival</p>
+                                        <p className="text-sm font-bold text-coffee-brown/30 tracking-tighter">Settlement on hand</p>
                                     </div>
                                 </button>
 
                                 <button
                                     onClick={() => setPaymentMethod("Razorpay")}
-                                    className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${paymentMethod === "Razorpay"
-                                        ? "border-brand-accent bg-brand-accent/5"
-                                        : "border-brand-primary/5 hover:border-brand-primary/10"
+                                    className={`group flex items-center gap-5 p-5 rounded-xl border-2 transition-all text-left ${paymentMethod === "Razorpay"
+                                        ? "border-accent-gold bg-accent-gold/5"
+                                        : "border-coffee-brown/5 hover:border-accent-gold/20"
                                         }`}
                                 >
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${paymentMethod === "Razorpay" ? "bg-brand-accent text-brand-primary" : "bg-brand-primary/5 text-brand-primary/40"}`}>
-                                        <CreditCard size={20} />
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${paymentMethod === "Razorpay" ? "bg-accent-gold text-white shadow-lg" : "bg-cream text-coffee-brown/20"}`}>
+                                        <CreditCard size={24} />
                                     </div>
                                     <div>
-                                        <p className="font-black text-sm">Online Payment</p>
-                                        <p className="text-[10px] font-medium text-brand-primary/40 uppercase tracking-wider">Razorpay Gateway</p>
+                                        <p className="font-bold text-sm text-coffee-brown tracking-wider">Store Digital</p>
+                                        <p className="text-sm font-bold text-coffee-brown/30 tracking-tighter">Secured Store Payment</p>
                                     </div>
                                 </button>
                             </div>
                         </div>
 
-                        <div className="bg-brand-primary rounded-[40px] p-8 text-brand-bg shadow-2xl shadow-brand-primary/20">
-                            <h2 className="text-2xl font-black mb-8 tracking-tight">ORDER SUMMARY</h2>
-                            <div className="space-y-4 text-sm font-medium mb-8">
-                                <div className="flex justify-between items-center opacity-60">
-                                    <span>Subtotal</span>
-                                    <span>₹ {subtotal.toLocaleString('en-IN')}</span>
+                        <div className="bg-coffee-brown rounded-[56px] p-6 text-white shadow-2xl shadow-coffee-brown/30 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-accent-gold/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-1000" />
+                            <h2 className="text-2xl font-bold mb-10 tracking-tighter">Store <span className="text-accent-gold">Summary</span></h2>
+                            <div className="space-y-6 text-[11px] font-bold tracking-wide mb-10 relative z-10">
+                                <div className="flex justify-between items-center text-white/40">
+                                    <span>Harvest Value</span>
+                                    <span className="tabular-nums">₹ {subtotal.toLocaleString('en-IN')}</span>
                                 </div>
-                                <div className="flex justify-between items-center opacity-60">
-                                    <span>Shipping</span>
-                                    <span>₹ {shipping.toLocaleString('en-IN')}</span>
+                                <div className="flex justify-between items-center text-white/40">
+                                    <span>Delivery Store</span>
+                                    <span className="tabular-nums">{shipping === 0 ? 'Complimentary' : `₹ ${shipping}`}</span>
                                 </div>
-                                <div className="flex justify-between items-center opacity-60">
-                                    <span>GST (Included)</span>
-                                    <span>₹ 0.00</span>
+                                <div className="flex justify-between items-center text-white/40">
+                                    <span>Store Sync</span>
+                                    <span className="tabular-nums">Included</span>
                                 </div>
-                                <div className="h-px bg-brand-bg/10 my-6" />
-                                <div className="flex justify-between items-center text-xl font-black">
-                                    <span>Total</span>
-                                    <span className="text-brand-accent">₹ {total.toLocaleString('en-IN')}</span>
+                                <div className="h-px bg-white/5 my-6" />
+                                <div className="flex justify-between items-center text-2xl font-bold text-white tracking-tighter leading-none">
+                                    <span>Total Value</span>
+                                    <span className="text-accent-gold tabular-nums">₹ {total.toLocaleString('en-IN')}</span>
                                 </div>
                             </div>
                             <button
                                 onClick={handleCheckout}
                                 disabled={isOrdering}
-                                className={`group w-full py-5 bg-brand-accent text-brand-primary rounded-2xl font-black text-sm hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 ${isOrdering ? 'opacity-70 cursor-not-allowed' : ''
+                                className={`group w-full py-6 bg-accent-gold text-white rounded-[24px] font-black text-xs uppercase tracking-[0.3em] hover:bg-white hover:text-coffee-brown transition-all transform active:scale-95 shadow-2xl shadow-accent-gold/20 flex items-center justify-center gap-4 ${isOrdering ? 'opacity-50 cursor-not-allowed' : ''
                                     }`}
                             >
-                                {isOrdering ? 'PROCESSING...' : 'PROCEED TO CHECKOUT'}
-                                {!isOrdering && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
+                                {isOrdering ? 'BREWING ORDER...' : 'FINALIZE SELECTION'}
+                                {!isOrdering && <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />}
                             </button>
                         </div>
                     </div>

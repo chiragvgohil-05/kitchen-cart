@@ -32,7 +32,7 @@ const UserOrders = () => {
                 setOrders(sortedOrders);
             } catch (error) {
                 console.error("Fetch user orders error:", error);
-                toast.error("Failed to fetch your orders");
+                toast.error("Failed to fetch your Store log");
             } finally {
                 setLoading(false);
             }
@@ -52,15 +52,15 @@ const UserOrders = () => {
             const url = window.URL.createObjectURL(blob);
             const anchor = document.createElement("a");
             anchor.href = url;
-            anchor.download = `invoice_${orderId}.pdf`;
+            anchor.download = `harvest_receipt_${orderId}.pdf`;
             document.body.appendChild(anchor);
             anchor.click();
             anchor.remove();
             window.URL.revokeObjectURL(url);
-            toast.success("Invoice downloaded");
+            toast.success("Receipt secured");
         } catch (error) {
             console.error("Invoice download error:", error);
-            toast.error(error.response?.data?.message || "Failed to download invoice");
+            toast.error(error.response?.data?.message || "Failed to secure receipt");
         } finally {
             setDownloadingInvoiceId(null);
         }
@@ -76,7 +76,7 @@ const UserOrders = () => {
 
             const sdkLoaded = await loadRazorpayScript();
             if (!sdkLoaded) {
-                toast.error("Unable to load Razorpay checkout");
+                toast.error("Unable to load Store Synchrony");
                 return;
             }
 
@@ -84,8 +84,8 @@ const UserOrders = () => {
                 key: razorpayKeyId,
                 amount: razorpayOrder.amount,
                 currency: razorpayOrder.currency,
-                name: "Kitchen Cart",
-                description: `Retry Payment for Order ${order._id}`,
+                name: "Our Store Cafe",
+                description: `Complete Store for Order ${order._id}`,
                 order_id: razorpayOrder.id,
                 handler: async (response) => {
                     const verification = await verifyRazorpayPayment({
@@ -96,17 +96,17 @@ const UserOrders = () => {
                     });
 
                     if (verification) {
-                        toast.success("Payment successful!");
+                        toast.success("Store Synchronized Successfully!");
                         navigate('/order-success');
                     }
                 },
                 modal: {
                     ondismiss: () => {
-                        toast.error("Payment cancelled");
+                        toast.error("Synchrony cancelled");
                     }
                 },
                 theme: {
-                    color: "#1f2937"
+                    color: "#4E342E"
                 }
             };
 
@@ -114,7 +114,7 @@ const UserOrders = () => {
             razorpay.open();
         } catch (error) {
             console.error("Retry payment error:", error);
-            toast.error("Failed to re-initialize payment");
+            toast.error("Failed to re-initialize synchrony");
         } finally {
             setRetryingOrderId(null);
         }
@@ -123,7 +123,6 @@ const UserOrders = () => {
     const isCancellable = (status) => ["Pending", "Processing"].includes(status);
 
     const handleCancelOrder = async (orderId) => {
-
         try {
             setCancellingOrderId(orderId);
             const response = await api.put(`/orders/${orderId}/cancel`);
@@ -137,11 +136,11 @@ const UserOrders = () => {
                 );
             }
 
-            toast.success(response.data?.message || "Order cancelled");
+            toast.success(response.data?.message || "Store order retired");
             await reloadUser();
         } catch (error) {
             console.error("Cancel order error:", error);
-            toast.error(error.response?.data?.message || "Failed to cancel order");
+            toast.error(error.response?.data?.message || "Failed to retire order");
         } finally {
             setCancellingOrderId(null);
         }
@@ -150,164 +149,172 @@ const UserOrders = () => {
     const getStatusStyles = (status) => {
         switch (status) {
             case "Delivered":
-                return "text-green-600 bg-green-50 border-green-100";
+                return "text-green-500 bg-green-50/50 border-green-100 shadow-[0_0_15px_rgba(34,197,94,0.1)]";
             case "Shipped":
-                return "text-blue-600 bg-blue-50 border-blue-100";
+                return "text-blue-500 bg-blue-50/50 border-blue-100 shadow-[0_0_15px_rgba(59,130,246,0.1)]";
             case "Processing":
-                return "text-amber-600 bg-amber-50 border-amber-100";
+                return "text-accent-gold bg-accent-gold/5 border-accent-gold/20 animate-pulse";
             case "Cancelled":
-                return "text-red-600 bg-red-50 border-red-100";
+                return "text-red-400 bg-red-50/50 border-red-100";
             case "Pending":
             default:
-                return "text-gray-600 bg-gray-50 border-gray-100";
+                return "text-coffee-brown/40 bg-cream/50 border-coffee-brown/5";
         }
     };
 
     if (loading) {
         return (
-            <div className="min-h-[60vh] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-brand-primary/10 border-t-brand-accent rounded-full animate-spin" />
-                    <p className="font-black text-brand-primary uppercase tracking-[0.2em] text-[10px]">Loading Orders...</p>
+            <div className="min-h-screen flex items-center justify-center bg-cream">
+                <div className="flex flex-col items-center gap-6">
+                    <div className="relative w-24 h-24">
+                        <div className="absolute inset-0 border-8 border-coffee-brown/10 rounded-full" />
+                        <div className="absolute inset-0 border-8 border-accent-gold border-t-transparent rounded-full animate-spin" />
+                    </div>
+                    <p className="font-bold text-coffee-brown tracking-wide text-sm animate-pulse">Reading Store Log...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-brand-bg min-h-screen py-16 lg:py-24">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
-                    <div className="space-y-4">
-                        <div className="h-1.5 w-16 bg-brand-accent rounded-full" />
-                        <h1 className="text-5xl font-black text-brand-primary tracking-tighter leading-[0.9] uppercase">
-                            YOUR <br />
-                            <span className="text-brand-accent italic">PURCHASES</span>
+        <div className="bg-cream min-h-screen py-20 lg:py-32 animate-fade-in">
+            <div className="max-w-6xl mx-auto px-6 lg:px-6">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20">
+                    <div className="space-y-6">
+                        <div className="h-1.5 w-16 bg-accent-gold rounded-full" />
+                        <h1 className="text-3xl lg:text-4xl font-bold text-coffee-brown tracking-tighter leading-[0.85]">
+                            STORE <br />
+                            <span className="text-accent-gold not-">LOG</span>
                         </h1>
                     </div>
-                    <p className="text-xs font-black uppercase tracking-[0.2em] text-brand-primary/40 bg-white/50 px-6 py-3 rounded-2xl border border-brand-primary/5">
-                        {orders.length} TOTAL ORDERS
+                    <p className="text-sm font-bold tracking-wide text-coffee-brown/40 bg-white/50 backdrop-blur-xl px-8 py-4 rounded-full border border-coffee-brown/5 shadow-2xl shadow-coffee-brown/5">
+                        {orders.length} <span className="text-accent-gold ml-1">TOTAL HARVESTS</span>
                     </p>
                 </div>
 
                 {orders.length === 0 ? (
-                    <div className="bg-white rounded-[40px] border border-brand-primary/5 p-12 text-center">
-                        <h3 className="text-xl font-black mb-3 uppercase tracking-tighter text-brand-primary">No Orders Yet</h3>
-                        <p className="text-brand-primary/40 font-medium mb-8">You have not placed any order yet.</p>
+                    <div className="bg-white rounded-3xl border border-coffee-brown/5 p-20 text-center shadow-2xl shadow-coffee-brown/5">
+                        <h3 className="text-2xl font-bold mb-4 tracking-tighter text-coffee-brown">Quiet Horizon</h3>
+                        <p className="text-coffee-brown/30 font-bold tracking-widest text-xs mb-10">Your collection journey has not yet begun.</p>
                         <Link
                             to="/menu"
-                            className="inline-flex items-center justify-center px-8 py-4 bg-brand-primary text-brand-bg rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-brand-primary/90 transition-all"
+                            className="inline-flex items-center justify-center px-6 py-3 bg-coffee-brown text-white rounded-full font-bold text-sm tracking-wide hover:bg-accent-gold transition-all transform hover:-translate-y-1 shadow-2xl shadow-coffee-brown/20"
                         >
-                            Start Shopping
+                            Start Your Store
                         </Link>
                     </div>
                 ) : (
-                    <div className="space-y-10">
+                    <div className="space-y-16">
                         {orders.map((order) => (
-                            <div key={order._id} className="bg-white rounded-[40px] border border-brand-primary/5 shadow-sm hover:shadow-2xl hover:shadow-brand-primary/5 transition-all duration-500 flex flex-col overflow-hidden">
-                                <div className="px-8 py-6 bg-brand-primary/5 border-b border-brand-primary/5 flex flex-wrap items-center justify-between gap-4">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-brand-primary shadow-sm">
-                                            <Package size={24} />
+                            <div key={order._id} className="group bg-white rounded-[56px] border border-coffee-brown/5 shadow-2xl shadow-coffee-brown/5 hover:shadow-accent-gold/10 transition-all duration-700 flex flex-col overflow-hidden">
+                                <div className="px-6 py-8 bg-cream/50 border-b border-coffee-brown/5 flex flex-wrap items-center justify-between gap-6">
+                                    <div className="flex items-center gap-6">
+                                        <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-coffee-brown shadow-lg border border-coffee-brown/5 group-hover:scale-110 transition-transform">
+                                            <Package size={28} />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5">Order ID</p>
-                                            <h2 className="font-black text-brand-primary">{order._id}</h2>
+                                            <p className="text-sm font-bold text-coffee-brown/30 tracking-wide mb-1">HARVEST ID</p>
+                                            <h2 className="font-bold text-coffee-brown text-lg tracking-tight">{order._id.toUpperCase()}</h2>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-6">
                                         <div className="hidden sm:flex flex-col items-end">
-                                            <p className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5">Payment</p>
-                                            <div className="flex items-center gap-1.5 font-bold text-brand-primary text-[10px] uppercase tracking-widest">
-                                                <span>{order.paymentMethod || 'COD'}</span>
-                                                <span className={`w-1.5 h-1.5 rounded-full ${order.paymentStatus === 'paid' ? 'bg-green-500' : (order.paymentStatus === 'failed' ? 'bg-red-500' : 'bg-amber-500')}`} title={order.paymentStatus}></span>
+                                            <p className="text-sm font-bold text-coffee-brown/30 tracking-wide mb-1">SYNCHRONY</p>
+                                            <div className="flex items-center gap-2 font-bold text-coffee-brown text-sm tracking-widest">
+                                                <span>{order.paymentMethod === 'COD' ? 'ARRIVAL' : 'DIGITAL'}</span>
+                                                <div className={`w-2 h-2 rounded-full ${order.paymentStatus === 'paid' ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : (order.paymentStatus === 'failed' ? 'bg-red-500' : 'bg-accent-gold animate-pulse')}`} />
                                             </div>
                                         </div>
-                                        <span className={`px-4 py-2 rounded-xl border text-[10px] font-black uppercase tracking-widest ${getStatusStyles(order.status)}`}>
+                                        <span className={`px-6 py-2.5 rounded-full border text-[9px] font-black uppercase tracking-[0.3em] transition-all ${getStatusStyles(order.status)}`}>
                                             {order.status}
                                         </span>
                                     </div>
                                 </div>
 
-                                <div className="p-8 space-y-6">
+                                <div className="p-6 space-y-10 bg-white">
                                     {(order.items || []).map((item, index) => {
                                         const product = item.product || {};
                                         const imageUrl = getProductImageUrl(product.images?.[0]);
 
                                         return (
-                                            <div key={item._id || `${order._id}-${product._id || index}`} className="flex items-center gap-6 group/item">
-                                                <div className="w-20 h-20 bg-brand-bg rounded-2xl overflow-hidden shrink-0 border border-brand-primary/5 group-hover/item:border-brand-accent transition-colors">
+                                            <div key={item._id || `${order._id}-${product._id || index}`} className="flex items-center gap-8 group/item">
+                                                <div className="w-24 h-24 bg-cream rounded-xl overflow-hidden shrink-0 border border-coffee-brown/5 group-hover/item:border-accent-gold/30 transition-all transform group-hover/item:scale-105 duration-500 shadow-inner ring-4 ring-cream/20">
                                                     {imageUrl ? (
                                                         <img
                                                             src={imageUrl}
                                                             alt={product.name || "Product"}
-                                                            className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500"
+                                                            className="w-full h-full object-cover mix-blend-multiply transition-transform duration-700"
                                                         />
                                                     ) : (
-                                                        <div className="w-full h-full flex items-center justify-center text-brand-primary/30">
-                                                            <Package size={24} />
+                                                        <div className="w-full h-full flex items-center justify-center text-coffee-brown/10">
+                                                            <Package size={32} />
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div className="grow min-w-0">
-                                                    <h3 className="font-black text-brand-primary truncate uppercase tracking-tight">{product.name || "Product"}</h3>
-                                                    <p className="text-[10px] font-bold text-brand-primary/40 uppercase tracking-widest mb-2">Quantity: {item.quantity}</p>
-                                                    <p className="font-black text-brand-accent">₹ {(item.price || 0).toLocaleString("en-IN")}</p>
+                                                <div className="grow min-w-0 py-2">
+                                                    <h3 className="text-xl font-bold text-coffee-brown truncate tracking-tighter leading-none mb-3 group-hover/item:text-accent-gold transition-colors">{product.name || "Artifact"}</h3>
+                                                    <div className="flex items-center gap-6">
+                                                        <p className="text-sm font-bold text-coffee-brown/30 tracking-widest">PORTION: {item.quantity}</p>
+                                                        <p className="text-sm font-bold text-accent-gold tracking-wide">₹{(item.price || 0).toLocaleString("en-IN")}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="hidden md:block">
+                                                    <p className="text-2xl font-bold text-coffee-brown tracking-tighter tabular-nums">₹{(item.price * item.quantity).toLocaleString("en-IN")}</p>
                                                 </div>
                                             </div>
                                         );
                                     })}
                                 </div>
 
-                                <div className="px-8 py-6 bg-brand-bg/30 border-t border-brand-primary/5 flex flex-wrap items-center justify-between gap-6">
-                                    <div className="flex gap-8">
+                                <div className="px-6 py-8 bg-cream/30 border-t border-coffee-brown/5 flex flex-wrap items-center justify-between gap-6">
+                                    <div className="flex gap-6">
                                         <div>
-                                            <p className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest mb-1">Date</p>
-                                            <p className="font-bold text-brand-primary text-sm">{new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</p>
+                                            <p className="text-sm font-bold text-coffee-brown/30 tracking-wide mb-2">STORES SINCE</p>
+                                            <p className="font-bold text-coffee-brown text-sm">{new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest mb-1">Total</p>
-                                            <p className="font-black text-brand-primary text-xl">₹ {(order.totalAmount || 0).toLocaleString("en-IN")}</p>
+                                            <p className="text-sm font-bold text-coffee-brown/30 tracking-wide mb-2">FINAL VALUE</p>
+                                            <p className="font-bold text-coffee-brown text-3xl tracking-tighter tabular-nums">₹{(order.totalAmount || 0).toLocaleString("en-IN")}</p>
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-wrap items-center gap-2">
-                                        {order.status === "Pending" && order.paymentResult?.status !== "COD" && (
+                                    <div className="flex flex-wrap items-center gap-3">
+                                        {order.status === "Pending" && order.paymentMethod !== "COD" && (
                                             <button
                                                 onClick={() => handleRetryPayment(order._id)}
                                                 disabled={retryingOrderId === order._id}
-                                                className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${retryingOrderId === order._id
-                                                    ? "bg-brand-accent/50 text-brand-primary/40 border-brand-accent/20 cursor-not-allowed"
-                                                    : "bg-brand-accent text-brand-primary border-brand-accent hover:bg-brand-accent/90"
+                                                className={`inline-flex items-center gap-3 px-6 py-4 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg ${retryingOrderId === order._id
+                                                    ? "bg-accent-gold/20 text-coffee-brown/40 cursor-not-allowed"
+                                                    : "bg-accent-gold text-white hover:bg-coffee-brown shadow-accent-gold/20"
                                                     }`}
                                             >
-                                                <CreditCard size={14} />
-                                                {retryingOrderId === order._id ? "Processing..." : "Pay Now"}
+                                                <CreditCard size={16} />
+                                                {retryingOrderId === order._id ? "SYNCING..." : "COMPLETE STORE"}
                                             </button>
                                         )}
                                         {isCancellable(order.status) && (
                                             <button
                                                 onClick={() => setConfirmCancelOrderId(order._id)}
                                                 disabled={cancellingOrderId === order._id}
-                                                className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${cancellingOrderId === order._id
-                                                    ? "bg-red-50 text-red-300 border-red-100 cursor-not-allowed"
-                                                    : "bg-white text-red-500 border-red-200 hover:bg-red-500 hover:text-white"
+                                                className={`inline-flex items-center gap-3 px-6 py-4 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] transition-all border transform active:scale-95 ${cancellingOrderId === order._id
+                                                    ? "bg-red-50 text-red-200 border-red-100 cursor-not-allowed"
+                                                    : "bg-white text-red-400 border-red-100 hover:bg-red-500 hover:text-white hover:border-red-500 shadow-xl shadow-red-500/5"
                                                     }`}
                                             >
-                                                <XCircle size={14} />
-                                                {cancellingOrderId === order._id ? "Cancelling..." : "Cancel Order"}
+                                                <XCircle size={16} />
+                                                {cancellingOrderId === order._id ? "RETIRING..." : "RETIRE ORDER"}
                                             </button>
                                         )}
                                         <button
                                             onClick={() => handleDownloadInvoice(order._id)}
                                             disabled={downloadingInvoiceId === order._id}
-                                            className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${downloadingInvoiceId === order._id
-                                                ? "bg-brand-primary/10 text-brand-primary/40 border-brand-primary/10 cursor-not-allowed"
-                                                : "bg-brand-primary text-brand-bg border-brand-primary hover:bg-brand-primary/90"
+                                            className={`inline-flex items-center gap-3 px-6 py-4 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg ${downloadingInvoiceId === order._id
+                                                ? "bg-coffee-brown/10 text-coffee-brown/40 cursor-not-allowed"
+                                                : "bg-coffee-brown text-white hover:bg-accent-gold shadow-coffee-brown/20"
                                                 }`}
                                         >
-                                            <Download size={14} />
-                                            {downloadingInvoiceId === order._id ? "Downloading..." : "Download Invoice"}
+                                            <Download size={16} />
+                                            {downloadingInvoiceId === order._id ? "SECURING..." : "HARVEST RECEIPT"}
                                         </button>
                                     </div>
                                 </div>
@@ -316,43 +323,44 @@ const UserOrders = () => {
                     </div>
                 )}
 
-                {/* Cancel Confirmation Modal */}
+                {/* Confirm Retirement Modal */}
                 {confirmCancelOrderId && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-primary/20 backdrop-blur-sm transition-all duration-300">
-                        <div className="bg-white rounded-[32px] p-8 max-w-sm w-full shadow-[0_20px_50px_rgba(56,84,77,0.15)] border border-brand-primary/5 animate-in fade-in zoom-in duration-200">
-                            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mb-6 border border-red-100">
-                                <XCircle size={32} />
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-coffee-brown/40 backdrop-blur-xl animate-fade-in">
+                        <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-coffee-brown/5 animate-scale-in">
+                            <div className="w-20 h-12 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mb-8 border border-red-100 shadow-inner">
+                                <XCircle size={40} />
                             </div>
-                            <h3 className="text-2xl font-black text-brand-primary uppercase tracking-tighter mb-2">Cancel Order?</h3>
-                            <p className="text-brand-primary/60 font-medium mb-8 text-sm">
-                                Are you sure you want to cancel this order? This action cannot be undone. If you already paid, the refund will be credited to your Kitchen Cart wallet automatically.
+                            <h3 className="text-2xl font-bold text-coffee-brown tracking-tighter mb-4 leading-none">Retire Order?</h3>
+                            <p className="text-coffee-brown/50 font-bold tracking-widest text-sm mb-10 leading-relaxed">
+                                Are you certain you wish to retire this harvest? This action is irreversible. For secured payments, credit will be restored to your Store Aura automatically.
                             </p>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-4">
                                 <button
                                     onClick={() => setConfirmCancelOrderId(null)}
-                                    className="flex-1 py-4 px-4 rounded-2xl font-black text-[10px] uppercase tracking-widest text-brand-primary hover:bg-brand-bg transition-colors border border-transparent hover:border-brand-primary/10"
+                                    className="flex-1 py-3 px-6 rounded-full font-bold text-sm tracking-wide text-coffee-brown hover:bg-cream transition-all border border-coffee-brown/5"
                                 >
-                                    Keep Order
+                                    Preserve
                                 </button>
                                 <button
                                     onClick={() => {
                                         handleCancelOrder(confirmCancelOrderId);
                                         setConfirmCancelOrderId(null);
                                     }}
-                                    className="flex-1 py-4 px-4 rounded-2xl bg-red-50 text-red-500 border border-red-100 hover:bg-red-500 hover:text-white font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-red-500/10"
+                                    className="flex-1 py-3 px-6 rounded-full bg-red-50 text-red-500 border border-red-100 hover:bg-red-500 hover:text-white font-bold text-sm tracking-wide transition-all shadow-2xl shadow-red-500/10"
                                 >
-                                    Cancel It
+                                    Retire
                                 </button>
                             </div>
                         </div>
                     </div>
                 )}
 
-                <div className="mt-20 p-12 bg-white rounded-[48px] text-center border border-brand-primary/5">
-                    <h3 className="text-xl font-black mb-4 uppercase tracking-tighter">Need help with an order?</h3>
-                    <p className="text-brand-primary/40 font-medium mb-8 max-w-sm mx-auto">Our support team is available 24/7 to assist with tracking or issues.</p>
-                    <Link to="/contact" className="text-brand-accent font-black text-xs uppercase tracking-widest hover:underline underline-offset-8">
-                        Contact Support
+                <div className="mt-40 p-8 bg-white rounded-3xl text-center border border-coffee-brown/5 shadow-2xl shadow-coffee-brown/5 relative overflow-hidden group">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-accent-gold/5 rounded-full blur-3xl -translate-y-1/2 group-hover:scale-150 transition-transform duration-1000" />
+                    <h3 className="text-3xl font-bold mb-4 tracking-tighter text-coffee-brown">Guidance Needed?</h3>
+                    <p className="text-coffee-brown/40 font-bold tracking-widest text-sm mb-10 max-w-xs mx-auto">Our keepers are available through all stores to assist with your collection.</p>
+                    <Link to="/contact" className="text-accent-gold font-bold text-sm tracking-wide hover:text-coffee-brown transition-colors border-b-2 border-accent-gold/20 pb-1 hover:border-coffee-brown">
+                        CONTACT KEEPERS
                     </Link>
                 </div>
             </div>

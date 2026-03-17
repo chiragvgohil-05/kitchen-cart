@@ -4,7 +4,6 @@ import {
     ArrowLeft,
     Plus,
     Trash2,
-    Camera,
     Save,
     X,
     Info,
@@ -63,7 +62,7 @@ const ProductFormPage = () => {
             }
         } catch (error) {
             console.error("Error fetching categories:", error);
-            toast.error("Failed to fetch categories");
+            toast.error("Failed to fetch collections");
         }
     };
 
@@ -92,7 +91,7 @@ const ProductFormPage = () => {
             setFetching(false);
         } catch (error) {
             console.error("Error fetching product:", error);
-            toast.error("Failed to fetch product details");
+            toast.error("Failed to fetch artifact credentials");
             navigate("/admin/products");
         }
     };
@@ -105,7 +104,7 @@ const ProductFormPage = () => {
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
         if (files.length + selectedImages.length + existingImages.length > 5) {
-            toast.error("You can only upload up to 5 images in total");
+            toast.error("Limit: 5 artifact visuals");
             return;
         }
 
@@ -168,7 +167,7 @@ const ProductFormPage = () => {
         e.preventDefault();
 
         if (selectedImages.length === 0 && existingImages.length === 0) {
-            toast.error("Please add at least one image");
+            toast.error("An artifact requires at least one visual");
             return;
         }
 
@@ -177,17 +176,17 @@ const ProductFormPage = () => {
         const mrpValue = Number(formData.mrp);
         const sellingPriceValue = Number(formData.sellingPrice);
         if (!Number.isFinite(mrpValue) || mrpValue <= 0) {
-            toast.error("MRP must be greater than 0");
+            toast.error("Aura value must be positive");
             setLoading(false);
             return;
         }
         if (!Number.isFinite(sellingPriceValue) || sellingPriceValue < 0) {
-            toast.error("Selling price must be 0 or greater");
+            toast.error("Sacrifice value cannot be negative");
             setLoading(false);
             return;
         }
         if (sellingPriceValue > mrpValue) {
-            toast.error("Selling price cannot be greater than MRP");
+            toast.error("Sacrifice cannot exceed Aura");
             setLoading(false);
             return;
         }
@@ -228,22 +227,22 @@ const ProductFormPage = () => {
                     headers: { "Content-Type": "multipart/form-data" }
                 });
                 if (response.status !== 200 || !response.data?.success) {
-                    throw new Error(response.data?.message || "Unexpected response while updating product");
+                    throw new Error(response.data?.message || "Error updating artifact");
                 }
-                toast.success("Product updated successfully");
+                toast.success("Artifact recalibrated");
             } else {
                 const response = await api.post("/products", data, {
                     headers: { "Content-Type": "multipart/form-data" }
                 });
                 if (response.status !== 201 || !response.data?.success) {
-                    throw new Error(response.data?.message || "Unexpected response while creating product");
+                    throw new Error(response.data?.message || "Error initiating artifact");
                 }
-                toast.success("Product created successfully");
+                toast.success("New artifact initiated in the store");
             }
             navigate("/admin/products");
         } catch (error) {
             console.error("Error saving product:", error);
-            toast.error(error.response?.data?.errors || error.response?.data?.message || error.message || "Failed to save product");
+            toast.error(error.response?.data?.errors || error.response?.data?.message || error.message || "Failed to record artifact");
         } finally {
             setLoading(false);
         }
@@ -252,109 +251,109 @@ const ProductFormPage = () => {
     if (fetching) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px]">
-                <div className="animate-spin w-12 h-12 border-4 border-brand-accent border-t-transparent rounded-full mb-4"></div>
-                <p className="text-brand-primary/40 font-black uppercase tracking-widest text-sm">Loading product data...</p>
+                <div className="animate-spin w-16 h-16 border-[6px] border-accent-gold border-t-transparent rounded-full mb-6"></div>
+                <p className="text-coffee-brown/30 font-bold tracking-wide text-sm">Retrieving Artifact Data...</p>
             </div>
         );
     }
 
     return (
-        <div className="max-w-6xl mx-auto pb-20 space-y-8 animate-in fade-in duration-500">
+        <div className="max-w-6xl mx-auto pb-20 space-y-12 animate-fade-in p-2">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                <div className="flex items-center gap-4">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+                <div className="flex items-start gap-6">
                     <Link
                         to="/admin/products"
-                        className="p-3 bg-white border border-brand-primary/5 text-brand-primary rounded-xl hover:bg-brand-primary hover:text-brand-bg transition-all shadow-sm"
+                        className="mt-2 p-5 bg-white/40 backdrop-blur-xl border border-coffee-brown/5 text-coffee-brown rounded-[24px] hover:bg-coffee-brown hover:text-white transition-all shadow-2xl shadow-coffee-brown/5 group"
                     >
-                        <ArrowLeft size={20} />
+                        <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
                     </Link>
-                    <div>
-                        <h1 className="text-3xl font-black text-brand-primary tracking-tight uppercase">
-                            {isEdit ? "Refine Product" : "Launch Product"}
+                    <div className="space-y-4">
+                        <h1 className="text-3xl md:text-4xl font-bold text-coffee-brown tracking-tighter leading-[0.85]">
+                            {isEdit ? <>CALIBRATE <br /><span className="text-accent-gold not-">ARTIFACT</span></> : <>INITIATE <br /><span className="text-accent-gold not-">ARTIFACT</span></>}
                         </h1>
-                        <p className="text-sm font-medium text-brand-primary/40">
-                            {isEdit ? `Editing: ${formData.name}` : "Introducing excellence to your catalog."}
+                        <p className="text-sm font-bold text-coffee-brown/30 tracking-wide leading-relaxed max-w-sm">
+                            {isEdit ? `Refining the credentials of ${formData.name.toUpperCase()}.` : "Introducing a new masterpiece to the Our Store gallery."}
                         </p>
                     </div>
                 </div>
                 <button
                     onClick={handleSubmit}
                     disabled={loading}
-                    className="flex items-center justify-center gap-2 px-8 py-4 bg-brand-primary text-brand-bg rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-brand-primary/90 transition-all shadow-xl shadow-brand-primary/20 disabled:opacity-50"
+                    className="h-12 flex items-center justify-center gap-6 px-16 bg-coffee-brown text-white rounded-full font-bold text-sm tracking-wide hover:bg-accent-gold transition-all shadow-2xl shadow-coffee-brown/20 disabled:opacity-50 group"
                 >
                     {loading ? (
-                        <div className="w-4 h-4 border-2 border-brand-bg border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     ) : (
-                        <CheckCircle2 size={16} />
+                        <CheckCircle2 size={18} strokeWidth={2.5} className="group-hover:scale-110 transition-transform" />
                     )}
-                    {isEdit ? "Commit Changes" : "Publish Masterpiece"}
+                    {isEdit ? "COMMIT LEGACY" : "RECORD IN STORE"}
                 </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Column: Core Details */}
-                <div className="lg:col-span-2 space-y-8">
+                <div className="lg:col-span-2 space-y-12">
                     {/* Basic Information */}
-                    <div className="bg-white p-8 rounded-[32px] border border-brand-primary/5 shadow-sm space-y-6">
-                        <div className="flex items-center gap-3 pb-4 border-b border-brand-primary/5">
-                            <Info size={18} className="text-brand-accent" />
-                            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-brand-primary">Identification & Narrative</h2>
+                    <div className="bg-white/40 backdrop-blur-2xl p-6 lg:p-8 rounded-3xl border border-coffee-brown/5 shadow-2xl shadow-coffee-brown/5 space-y-10">
+                        <div className="flex items-center gap-4 pb-6 border-b border-coffee-brown/5">
+                            <Info size={24} strokeWidth={1} className="text-accent-gold" />
+                            <h2 className="text-xl font-bold tracking-tighter text-coffee-brown">Essence & Narrative</h2>
                         </div>
 
-                        <div className="space-y-5">
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-brand-primary/40 ml-1">Product Designation</label>
+                        <div className="space-y-10">
+                            <div className="space-y-4">
+                                <label className="text-sm font-bold tracking-wide text-coffee-brown/40 ml-2">Artifact Designation</label>
                                 <input
                                     type="text"
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    placeholder="e.g. Signature Series Stand Mixer"
-                                    className="w-full px-6 py-4 bg-brand-bg border border-brand-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent/20 transition-all font-bold text-brand-primary"
+                                    placeholder="E.G. VINTAGE ESPRESSO MACHINE X1"
+                                    className="w-full px-8 py-6 bg-white border border-coffee-brown/5 rounded-full focus:outline-none focus:ring-4 focus:ring-accent-gold/5 focus:border-accent-gold/20 transition-all font-bold text-sm tracking-wide text-coffee-brown placeholder:text-coffee-brown/10 shadow-inner"
                                     required
                                 />
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-brand-primary/40 ml-1">Classification</label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <label className="text-sm font-bold tracking-wide text-coffee-brown/40 ml-2">Collection Store</label>
                                     <select
                                         name="category"
                                         value={formData.category}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-6 py-4 bg-brand-bg border border-brand-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent/20 transition-all font-bold text-brand-primary appearance-none cursor-pointer"
+                                        className="w-full px-8 py-6 bg-white border border-coffee-brown/5 rounded-full focus:outline-none focus:ring-4 focus:ring-accent-gold/5 focus:border-accent-gold/20 transition-all font-bold text-sm tracking-wide text-coffee-brown appearance-none cursor-pointer shadow-inner"
                                     >
-                                        <option value="" disabled>Select Category</option>
+                                        <option value="" disabled>SELECT COLLECTION</option>
                                         {categories.map(c => (
-                                            <option key={c._id} value={c._id}>{c.name}</option>
+                                            <option key={c._id} value={c._id}>{c.name.toUpperCase()}</option>
                                         ))}
                                     </select>
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-brand-primary/40 ml-1">Inventory Stock</label>
+                                <div className="space-y-4">
+                                    <label className="text-sm font-bold tracking-wide text-coffee-brown/40 ml-2">Harvest Stock</label>
                                     <input
                                         type="number"
                                         name="stock"
                                         value={formData.stock}
                                         onChange={handleChange}
-                                        placeholder="Available units..."
-                                        className="w-full px-6 py-4 bg-brand-bg border border-brand-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent/20 transition-all font-bold text-brand-primary"
+                                        placeholder="UNITS IN SANCTUARY..."
+                                        className="w-full px-8 py-6 bg-white border border-coffee-brown/5 rounded-full focus:outline-none focus:ring-4 focus:ring-accent-gold/5 focus:border-accent-gold/20 transition-all font-bold text-sm tracking-wide text-coffee-brown placeholder:text-coffee-brown/10 shadow-inner"
                                         required
                                     />
                                 </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-brand-primary/40 ml-1">Product Description</label>
+                            <div className="space-y-4">
+                                <label className="text-sm font-bold tracking-wide text-coffee-brown/40 ml-2">Artifact Narrative</label>
                                 <textarea
                                     name="description"
                                     value={formData.description}
                                     onChange={handleChange}
                                     rows="5"
-                                    placeholder="The story behind this piece, its craftsmanship, and its utility..."
-                                    className="w-full px-6 py-4 bg-brand-bg border border-brand-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent/20 transition-all font-bold text-brand-primary resize-none"
+                                    placeholder="DESCRIBE THE HARVEST, ITS CRAFTSMANSHIP, AND THE RITUAL IT SERVES..."
+                                    className="w-full px-8 py-6 bg-white border border-coffee-brown/5 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-gold/5 focus:border-accent-gold/20 transition-all font-bold text-sm tracking-wide text-coffee-brown placeholder:text-coffee-brown/10 shadow-inner resize-none leading-relaxed"
                                     required
                                 />
                             </div>
@@ -362,39 +361,39 @@ const ProductFormPage = () => {
                     </div>
 
                     {/* Features & Specs */}
-                    <div className="bg-white p-8 rounded-[32px] border border-brand-primary/5 shadow-sm space-y-8">
+                    <div className="bg-white/40 backdrop-blur-2xl p-6 lg:p-8 rounded-3xl border border-coffee-brown/5 shadow-2xl shadow-coffee-brown/5 space-y-12">
                         {/* Key Features */}
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between pb-4 border-b border-brand-primary/5">
-                                <div className="flex items-center gap-3">
-                                    <Sparkles size={18} className="text-brand-accent" />
-                                    <h2 className="text-xs font-black uppercase tracking-[0.2em] text-brand-primary">Key Attributes (Optional)</h2>
+                        <div className="space-y-10">
+                            <div className="flex items-center justify-between pb-6 border-b border-coffee-brown/5">
+                                <div className="flex items-center gap-4">
+                                    <Sparkles size={24} strokeWidth={1} className="text-accent-gold" />
+                                    <h2 className="text-xl font-bold tracking-tighter text-coffee-brown leading-none">Aura Attributes</h2>
                                 </div>
                                 <button
                                     type="button"
                                     onClick={addKeyFeature}
-                                    className="p-2 bg-brand-accent/10 text-brand-accent rounded-lg hover:bg-brand-accent hover:text-brand-primary transition-all"
+                                    className="p-3 bg-accent-gold/10 text-accent-gold rounded-xl hover:bg-accent-gold hover:text-white transition-all shadow-lg shadow-accent-gold/5"
                                 >
-                                    <Plus size={16} />
+                                    <Plus size={20} strokeWidth={2.5} />
                                 </button>
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-6">
                                 {formData.keyFeatures.map((feature, index) => (
-                                    <div key={index} className="flex gap-3">
+                                    <div key={index} className="flex gap-4 group">
                                         <input
                                             type="text"
                                             value={feature}
                                             onChange={(e) => handleFeatureChange(index, e.target.value)}
-                                            placeholder="e.g. 500W High Torque Motor"
-                                            className="grow px-6 py-3 bg-brand-bg border border-brand-primary/5 rounded-xl focus:outline-none focus:ring-1 focus:ring-brand-accent transition-all font-bold text-sm text-brand-primary"
+                                            placeholder="E.G. 24K GOLD-PLATED FILTER RITUAL"
+                                            className="grow px-8 py-3 bg-white border border-coffee-brown/5 rounded-full focus:outline-none focus:ring-4 focus:ring-accent-gold/5 focus:border-accent-gold/20 transition-all font-bold text-sm tracking-wide text-coffee-brown shadow-inner"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => removeKeyFeature(index)}
-                                            className="p-3 text-brand-primary/20 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                            className="p-4 text-coffee-brown/20 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all"
                                         >
-                                            <X size={16} />
+                                            <X size={20} />
                                         </button>
                                     </div>
                                 ))}
@@ -402,46 +401,52 @@ const ProductFormPage = () => {
                         </div>
 
                         {/* Technical Specs */}
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between pb-4 border-b border-brand-primary/5">
-                                <div className="flex items-center gap-3">
-                                    <Cpu size={18} className="text-brand-accent" />
-                                    <h2 className="text-xs font-black uppercase tracking-[0.2em] text-brand-primary">Technical Specifications (Optional)</h2>
+                        <div className="space-y-10">
+                            <div className="flex items-center justify-between pb-6 border-b border-coffee-brown/5">
+                                <div className="flex items-center gap-4">
+                                    <Cpu size={24} strokeWidth={1} className="text-accent-gold" />
+                                    <h2 className="text-xl font-bold tracking-tighter text-coffee-brown leading-none">Store Specifications</h2>
                                 </div>
                                 <button
                                     type="button"
                                     onClick={addSpec}
-                                    className="p-2 bg-brand-accent/10 text-brand-accent rounded-lg hover:bg-brand-accent hover:text-brand-primary transition-all"
+                                    className="p-3 bg-accent-gold/10 text-accent-gold rounded-xl hover:bg-accent-gold hover:text-white transition-all shadow-lg shadow-accent-gold/5"
                                 >
-                                    <Plus size={16} />
+                                    <Plus size={20} strokeWidth={2.5} />
                                 </button>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="space-y-10">
                                 {formData.technicalSpecs.map((spec, index) => (
-                                    <div key={index} className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-4 border-b border-dashed border-brand-primary/5 last:border-0 relative group">
-                                        <input
-                                            type="text"
-                                            value={spec.key}
-                                            onChange={(e) => handleSpecChange(index, 'key', e.target.value)}
-                                            placeholder="Label (e.g. Dimensions)"
-                                            className="px-6 py-3 bg-brand-bg border border-brand-primary/5 rounded-xl focus:outline-none focus:ring-1 focus:ring-brand-accent transition-all font-bold text-xs uppercase tracking-widest text-brand-primary/40"
-                                        />
-                                        <div className="flex gap-3">
+                                    <div key={index} className="grid grid-cols-1 sm:grid-cols-2 gap-6 pb-10 border-b border-dashed border-coffee-brown/10 last:border-0 relative group">
+                                        <div className="space-y-3">
+                                            <label className="text-[9px] font-bold tracking-wide text-coffee-brown/30 ml-2">Technical Label</label>
                                             <input
                                                 type="text"
-                                                value={spec.value}
-                                                onChange={(e) => handleSpecChange(index, 'value', e.target.value)}
-                                                placeholder="Value (e.g. 15 x 10 x 12 in)"
-                                                className="grow px-6 py-3 bg-brand-bg border border-brand-primary/5 rounded-xl focus:outline-none focus:ring-1 focus:ring-brand-accent transition-all font-bold text-sm text-brand-primary"
+                                                value={spec.key}
+                                                onChange={(e) => handleSpecChange(index, 'key', e.target.value)}
+                                                placeholder="LABEL (E.G. CALIBRATION)"
+                                                className="w-full px-8 py-3 bg-white border border-coffee-brown/5 rounded-full focus:outline-none focus:ring-4 focus:ring-accent-gold/5 focus:border-accent-gold/20 transition-all font-bold text-sm tracking-wide text-coffee-brown shadow-inner"
                                             />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeSpec(index)}
-                                                className="p-3 text-brand-primary/20 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                                            >
-                                                <X size={16} />
-                                            </button>
+                                        </div>
+                                        <div className="space-y-3">
+                                            <label className="text-[9px] font-bold tracking-wide text-coffee-brown/30 ml-2">Scientific Value</label>
+                                            <div className="flex gap-4">
+                                                <input
+                                                    type="text"
+                                                    value={spec.value}
+                                                    onChange={(e) => handleSpecChange(index, 'value', e.target.value)}
+                                                    placeholder="VALUE (E.G. 100% PURITY)"
+                                                    className="grow px-8 py-3 bg-white border border-coffee-brown/5 rounded-full focus:outline-none focus:ring-4 focus:ring-accent-gold/5 focus:border-accent-gold/20 transition-all font-bold text-sm tracking-wide text-coffee-brown shadow-inner"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeSpec(index)}
+                                                    className="p-4 text-coffee-brown/20 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all"
+                                                >
+                                                    <X size={20} />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
@@ -451,47 +456,50 @@ const ProductFormPage = () => {
                 </div>
 
                 {/* Right Column: Imagery & Pricing */}
-                <div className="space-y-8">
+                <div className="space-y-12">
                     {/* Gallery */}
-                    <div className="bg-white p-8 rounded-[40px] border border-brand-primary/5 shadow-sm space-y-6">
-                        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-brand-accent">Exquisite Gallery</h2>
+                    <div className="bg-white/40 backdrop-blur-2xl p-6 rounded-3xl border border-coffee-brown/5 shadow-2xl shadow-coffee-brown/5 space-y-10">
+                        <div className="space-y-2">
+                            <h2 className="text-sm font-bold tracking-wide text-accent-gold">Visual Archives</h2>
+                            <p className="text-[9px] font-bold tracking-widest text-coffee-brown/30 leading-relaxed">Capture the absolute essence of the artifact.</p>
+                        </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-6">
                             {/* Existing Saved Images */}
                             {existingImages.map((url, index) => (
-                                <div key={`existing-${index}`} className="aspect-square bg-brand-bg rounded-2xl overflow-hidden relative group border border-brand-primary/5 shadow-sm">
-                                    <img src={getProductImageUrl(url)} alt="Product" className="w-full h-full object-cover" />
+                                <div key={`existing-${index}`} className="aspect-square bg-cream rounded-xl overflow-hidden relative group border border-coffee-brown/10 shadow-inner">
+                                    <img src={getProductImageUrl(url)} alt="Artifact" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-110" />
                                     <button
                                         type="button"
                                         onClick={() => removeExistingImage(index)}
-                                        className="absolute top-2 right-2 p-2 bg-white/90 backdrop-blur-sm text-red-500 rounded-lg opacity-0 group-hover:opacity-100 transition-all border border-red-50 shadow-sm"
+                                        className="absolute top-3 right-3 p-3 bg-red-500 text-white rounded-2xl opacity-0 group-hover:opacity-100 transition-all shadow-xl shadow-red-500/30"
                                     >
-                                        <Trash2 size={14} />
+                                        <Trash2 size={16} strokeWidth={2.5} />
                                     </button>
-                                    <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-brand-primary/80 text-[8px] text-white rounded font-black uppercase tracking-widest backdrop-blur-md">Saved</div>
+                                    <div className="absolute bottom-3 left-3 px-4 py-1.5 bg-coffee-brown/90 text-[8px] text-white rounded-full font-bold tracking-wide backdrop-blur-md">LEGACY</div>
                                 </div>
                             ))}
 
                             {/* New Previews */}
                             {previewImages.map((url, index) => (
-                                <div key={`new-${index}`} className="aspect-square bg-brand-bg rounded-2xl overflow-hidden relative group border-2 border-brand-accent/20 shadow-sm">
-                                    <img src={url} alt="Preview" className="w-full h-full object-cover" />
+                                <div key={`new-${index}`} className="aspect-square bg-cream rounded-xl overflow-hidden relative group border-2 border-accent-gold/30 shadow-2xl shadow-accent-gold/10">
+                                    <img src={url} alt="Curation" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-110" />
                                     <button
                                         type="button"
                                         onClick={() => removeSelectedImage(index)}
-                                        className="absolute top-2 right-2 p-2 bg-white/90 backdrop-blur-sm text-red-500 rounded-lg opacity-0 group-hover:opacity-100 transition-all border border-red-50 shadow-sm"
+                                        className="absolute top-3 right-3 p-3 bg-red-500 text-white rounded-2xl opacity-0 group-hover:opacity-100 transition-all shadow-xl shadow-red-500/30"
                                     >
-                                        <Trash2 size={14} />
+                                        <Trash2 size={16} strokeWidth={2.5} />
                                     </button>
-                                    <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-brand-accent text-[8px] text-brand-primary rounded font-black uppercase tracking-widest">New Upload</div>
+                                    <div className="absolute bottom-3 left-3 px-4 py-1.5 bg-accent-gold text-[8px] text-white rounded-full font-bold tracking-wide shadow-lg shadow-accent-gold/20">NEW RAW</div>
                                 </div>
                             ))}
 
                             {/* Upload Trigger */}
                             {(existingImages.length + selectedImages.length) < 5 && (
-                                <label className="aspect-square bg-brand-bg border-2 border-dashed border-brand-primary/10 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-brand-accent/40 hover:bg-brand-accent/5 transition-all group shadow-sm">
-                                    <Camera size={24} className="text-brand-primary/20 group-hover:text-brand-accent transition-colors mb-2" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary/20 group-hover:text-brand-primary/60">Capture</span>
+                                <label className="aspect-square bg-white/40 border-2 border-dashed border-coffee-brown/10 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-accent-gold/40 hover:bg-accent-gold/5 transition-all group shadow-inner">
+                                    <Save size={32} strokeWidth={1} className="text-coffee-brown/20 group-hover:text-accent-gold transition-all duration-500 mb-3 group-hover:scale-110" />
+                                    <span className="text-[9px] font-bold tracking-wide text-coffee-brown/20 group-hover:text-coffee-brown transition-colors">CAPTURE</span>
                                     <input
                                         type="file"
                                         multiple
@@ -502,46 +510,48 @@ const ProductFormPage = () => {
                                 </label>
                             )}
                         </div>
-                        <p className="text-[9px] text-brand-primary/30 font-bold text-center italic uppercase tracking-wider">Showcase perfection through high-res imagery.</p>
                     </div>
 
                     {/* Pricing */}
-                    <div className="bg-white p-8 rounded-[40px] border border-brand-primary/5 shadow-sm space-y-6">
-                        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-brand-accent">Economic Strategy</h2>
+                    <div className="bg-white/40 backdrop-blur-2xl p-6 rounded-3xl border border-coffee-brown/5 shadow-2xl shadow-coffee-brown/5 space-y-10">
+                        <div className="space-y-2">
+                            <h2 className="text-sm font-bold tracking-wide text-accent-gold">Aura Calibration</h2>
+                            <p className="text-[9px] font-bold tracking-widest text-coffee-brown/30 leading-relaxed">Defining the worth within the Our Store economy.</p>
+                        </div>
 
-                        <div className="space-y-4">
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-brand-primary/40 ml-1">Market Price (MRP)</label>
+                        <div className="space-y-8">
+                            <div className="space-y-4">
+                                <label className="text-sm font-bold tracking-wide text-coffee-brown/40 ml-2">Standard Aura (MRP)</label>
                                 <div className="relative">
-                                    <span className="absolute left-6 top-1/2 -translate-y-1/2 font-black text-brand-primary/40">₹</span>
+                                    <span className="absolute left-8 top-1/2 -translate-y-1/2 font-bold text-coffee-brown/20 text-sm tracking-widest">Aura</span>
                                     <input
                                         type="number"
                                         name="mrp"
                                         value={formData.mrp}
                                         onChange={handleChange}
                                         placeholder="0.00"
-                                        className="w-full pl-10 pr-6 py-4 bg-brand-bg border border-brand-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent/20 transition-all font-bold text-brand-primary"
+                                        className="w-full pl-20 pr-8 py-6 bg-white border border-coffee-brown/5 rounded-full focus:outline-none focus:ring-4 focus:ring-accent-gold/5 focus:border-accent-gold/20 transition-all font-bold text-[12px] text-coffee-brown shadow-inner"
                                         required
                                     />
                                 </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <div className="flex justify-between px-1">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-brand-primary/40">Our Selling Value</label>
+                            <div className="space-y-4">
+                                <div className="flex justify-between px-2">
+                                    <label className="text-sm font-bold tracking-wide text-coffee-brown/40">Store Sacrifice (Price)</label>
                                     {formData.discount > 0 && (
-                                        <span className="text-[10px] font-black text-brand-accent italic uppercase tracking-widest animate-pulse">Save {formData.discount}%</span>
+                                        <span className="text-sm font-bold text-accent-gold tracking-wide animate-pulse">Saving {formData.discount}% Harvest</span>
                                     )}
                                 </div>
                                 <div className="relative">
-                                    <span className="absolute left-6 top-1/2 -translate-y-1/2 font-black text-brand-primary">₹</span>
+                                    <span className="absolute left-8 top-1/2 -translate-y-1/2 font-bold text-coffee-brown text-sm tracking-widest">Price</span>
                                     <input
                                         type="number"
                                         name="sellingPrice"
                                         value={formData.sellingPrice}
                                         onChange={handleChange}
                                         placeholder="0.00"
-                                        className="w-full pl-10 pr-6 py-4 bg-white border-2 border-brand-accent/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent transition-all font-black text-brand-primary text-xl"
+                                        className="w-full pl-20 pr-8 py-8 bg-white border-[3px] border-accent-gold/20 rounded-full focus:outline-none focus:ring-8 focus:ring-accent-gold/5 focus:border-accent-gold transition-all font-bold text-coffee-brown text-2xl shadow-2xl shadow-accent-gold/5"
                                         required
                                     />
                                 </div>
@@ -549,20 +559,21 @@ const ProductFormPage = () => {
                         </div>
 
                         {formData.mrp && formData.sellingPrice && (
-                            <div className="p-4 bg-brand-primary/5 rounded-2xl border border-brand-primary/5 space-y-2">
-                                <div className="flex justify-between text-[10px] font-bold text-brand-primary/40 uppercase tracking-widest">
-                                    <span>Profit Margin Calc</span>
-                                    <span>Live</span>
+                            <div className="p-8 bg-coffee-brown/5 rounded-2xl border border-coffee-brown/5 space-y-6 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-accent-gold/10 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/2" />
+                                <div className="flex justify-between items-center relative z-10">
+                                    <span className="text-[9px] font-bold text-coffee-brown/40 tracking-wide">Store Analytics</span>
+                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-ping" />
                                 </div>
-                                <div className="flex justify-between items-end">
-                                    <div>
-                                        <p className="text-[8px] font-black text-brand-primary/20 uppercase">Total Difference</p>
-                                        <p className="text-sm font-black text-brand-primary">₹{Math.max(0, formData.mrp - formData.sellingPrice)} Off</p>
+                                <div className="flex justify-between items-end relative z-10">
+                                    <div className="space-y-2">
+                                        <p className="text-[8px] font-bold text-coffee-brown/20 tracking-widest">Total Delta</p>
+                                        <p className="text-xl font-bold text-coffee-brown tabular-nums tracking-tighter">₹{Math.max(0, formData.mrp - formData.sellingPrice)} REMITTED</p>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="text-[8px] font-black text-brand-primary/20 uppercase">Deal Rating</p>
-                                        <p className={`text-sm font-black ${formData.discount > 30 ? 'text-green-500' : 'text-brand-accent'}`}>
-                                            {formData.discount > 30 ? 'Aggressive' : 'Premium'}
+                                    <div className="text-right space-y-2">
+                                        <p className="text-[8px] font-bold text-coffee-brown/20 tracking-widest">Curation Tier</p>
+                                        <p className={`text-[10px] font-black uppercase tracking-widest ${formData.discount > 30 ? 'text-green-600' : 'text-accent-gold'}`}>
+                                            {formData.discount > 30 ? 'MASTER DROP' : 'ELITE HARVEST'}
                                         </p>
                                     </div>
                                 </div>

@@ -121,7 +121,7 @@ const AdminOrders = () => {
             <div className="min-h-[60vh] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
                     <div className="w-12 h-12 border-4 border-brand-primary/10 border-t-brand-accent rounded-full animate-spin" />
-                    <p className="font-black text-brand-primary uppercase tracking-[0.2em] text-[10px]">Loading Orders...</p>
+                    <p className="font-bold text-brand-primary tracking-wide text-sm">Loading Orders...</p>
                 </div>
             </div>
         );
@@ -132,7 +132,7 @@ const AdminOrders = () => {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-black text-brand-primary tracking-tight uppercase">Orders</h1>
+                    <h1 className="text-3xl font-bold text-brand-primary tracking-tight">Orders</h1>
                     <p className="text-sm font-medium text-brand-primary/40">Track, manage and fulfill customer purchases.</p>
                 </div>
             </div>
@@ -147,7 +147,7 @@ const AdminOrders = () => {
                     { label: "Delivered", value: orders.filter(o => o.status === "Delivered").length, color: "text-green-500" }
                 ].map((stat, i) => (
                     <div key={i} className="bg-white p-6 rounded-[24px] border border-brand-primary/5 shadow-sm">
-                        <p className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest mb-1">{stat.label}</p>
+                        <p className="text-sm font-bold text-brand-primary/40 tracking-widest mb-1">{stat.label}</p>
                         <p className={`text-2xl font-black ${stat.color}`}>{stat.value}</p>
                     </div>
                 ))}
@@ -182,54 +182,54 @@ const AdminOrders = () => {
             </div>
 
             {/* Orders Table */}
-            <div className="bg-white rounded-[32px] border border-brand-primary/5 shadow-sm overflow-hidden overflow-x-auto">
+            <div className="bg-white rounded-xl border border-brand-primary/5 shadow-sm overflow-hidden overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[900px]">
                     <thead>
                         <tr className="bg-brand-primary/5 border-b border-brand-primary/5">
-                            <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Order Details</th>
-                            <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Customer</th>
-                            <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Amount</th>
-                            <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Status</th>
-                            <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Payment</th>
-                            <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40 text-right">Action</th>
+                            <th className="px-6 py-3 text-sm font-bold tracking-wide text-brand-primary/40">Order Details</th>
+                            <th className="px-6 py-3 text-sm font-bold tracking-wide text-brand-primary/40">Customer</th>
+                            <th className="px-6 py-3 text-sm font-bold tracking-wide text-brand-primary/40">Amount</th>
+                            <th className="px-6 py-3 text-sm font-bold tracking-wide text-brand-primary/40">Status</th>
+                            <th className="px-6 py-3 text-sm font-bold tracking-wide text-brand-primary/40">Payment</th>
+                            <th className="px-6 py-3 text-sm font-bold tracking-wide text-brand-primary/40 text-right">Action</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-brand-primary/5">
                         {filteredOrders.map((order) => (
                             <tr key={order._id} className="hover:bg-brand-primary/5 transition-colors group">
-                                <td className="px-6 py-5">
+                                <td className="px-6 py-3">
                                     <div className="space-y-1">
-                                        <p className="font-black text-brand-primary leading-none text-sm">{order._id.slice(-8).toUpperCase()}</p>
-                                        <p className="text-[10px] font-medium text-brand-primary/40 tracking-wider uppercase">{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                        <p className="font-bold text-brand-primary leading-none text-sm">{order._id.slice(-8).toUpperCase()}</p>
+                                        <p className="text-sm font-medium text-brand-primary/40 tracking-wider">{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                                     </div>
                                 </td>
-                                <td className="px-6 py-5">
+                                <td className="px-6 py-3">
                                     <div className="space-y-0.5">
                                         <p className="font-bold text-brand-primary text-sm">{order.user?.name || "N/A"}</p>
-                                        <p className="text-[10px] font-medium text-brand-primary/40">{order.user?.email || "N/A"}</p>
+                                        <p className="text-sm font-medium text-brand-primary/40">{order.user?.email || "N/A"}</p>
                                     </div>
                                 </td>
-                                <td className="px-6 py-5">
-                                    <p className="font-black text-brand-primary">₹ {order.totalAmount.toLocaleString('en-IN')}</p>
-                                    <p className="text-[10px] font-medium text-brand-primary/40 uppercase tracking-widest">{order.items.length} items</p>
+                                <td className="px-6 py-3">
+                                    <p className="font-bold text-brand-primary">₹ {order.totalAmount.toLocaleString('en-IN')}</p>
+                                    <p className="text-sm font-medium text-brand-primary/40 tracking-widest">{order.items.length} items</p>
                                 </td>
-                                <td className="px-6 py-5">
+                                <td className="px-6 py-3">
                                     <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[10px] font-black uppercase tracking-widest ${getStatusStyles(order.status)}`}>
                                         {getStatusIcon(order.status)}
                                         {order.status}
                                     </span>
                                 </td>
-                                <td className="px-6 py-5">
+                                <td className="px-6 py-3">
                                     <div className="space-y-0.5">
                                         <p className={`text-[10px] font-black uppercase tracking-widest ${order.status === 'Pending' && order.paymentResult?.status !== 'COD' ? 'text-red-500 animate-pulse' : 'text-brand-primary'}`}>
                                             {order.paymentResult?.status || "Pending"}
                                         </p>
-                                        <p className="text-[10px] font-medium text-brand-primary/40">
+                                        <p className="text-sm font-medium text-brand-primary/40">
                                             {order.paymentResult?.status === 'COD' ? 'Cash on Delivery' : 'Online Payment'}
                                         </p>
                                     </div>
                                 </td>
-                                <td className="px-6 py-5 text-right">
+                                <td className="px-6 py-3 text-right">
                                     <div className="flex items-center justify-end gap-2">
                                         <button
                                             onClick={() => handleInvoiceDownload(order._id)}
@@ -246,7 +246,7 @@ const AdminOrders = () => {
                                         <select
                                             onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
                                             value={order.status}
-                                            className="text-[10px] font-black uppercase bg-brand-bg px-3 py-2 rounded-lg border border-brand-primary/5 outline-none cursor-pointer"
+                                            className="text-sm font-bold bg-brand-bg px-3 py-2 rounded-lg border border-brand-primary/5 outline-none cursor-pointer"
                                         >
                                             <option value="Pending">Pending</option>
                                             <option value="Processing">Processing</option>
@@ -263,8 +263,8 @@ const AdminOrders = () => {
             </div>
 
             {filteredOrders.length === 0 && (
-                <div className="py-20 text-center bg-white rounded-[40px] border border-dashed border-brand-primary/10">
-                    <p className="font-black text-brand-primary opacity-20 uppercase tracking-[0.2em]">No matches found</p>
+                <div className="py-20 text-center bg-white rounded-2xl border border-dashed border-brand-primary/10">
+                    <p className="font-bold text-brand-primary opacity-20 tracking-wide">No matches found</p>
                 </div>
             )}
         </div>

@@ -1,13 +1,46 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-primary: #38544D;
-  --color-brand-bg: #ECECE6;
-  --color-brand-accent: #DE9545;
+  --color-coffee-brown: #4E342E;
+  --color-cream: #F5EFE6;
+  --color-accent-gold: #C9A24D;
+  --color-soft-black: #1C1C1C;
+  --color-gray-light: #F8F9FA;
+  --color-muted-text: #6c757d;
+  
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --radius-glass: 12px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: var(--shadow-glass);
 }
 
 body {
-  background-color: var(--color-brand-bg);
-  color: var(--color-brand-primary);
-  font-family: inherit;
+  background-color: var(--color-cream);
+  color: var(--color-soft-black);
+  min-height: 100vh;
+  font-family: var(--font-sans);
+}
+
+.btn-gold {
+  background-color: var(--color-accent-gold);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+  background-color: #b08d43;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(201, 162, 77, 0.3);
+}
+
+.bg-coffee {
+  background-color: var(--color-coffee-brown);
 }

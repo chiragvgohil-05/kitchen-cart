@@ -63,7 +63,7 @@ const AdminUsers = () => {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-black text-brand-primary tracking-tight uppercase">User Management</h1>
+                    <h1 className="text-3xl font-bold text-brand-primary tracking-tight">User Management</h1>
                     <p className="text-sm font-medium text-brand-primary/40">Manage your digital community and access control.</p>
                 </div>
             </div>
@@ -83,48 +83,48 @@ const AdminUsers = () => {
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-[32px] border border-brand-primary/5 shadow-sm overflow-hidden overflow-x-auto">
+            <div className="bg-white rounded-xl border border-brand-primary/5 shadow-sm overflow-hidden overflow-x-auto">
                 {loading ? (
                     <div className="p-20 text-center">
                         <div className="animate-spin w-10 h-10 border-4 border-brand-accent border-t-transparent rounded-full mx-auto mb-4"></div>
-                        <p className="text-brand-primary/40 font-bold uppercase tracking-widest text-xs">Loading Directory...</p>
+                        <p className="text-brand-primary/40 font-bold tracking-widest text-xs">Loading Directory...</p>
                     </div>
                 ) : (
                     <table className="w-full text-left border-collapse min-w-[900px]">
                         <thead>
                             <tr className="bg-brand-primary/5 border-b border-brand-primary/5">
-                                <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">User Identity</th>
-                                <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Contact Info</th>
-                                <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Delivery Address</th>
-                                <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Access Level</th>
-                                <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40 text-right">Actions</th>
+                                <th className="px-6 py-3 text-sm font-bold tracking-wide text-brand-primary/40">User Identity</th>
+                                <th className="px-6 py-3 text-sm font-bold tracking-wide text-brand-primary/40">Contact Info</th>
+                                <th className="px-6 py-3 text-sm font-bold tracking-wide text-brand-primary/40">Delivery Address</th>
+                                <th className="px-6 py-3 text-sm font-bold tracking-wide text-brand-primary/40">Access Level</th>
+                                <th className="px-6 py-3 text-sm font-bold tracking-wide text-brand-primary/40 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-brand-primary/5">
                             {filteredUsers.length > 0 ? (
                                 filteredUsers.map((user) => (
                                     <tr key={user._id} className="hover:bg-brand-primary/5 transition-colors group">
-                                        <td className="px-6 py-5">
+                                        <td className="px-6 py-3">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-12 h-12 rounded-2xl bg-brand-primary/5 flex items-center justify-center text-brand-primary/40 group-hover:bg-brand-accent group-hover:text-brand-primary transition-all duration-300">
                                                     <UserIcon size={20} />
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-black text-brand-primary leading-tight uppercase tracking-tight">{user.name}</h3>
-                                                    <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-brand-primary/30 uppercase tracking-widest">
+                                                    <h3 className="font-bold text-brand-primary leading-tight tracking-tight">{user.name}</h3>
+                                                    <div className="flex items-center gap-1.5 mt-1 text-sm font-bold text-brand-primary/30 tracking-widest">
                                                         <Calendar size={10} />
                                                         Joined {new Date(user.createdAt).toLocaleDateString('en-GB')}
                                                     </div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
+                                        <td className="px-6 py-3">
                                             <div className="flex items-center gap-2 text-sm font-bold text-brand-primary/60">
                                                 <Mail size={14} className="text-brand-primary/20" />
                                                 {user.email}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
+                                        <td className="px-6 py-3">
                                             <div className="max-w-[200px] space-y-1">
                                                 {user.address && (user.address.street || user.address.city) ? (
                                                     <>
@@ -133,16 +133,16 @@ const AdminUsers = () => {
                                                             <span>
                                                                 {user.address.street}, {user.address.city}<br />
                                                                 {user.address.state}, {user.address.zipCode}<br />
-                                                                <span className="uppercase">{user.address.country}</span>
+                                                                <span className="">{user.address.country}</span>
                                                             </span>
                                                         </div>
                                                     </>
                                                 ) : (
-                                                    <span className="text-[10px] font-black text-brand-primary/10 uppercase tracking-widest italic">Address not provided</span>
+                                                    <span className="text-sm font-bold text-brand-primary/10 tracking-widest">Address not provided</span>
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
+                                        <td className="px-6 py-3">
                                             <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-widest ${user.role === 'admin'
                                                 ? "bg-brand-accent/10 border-brand-accent/20 text-brand-primary"
                                                 : "bg-brand-primary/5 border-brand-primary/5 text-brand-primary/40"
@@ -151,7 +151,7 @@ const AdminUsers = () => {
                                                 {user.role}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
+                                        <td className="px-6 py-3">
                                             <div className="flex items-center justify-end gap-2">
                                                 <button
                                                     onClick={() => handleDeleteClick(user)}
@@ -173,7 +173,7 @@ const AdminUsers = () => {
                             ) : (
                                 <tr>
                                     <td colSpan="5" className="px-6 py-20 text-center">
-                                        <p className="text-brand-primary/20 font-black uppercase tracking-widest text-sm">No users found</p>
+                                        <p className="text-brand-primary/20 font-bold tracking-widest text-sm">No users found</p>
                                     </td>
                                 </tr>
                             )}

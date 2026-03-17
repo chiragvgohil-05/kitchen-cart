@@ -18,7 +18,6 @@ const ProductCard = ({ product }) => {
     const { addToCart, wishlist, toggleWishlist } = useShop();
 
     const isWishlisted = wishlist.some(item => item._id === _id);
-
     const discount = calculateDiscountPercentage(mrp, sellingPrice);
 
     const handleAddToCart = (e) => {
@@ -27,40 +26,37 @@ const ProductCard = ({ product }) => {
     };
 
     return (
-        <Link to={`/product/${_id}`} className="block">
+        <Link to={`/product/${_id}`} className="block group">
             <div
-                className="group relative flex flex-col bg-white rounded-xl border border-gray-100 hover:border-brand-accent/20 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(56,84,77,0.1)] overflow-hidden"
+                className="relative flex flex-col bg-white rounded-xl border border-coffee-brown/5 group-hover:border-accent-gold/20 transition-all duration-700 hover:shadow-[0_30px_60px_-15px_rgba(78,52,46,0.15)] overflow-hidden"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
                 {/* Image Container */}
-                <div className="relative aspect-3/3 overflow-hidden bg-[#F8F8F6]">
-                    {/* Floating Badges */}
-                    <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5">
+                <div className="relative aspect-square overflow-hidden bg-cream/30">
+                    <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
                         {discount > 0 && (
-                            <div className="bg-red-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-tighter shadow-lg shadow-red-500/20">
+                            <div className="bg-accent-gold text-white text-sm font-bold px-3 py-1.5 rounded-full tracking-widest shadow-lg shadow-accent-gold/20">
                                 {discount}% OFF
                             </div>
                         )}
                     </div>
 
-                    {/* Quick Actions */}
-                    <div className={`absolute top-3 right-3 z-20 transition-all duration-500 transform ${isHovered ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}>
+                    <div className={`absolute top-4 right-4 z-20 transition-all duration-500 transform ${isHovered ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}>
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
                                 toggleWishlist(product);
                             }}
-                            className={`p-2.5 rounded-xl backdrop-blur-md transition-all duration-300 shadow-xl ${isWishlisted
-                                ? "bg-red-50 text-red-500 shadow-red-500/10"
-                                : "bg-white/80 text-brand-primary hover:bg-white"
+                            className={`p-3 rounded-2xl backdrop-blur-md transition-all duration-300 shadow-xl ${isWishlisted
+                                ? "bg-red-50 text-red-500"
+                                : "bg-white/90 text-coffee-brown hover:bg-white"
                                 }`}
                         >
-                            <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
+                            <Heart size={20} fill={isWishlisted ? "currentColor" : "none"} />
                         </button>
                     </div>
 
-                    {/* Image Slider */}
                     <Swiper
                         modules={[Navigation, Pagination]}
                         navigation={{
@@ -72,64 +68,61 @@ const ProductCard = ({ product }) => {
                         loop={images?.length > 1}
                     >
                         {images?.map((img, idx) => (
-                            <SwiperSlide key={idx} className="flex items-center justify-center">
+                            <SwiperSlide key={idx} className="flex items-center justify-center p-8">
                                 <img
                                     src={getProductImageUrl(img)}
                                     alt={`${name} - ${idx + 1}`}
-                                    className="h-full w-full object-contain p-4 mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out"
+                                    className="h-full w-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-1000 ease-out"
                                 />
                             </SwiperSlide>
                         ))}
 
-                        {/* Minimalist Navigation Arrows */}
                         {images?.length > 1 && (
                             <>
-                                <button className="prev-btn absolute left-2 top-1/2 -translate-y-1/2 z-30 p-1.5 text-brand-primary/40 hover:text-brand-primary transition-all duration-300 opacity-0 group-hover/swiper:opacity-100">
-                                    <ChevronLeft size={20} strokeWidth={1.5} />
+                                <button className="prev-btn absolute left-4 top-1/2 -translate-y-1/2 z-30 p-2 text-coffee-brown/20 hover:text-accent-gold transition-all duration-300 opacity-0 group-hover/swiper:opacity-100">
+                                    <ChevronLeft size={24} />
                                 </button>
-                                <button className="next-btn absolute right-2 top-1/2 -translate-y-1/2 z-30 p-1.5 text-brand-primary/40 hover:text-brand-primary transition-all duration-300 opacity-0 group-hover/swiper:opacity-100">
-                                    <ChevronRight size={20} strokeWidth={1.5} />
+                                <button className="next-btn absolute right-4 top-1/2 -translate-y-1/2 z-30 p-2 text-coffee-brown/20 hover:text-accent-gold transition-all duration-300 opacity-0 group-hover/swiper:opacity-100">
+                                    <ChevronRight size={24} />
                                 </button>
                             </>
                         )}
                     </Swiper>
-
-                    {/* Interactive Add to Cart Button */}
-                    <div className={`absolute bottom-4 left-4 right-4 z-20 transition-all duration-500 transform ${isHovered ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
-                        <button 
-                            onClick={handleAddToCart}
-                            disabled={stock <= 0}
-                            className={`w-full py-3.5 font-black text-[10px] rounded-xl transition-all duration-300 flex items-center justify-center gap-2 uppercase tracking-widest leading-none ${
-                                stock > 0
-                                    ? 'bg-brand-primary text-white hover:bg-brand-accent shadow-2xl shadow-brand-primary/20 hover:scale-[1.02] active:scale-95'
-                                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            }`}
-                        >
-                            <ShoppingCart size={14} />
-                            {stock > 0 ? 'Add to cart' : 'Out of stock'}
-                        </button>
-                    </div>
                 </div>
 
                 {/* Content Section */}
-                <div className="p-5 flex flex-col gap-1.5">
+                <div className="p-6 pt-2 flex flex-col gap-2">
                     <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-black text-brand-accent uppercase tracking-[0.2em]">{brand}</span>
+                        <span className="text-sm font-bold text-accent-gold tracking-wide">{brand || 'Brewed in Store'}</span>
                     </div>
 
-                    <h3 className="text-sm font-bold text-brand-primary leading-snug line-clamp-2 min-h-12 group-hover:text-brand-accent transition-colors duration-300">
+                    <h3 className="text-lg font-bold text-coffee-brown leading-tight line-clamp-2 min-h-14 group-hover:text-accent-gold transition-colors duration-300">
                         {name}
                     </h3>
 
-                    <div className="flex items-baseline gap-2 pt-1 border-t border-gray-50 mt-1">
-                        <span className="text-xl font-black text-brand-primary tracking-tight tabular-nums">
-                            ₹ {sellingPrice}
-                        </span>
-                        {mrp && mrp > sellingPrice && (
-                            <span className="text-xs font-semibold text-gray-400 line-through decoration-red-500/20 tracking-tighter">
-                                ₹ {mrp}
+                    <div className="flex flex-row items-center justify-between mt-2 pt-4 border-t border-coffee-brown/5">
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-bold text-coffee-brown tracking-tighter tabular-nums">
+                                ₹{sellingPrice}
                             </span>
-                        )}
+                            {mrp && mrp > sellingPrice && (
+                                <span className="text-sm font-bold text-muted-text line-through opacity-50 tracking-tighter">
+                                    ₹{mrp}
+                                </span>
+                            )}
+                        </div>
+                        
+                        <button 
+                            onClick={handleAddToCart}
+                            disabled={stock <= 0}
+                            className={`p-3 rounded-2xl transition-all duration-300 group ${
+                                stock > 0
+                                    ? 'bg-coffee-brown text-white hover:bg-accent-gold shadow-lg shadow-coffee-brown/10'
+                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            }`}
+                        >
+                            <ShoppingCart size={20} className="group-hover:scale-110 transition-transform" />
+                        </button>
                     </div>
                 </div>
             </div>

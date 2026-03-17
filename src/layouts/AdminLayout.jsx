@@ -28,37 +28,43 @@ const AdminLayout = () => {
     };
 
     const sidebarLinks = [
-        { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
-        { to: "/admin/categories", label: "Categories", icon: LayoutGrid },
-        { to: "/admin/products", label: "Products", icon: Package },
-        { to: "/admin/orders", label: "Orders", icon: ShoppingCart },
-        { to: "/admin/users", label: "Users", icon: UserIcon },
-        { to: "/admin/profile", label: "Profile Settings", icon: Settings },
+        { to: "/admin", label: "Analytics", icon: LayoutDashboard, end: true },
+        { to: "/admin/categories", label: "Menu Categories", icon: LayoutGrid },
+        { to: "/admin/products", label: "Menu Items", icon: Package },
+        { to: "/admin/orders", label: "Recent Orders", icon: ShoppingCart },
+        { to: "/admin/users", label: "Staff & Users", icon: UserIcon },
+        { to: "/admin/profile", label: "Store Info", icon: Settings },
     ];
 
     return (
-        <div className="flex h-screen bg-brand-bg text-brand-primary overflow-hidden">
+        <div className="flex h-screen bg-cream text-soft-black overflow-hidden font-sans">
             {/* Overlay for mobile */}
             {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-brand-primary/40 backdrop-blur-sm z-40 lg:hidden"
+                    className="fixed inset-0 bg-soft-black/40 backdrop-blur-sm z-40 lg:hidden"
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}
 
             {/* Sidebar */}
             <aside
-                className={`fixed inset-y-0 left-0 w-72 text-brand-primary bg-brand-bg border-r border-brand-primary/10 transform transition-transform duration-300 ease-in-out z-50 lg:translate-x-0 lg:static lg:h-screen ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+                className={`fixed inset-y-0 left-0 w-72 text-cream bg-coffee-brown border-r border-white/5 transform transition-transform duration-500 ease-in-out z-50 lg:translate-x-0 lg:static lg:h-screen ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
                     }`}
             >
                 <div className="flex flex-col h-full">
-                    <div className="p-8">
-                        <Link to="/" className="flex items-center group">
-                            <img src={logo} alt="Kitchen Logo" className="h-15 w-auto object-contain" />
+                    <div className="p-6">
+                        <Link to="/" className="flex items-center gap-3 group">
+                            <div className="w-8 h-8 bg-accent-gold rounded-full flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
+                                <ShoppingCart className="text-white h-5 w-5" />
+                            </div>
+                            <span className="text-2xl font-bold tracking-tighter text-white">
+                                Our Store <span className="text-accent-gold">Admin</span>
+                            </span>
                         </Link>
                     </div>
 
-                    <nav className="flex-1 px-6 space-y-1.5 mt-4">
+                    <nav className="flex-1 px-8 space-y-2 mt-6">
+                        <p className="text-sm font-bold text-white/30 tracking-wide ml-4 mb-4">Management</p>
                         {sidebarLinks.map((link) => (
                             <NavLink
                                 key={link.to}
@@ -66,35 +72,35 @@ const AdminLayout = () => {
                                 end={link.end}
                                 onClick={() => setIsSidebarOpen(false)}
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all font-bold text-sm ${isActive
-                                        ? "bg-brand-accent text-brand-primary shadow-xl shadow-brand-accent/20"
-                                        : "text-brand-primary/50 hover:bg-brand-primary/10 hover:text-brand-primary"
+                                    `flex items-center gap-4 px-5 py-4 rounded-full transition-all text-xs font-black uppercase tracking-widest ${isActive
+                                        ? "bg-accent-gold text-white shadow-2xl shadow-accent-gold/20 -translate-y-1"
+                                        : "text-white/40 hover:bg-white/5 hover:text-white"
                                     }`
                                 }
                             >
-                                <link.icon size={20} strokeWidth={2.5} />
+                                <link.icon size={18} strokeWidth={2.5} />
                                 {link.label}
                             </NavLink>
                         ))}
                     </nav>
 
-                    <div className="p-6 mt-auto">
-                        <div className="bg-brand-primary/5 rounded-2xl p-4 border border-brand-primary/10 mb-6">
-                            <div className="flex items-center gap-3 mb-3">
-                                <div className="w-10 h-10 rounded-full bg-brand-accent flex items-center justify-center text-brand-primary font-bold shadow-sm">
-                                    {user?.name?.charAt(0).toUpperCase() || 'A'}
+                    <div className="p-8 mt-auto">
+                        <div className="bg-white/5 rounded-3xl p-6 border border-white/10">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-12 h-12 rounded-2xl bg-accent-gold flex items-center justify-center text-white font-bold shadow-lg">
+                                    {user?.name?.charAt(0).toUpperCase() || 'S'}
                                 </div>
                                 <div>
-                                    <p className="text-xs font-bold text-brand-primary">{user?.name || 'Administrator'}</p>
-                                    <p className="text-[10px] text-brand-primary/50 font-medium">{user?.role === 'admin' ? 'Super User' : 'User'}</p>
+                                    <p className="text-xs font-bold text-white tracking-widest">{user?.name || 'Manager'}</p>
+                                    <p className="text-sm text-accent-gold font-bold tracking-widest opacity-80 mt-0.5">Administrator</p>
                                 </div>
                             </div>
                             <button
                                 onClick={handleLogout}
-                                className="w-full flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-brand-primary/40 hover:text-brand-accent transition-colors py-2"
+                                className="w-full flex items-center justify-center gap-3 text-sm font-bold tracking-wide text-white/40 hover:text-red-400 transition-colors py-2 group"
                             >
-                                <LogOut size={14} />
-                                Sign Out
+                                <LogOut size={16} className="group-hover:-translate-x-1 transition-transform" />
+                                Secure Logout
                             </button>
                         </div>
                     </div>
@@ -102,30 +108,41 @@ const AdminLayout = () => {
             </aside>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-cream/50">
                 {/* Header */}
-                <header className="h-20 bg-brand-bg/80 backdrop-blur-md border-b border-brand-primary/10 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30">
-                    <div className="flex items-center gap-4">
+                <header className="h-24 px-8 lg:px-6 flex items-center justify-between sticky top-0 z-30">
+                    <div className="flex items-center gap-6">
                         <button
                             onClick={() => setIsSidebarOpen(true)}
-                            className="lg:hidden p-2 text-brand-primary/60 hover:bg-brand-primary/5 rounded-xl transition-colors"
+                            className="lg:hidden p-3 text-coffee-brown bg-white rounded-2xl shadow-lg transition-all active:scale-95"
                         >
                             <Menu size={24} />
                         </button>
-                        <div className="hidden sm:flex items-center bg-brand-primary/5 border border-brand-primary/10 rounded-full px-4 py-2 w-64">
-                            <Search size={16} className="text-brand-primary/40 mr-2" />
+                        <div className="max-lg:hidden">
+                            <h2 className="text-xl font-bold text-coffee-brown tracking-wide">Opstoretional Dashboard</h2>
+                            <p className="text-sm font-bold text-coffee-brown/40 tracking-widest mt-1">Welcome back to the Our Store Command Center</p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-6">
+                        <div className="hidden sm:flex items-center bg-white border border-coffee-brown/5 rounded-full px-6 py-3 w-80 shadow-sm focus-within:shadow-md transition-all">
+                            <Search size={18} className="text-coffee-brown/40 mr-3" />
                             <input
                                 type="text"
-                                placeholder="Search command..."
-                                className="bg-transparent border-none text-xs focus:ring-0 w-full placeholder:text-brand-primary/40 font-medium text-brand-primary"
+                                placeholder="Search analytics..."
+                                className="bg-transparent border-none text-xs focus:ring-0 w-full placeholder:text-coffee-brown/30 font-bold text-coffee-brown tracking-widest"
                             />
                         </div>
+                        <button className="relative p-3 bg-white text-coffee-brown rounded-full shadow-sm hover:shadow-md transition-all">
+                            <Bell size={20} />
+                            <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
+                        </button>
                     </div>
                 </header>
 
                 {/* Content */}
-                <main className="flex-1 overflow-y-auto p-4 lg:p-8">
-                    <div className="max-w-7xl mx-auto">
+                <main className="flex-1 overflow-y-auto p-8 lg:p-6 scrollbar-coffee">
+                    <div className="max-w-7xl mx-auto pb-12">
                         <Outlet />
                     </div>
                 </main>

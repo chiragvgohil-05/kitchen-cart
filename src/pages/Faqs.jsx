@@ -3,53 +3,57 @@ import { HelpCircle, ChevronRight } from "lucide-react";
 const Faqs = () => {
     const faqData = [
         {
-            q: "How do I care for my stainless steel knives?",
-            a: "We recommend hand-washing with mild soap and immediate drying to maintain the edge and finish. Avoid dishwashers as high heat and chemicals can dull the blade over time."
+            q: "What makes your products special?",
+            a: "Our products are sourced from the best locations and carefully selected for quality."
         },
         {
-            q: "Do you offer professional sharpening?",
-            a: "Yes, we provide one complimentary professional sharpening service within the first year for all our premium knife sets. Contact our support to arrange a pickup."
+            q: "Do you provide brewing guides?",
+            a: "Yes, we provide detailed guides for all our products."
         },
         {
-            q: "Are the induction hobs compatible with all cookware?",
-            a: "Induction hobs require magnetic base cookware (cast iron or magnetic stainless steel). You can test your existing pans with a simple magnet!"
+            q: "How should I store my products?",
+            a: "Store them in a cool, dark place away from direct sunlight."
         },
         {
-            q: "What is your warranty period?",
-            a: "Our appliances come with a 2-year comprehensive warranty, while our professional cutlery collection features a limited lifetime warranty on manufacturing defects."
+            q: "Do you have a rewards program?",
+            a: "Yes, you can earn points on every purchase and redeem them for discounts and special items."
         }
     ];
 
     return (
-        <div className="bg-brand-bg min-h-screen py-20 px-4">
-            <div className="max-w-4xl mx-auto space-y-20">
-                <div className="text-center space-y-6">
-                    <div className="w-20 h-20 bg-brand-primary text-brand-accent rounded-[32px] flex items-center justify-center mx-auto shadow-2xl shadow-brand-primary/20 rotate-45">
-                        <HelpCircle size={40} className="-rotate-45" />
+        <div className="bg-cream min-h-screen py-32 px-6 sm:px-8 lg:px-6 animate-fade-in">
+            <div className="max-w-4xl mx-auto space-y-24">
+                <div className="text-center space-y-8">
+                    <div className="w-24 h-24 bg-coffee-brown text-accent-gold rounded-2xl flex items-center justify-center mx-auto shadow-2xl shadow-coffee-brown/20 rotate-12 transform hover:rotate-0 transition-transform duration-700 cursor-default">
+                        <HelpCircle size={48} strokeWidth={1.5} />
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-black text-brand-primary tracking-tighter uppercase">Frequently <br /><span className="text-brand-accent italic">Asked</span></h1>
-                    <p className="text-brand-primary/60 font-medium max-w-lg mx-auto">Everything you need to know about our products and services.</p>
+                    <div className="space-y-4">
+                        <h1 className="text-4xl md:text-5xl font-bold text-coffee-brown tracking-tighter leading-[0.85]">
+                            FREQUENTLY ASKED <br /><span className="text-accent-gold not-">QUESTIONS</span>
+                        </h1>
+                        <p className="text-sm font-bold text-coffee-brown/30 tracking-wide max-w-sm mx-auto leading-relaxed">Everything you need to know about our products and services.</p>
+                    </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-6">
                     {faqData.map((item, i) => (
-                        <details key={i} className="group bg-white rounded-[32px] border border-brand-primary/5 shadow-sm overflow-hidden transition-all">
-                            <summary className="flex items-center justify-between p-8 cursor-pointer list-none">
-                                <h3 className="text-xl font-black tracking-tight text-brand-primary max-w-[80%]">{item.q}</h3>
-                                <div className="w-10 h-10 bg-brand-bg rounded-xl flex items-center justify-center text-brand-primary/20 group-open:rotate-90 group-open:bg-brand-accent group-open:text-brand-primary transition-all">
-                                    <ChevronRight size={20} />
+                        <details key={i} className="group bg-white/40 backdrop-blur-xl rounded-[48px] border border-coffee-brown/5 shadow-2xl shadow-coffee-brown/5 overflow-hidden transition-all duration-700">
+                            <summary className="flex items-center justify-between p-6 cursor-pointer list-none focus:outline-none">
+                                <h3 className="text-xl font-bold tracking-tight text-coffee-brown max-w-[80%]">{item.q}</h3>
+                                <div className="w-12 h-12 bg-cream rounded-full flex items-center justify-center text-coffee-brown/20 group-open:rotate-90 group-open:bg-accent-gold group-open:text-white transition-all duration-500 shadow-inner">
+                                    <ChevronRight size={24} />
                                 </div>
                             </summary>
-                            <div className="px-8 pb-8 text-brand-primary/60 font-medium leading-relaxed border-t border-brand-primary/5 pt-6 animate-in fade-in slide-in-from-top-2">
+                            <div className="px-6 pb-10 text-sm font-medium text-coffee-brown/70 leading-loose border-t border-coffee-brown/5 pt-8 animate-fade-in">
                                 {item.a}
                             </div>
                         </details>
                     ))}
                 </div>
 
-                <div className="text-center space-y-8">
-                    <h2 className="text-2xl font-black uppercase tracking-tight">Still have questions?</h2>
-                    <button className="px-12 py-5 bg-brand-primary text-brand-bg rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-brand-accent hover:text-brand-primary transition-all shadow-xl shadow-brand-primary/20">Contact Expertise</button>
+                <div className="text-center space-y-10 pt-12">
+                    <h2 className="text-sm font-bold tracking-[0.5em] text-coffee-brown/30">Still have questions?</h2>
+                    <button className="px-16 py-6 bg-coffee-brown text-white rounded-full font-bold text-sm tracking-wide hover:bg-accent-gold transition-all shadow-2xl shadow-coffee-brown/20 transform hover:-translate-y-1">Contact Support</button>
                 </div>
             </div>
         </div>

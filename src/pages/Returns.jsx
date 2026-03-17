@@ -2,39 +2,42 @@ import { RotateCcw, CheckCircle2, AlertCircle } from "lucide-react";
 
 const Returns = () => {
     return (
-        <div className="bg-brand-bg min-h-screen py-20 px-4">
-            <div className="max-w-4xl mx-auto space-y-20">
-                <div className="text-center space-y-6">
-                    <div className="w-20 h-20 bg-brand-primary text-brand-accent rounded-[32px] flex items-center justify-center mx-auto shadow-2xl shadow-brand-primary/20 -rotate-12">
-                        <RotateCcw size={40} />
+        <div className="bg-cream min-h-screen py-32 px-6 sm:px-8 lg:px-6 animate-fade-in">
+            <div className="max-w-4xl mx-auto space-y-24">
+                <div className="text-center space-y-8">
+                    <div className="w-24 h-24 bg-coffee-brown text-accent-gold rounded-2xl flex items-center justify-center mx-auto shadow-2xl shadow-coffee-brown/20 -rotate-12 transform hover:rotate-0 transition-transform duration-700 cursor-default">
+                        <RotateCcw size={48} strokeWidth={1.5} />
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-black text-brand-primary tracking-tighter uppercase">Returns <br /><span className="text-brand-accent italic">& Refund</span></h1>
-                    <p className="text-brand-primary/60 font-medium max-w-lg mx-auto">Not thrilled with your tool? We offer a hassle-free 30-day return policy for all our premium kitchenware.</p>
+                    <div className="space-y-4">
+                        <h1 className="text-4xl md:text-5xl font-bold text-coffee-brown tracking-tighter leading-[0.85]">EASY <br /><span className="text-accent-gold not-">RETURNS</span></h1>
+                        <p className="text-sm font-bold text-coffee-brown/30 tracking-wide max-w-lg mx-auto leading-relaxed">If you are not satisfied with your purchase, you can return it easily.</p>
+                    </div>
                 </div>
 
                 <div className="space-y-6">
                     {[
-                        { title: "30-Day Window", desc: "Items must be returned within 30 days of delivery receipt." },
-                        { title: "Original Packaging", desc: "Please keep all original boxes and certificates for a smooth return process." },
-                        { title: "Condition", desc: "To be eligible, items must be unused and in the same condition that you received them." }
+                        { title: "30-DAY WINDOW", desc: "Returns must be initiated within 30 days of receiving your order." },
+                        { title: "ORIGINAL PACKAGING", desc: "Keep all original packaging for a seamless return process." },
+                        { title: "UNUSED ITEMS", desc: "Items must be returned in their original, unused condition." }
                     ].map((item, i) => (
-                        <div key={i} className="bg-white p-8 rounded-[32px] border border-brand-primary/5 shadow-sm flex items-start gap-6 group hover:border-brand-accent transition-all">
-                            <div className="w-12 h-12 bg-brand-bg rounded-2xl flex items-center justify-center text-brand-accent shrink-0 group-hover:bg-brand-accent group-hover:text-brand-primary transition-colors">
-                                <CheckCircle2 size={24} />
+                        <div key={i} className="bg-white/40 backdrop-blur-xl p-6 rounded-[48px] border border-coffee-brown/5 shadow-2xl shadow-coffee-brown/5 flex items-start gap-8 group hover:border-accent-gold transition-all duration-700">
+                            <div className="w-16 h-16 bg-cream rounded-[24px] flex items-center justify-center text-accent-gold shrink-0 group-hover:bg-coffee-brown group-hover:text-white transition-all duration-500 shadow-inner">
+                                <CheckCircle2 size={32} strokeWidth={1} />
                             </div>
-                            <div className="space-y-1">
-                                <h3 className="text-xl font-black">{item.title}</h3>
-                                <p className="text-brand-primary/60 font-medium">{item.desc}</p>
+                            <div className="space-y-3">
+                                <h3 className="text-xl font-bold text-coffee-brown tracking-tight">{item.title}</h3>
+                                <p className="text-sm font-bold text-coffee-brown/40 tracking-wide leading-loose">{item.desc}</p>
                             </div>
                         </div>
                     ))}
                 </div>
 
-                <div className="bg-red-50 p-12 rounded-[48px] border border-red-100 flex flex-col md:flex-row items-center gap-8">
-                    <AlertCircle size={48} className="text-red-500 shrink-0" />
-                    <div className="space-y-2 text-center md:text-left">
-                        <h2 className="text-2xl font-black text-red-900 tracking-tight">Need help right now?</h2>
-                        <p className="text-red-700/70 font-medium">Contact our returns concierge at <span className="font-black">returns@kitchencart.com</span> for immediate assistance with your request.</p>
+                <div className="bg-coffee-brown p-8 rounded-3xl shadow-2xl shadow-coffee-brown/20 flex flex-col md:flex-row items-center gap-6 text-center md:text-left relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-accent-gold/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
+                    <AlertCircle size={64} strokeWidth={1} className="text-accent-gold shrink-0 relative z-10" />
+                    <div className="space-y-4 relative z-10">
+                        <h2 className="text-2xl font-bold text-white tracking-tighter">Seeking Immediate Guidance?</h2>
+                        <p className="text-white/60 text-sm font-bold tracking-wide leading-relaxed">Contact us at <span className="text-accent-gold border-b border-accent-gold/30 pb-1">support@example.com</span> for professional assistance with your request.</p>
                     </div>
                 </div>
             </div>

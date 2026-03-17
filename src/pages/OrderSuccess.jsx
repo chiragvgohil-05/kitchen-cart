@@ -9,69 +9,73 @@ const OrderSuccess = () => {
     useEffect(() => {
         reloadUser();
     }, []);
+
     return (
-        <div className="min-h-screen bg-brand-bg flex items-center justify-center px-4 py-20 uppercase tracking-tighter">
-            <div className="max-w-xl w-full text-center space-y-10 animate-in fade-in zoom-in-95 duration-700">
+        <div className="min-h-screen bg-cream flex items-center justify-center px-6 py-24 animate-fade-in">
+            <div className="max-w-xl w-full text-center space-y-12">
                 {/* Success Animation Area */}
-                <div className="relative mx-auto w-32 h-32">
-                    <div className="absolute inset-0 bg-brand-accent rounded-[40px] rotate-12 animate-pulse opacity-20" />
-                    <div className="absolute inset-0 bg-brand-primary rounded-[40px] -rotate-6 transition-transform hover:rotate-0 duration-500" />
-                    <div className="relative z-10 w-full h-full flex items-center justify-center text-brand-accent">
-                        <CheckCircle2 size={64} strokeWidth={1.5} />
+                <div className="relative mx-auto w-40 h-40 group cursor-default">
+                    <div className="absolute inset-0 bg-accent-gold rounded-[48px] rotate-12 animate-pulse opacity-10 group-hover:rotate-0 transition-transform duration-1000" />
+                    <div className="absolute inset-0 bg-coffee-brown rounded-[48px] -rotate-6 transition-transform group-hover:rotate-0 duration-700 shadow-2xl shadow-coffee-brown/20" />
+                    <div className="relative z-10 w-full h-full flex items-center justify-center text-accent-gold transform group-hover:scale-110 transition-transform duration-700">
+                        <CheckCircle2 size={72} strokeWidth={1} />
                     </div>
                 </div>
 
-                <div className="space-y-4">
-                    <h1 className="text-5xl lg:text-6xl font-black text-brand-primary leading-none">
+                <div className="space-y-6">
+                    <h1 className="text-4xl lg:text-4xl font-bold text-coffee-brown tracking-tighter leading-[0.85]">
                         ORDER <br />
-                        <span className="text-brand-accent italic">CONFIRMED</span>
+                        <span className="text-accent-gold not-">PLACED</span>
                     </h1>
-                    <p className="text-brand-primary/40 font-bold tracking-widest text-xs uppercase leading-relaxed max-w-sm mx-auto">
-                        Your professional culinary tools are being prepared. <br />
-                        Check your email for order #ORD-2026-9843
+                    <p className="text-coffee-brown/40 font-bold tracking-wide text-sm leading-relaxed max-w-sm mx-auto">
+                        Your professional selections are being prepared. <br />
+                        An order confirmation has been sent to your email.
                     </p>
                 </div>
 
                 {/* Progress Mini View */}
-                <div className="bg-white p-8 rounded-[48px] border border-brand-primary/5 shadow-2xl shadow-brand-primary/5 space-y-6">
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="flex flex-col items-center gap-2">
-                            <div className="w-10 h-10 bg-brand-accent rounded-full flex items-center justify-center text-brand-primary">
-                                <ShoppingBag size={18} />
+                <div className="bg-white/50 backdrop-blur-2xl p-6 rounded-3xl border border-coffee-brown/5 shadow-2xl shadow-coffee-brown/5 space-y-8 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent-gold to-transparent opacity-30" />
+                    <div className="flex items-center justify-between gap-6">
+                        <div className="flex flex-col items-center gap-3">
+                            <div className="w-12 h-12 bg-accent-gold rounded-full flex items-center justify-center text-white shadow-lg shadow-accent-gold/20">
+                                <ShoppingBag size={20} />
                             </div>
-                            <span className="text-[8px] font-black uppercase">Confirmed</span>
+                            <span className="text-[9px] font-bold tracking-wide text-accent-gold">Secured</span>
                         </div>
-                        <div className="h-0.5 grow bg-brand-accent" />
-                        <div className="flex flex-col items-center gap-2">
-                            <div className="w-10 h-10 bg-brand-bg rounded-full flex items-center justify-center text-brand-primary/20 border border-brand-primary/5">
-                                <Package size={18} />
-                            </div>
-                            <span className="text-[8px] font-black uppercase text-brand-primary/20">Processing</span>
+                        <div className="h-0.5 grow bg-accent-gold/20 relative">
+                            <div className="absolute inset-0 bg-accent-gold animate-progress-flow" />
                         </div>
-                        <div className="h-0.5 grow bg-brand-bg" />
-                        <div className="flex flex-col items-center gap-2 text-brand-primary/10">
-                            <div className="w-10 h-10 bg-brand-bg rounded-full flex items-center justify-center border border-brand-primary/5">
-                                <Package size={18} />
+                        <div className="flex flex-col items-center gap-3">
+                            <div className="w-12 h-12 bg-cream rounded-full flex items-center justify-center text-coffee-brown/20 border border-coffee-brown/5">
+                                <Package size={20} />
                             </div>
-                            <span className="text-[8px] font-black uppercase">Shipped</span>
+                            <span className="text-[9px] font-bold tracking-wide text-coffee-brown/20">Refining</span>
+                        </div>
+                        <div className="h-0.5 grow bg-coffee-brown/5" />
+                        <div className="flex flex-col items-center gap-3">
+                            <div className="w-12 h-12 bg-cream rounded-full flex items-center justify-center text-coffee-brown/10 border border-coffee-brown/5">
+                                <Package size={20} />
+                            </div>
+                            <span className="text-[9px] font-bold tracking-wide text-coffee-brown/10">Departure</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
                     <Link
                         to="/user/orders"
-                        className="w-full sm:w-auto px-10 py-5 bg-brand-primary text-brand-bg rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-brand-primary/90 transition-all flex items-center justify-center gap-2 shadow-xl shadow-brand-primary/20"
+                        className="w-full sm:w-auto px-6 py-3 bg-coffee-brown text-white rounded-full font-bold text-sm tracking-wide hover:bg-accent-gold transition-all flex items-center justify-center gap-3 shadow-2xl shadow-coffee-brown/20 transform hover:-translate-y-1"
                     >
-                        VIEW MY ORDERS
-                        <ArrowRight size={16} />
+                        VIEW ORDERS
+                        <ArrowRight size={16} className="animate-bounce-x" />
                     </Link>
                     <Link
                         to="/"
-                        className="w-full sm:w-auto px-10 py-5 border-2 border-brand-primary text-brand-primary rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-brand-primary hover:text-brand-bg transition-all flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto px-6 py-3 border-2 border-coffee-brown/10 text-coffee-brown rounded-full font-bold text-sm tracking-wide hover:bg-coffee-brown hover:text-white transition-all flex items-center justify-center gap-3 transform hover:-translate-y-1"
                     >
                         <HomeIcon size={16} />
-                        BACK TO HOME
+                        RETURN TO GALLERY
                     </Link>
                 </div>
             </div>

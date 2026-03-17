@@ -42,34 +42,36 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center px-4 py-12 bg-brand-bg relative overflow-hidden">
+        <div className="min-h-screen w-full flex items-center justify-center px-6 py-20 bg-cream relative overflow-hidden animate-fade-in">
             {/* Background Decorative Elements */}
-            <div className="absolute top-[-10%] left-[-5%] w-96 h-96 bg-brand-accent/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-[-10%] right-[-5%] w-96 h-96 bg-brand-primary/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] bg-accent-gold/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-coffee-brown/5 rounded-full blur-[120px] pointer-events-none" />
 
-            <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[2.5rem] shadow-2xl shadow-brand-primary/10 border border-white/20 relative z-10 animate-in fade-in zoom-in slide-in-from-bottom-4 duration-700">
-                <div className="text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-bg rounded-2xl mb-6 shadow-inner">
-                        <User className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />
+            <div className="max-w-md w-full space-y-12 bg-white/40 backdrop-blur-2xl p-6 lg:p-8 rounded-3xl shadow-2xl shadow-coffee-brown/5 border border-white relative z-10 transform scale-100 hover:scale-[1.01] transition-all duration-700">
+                <div className="text-center space-y-6">
+                    <div className="inline-flex items-center justify-center w-20 h-12 bg-coffee-brown rounded-xl mb-4 shadow-2xl shadow-coffee-brown/20 transform -rotate-12 group hover:rotate-0 transition-transform duration-700">
+                        <User className="h-8 w-8 text-accent-gold" strokeWidth={1} />
                     </div>
-                    <h2 className="text-4xl font-black text-brand-primary tracking-tight mb-2">Create Account</h2>
-                    <p className="text-gray-500 font-medium whitespace-nowrap">Join our community today</p>
+                    <div className="space-y-4">
+                        <h2 className="text-2xl font-bold text-coffee-brown">CREATE <br /><span className="text-accent-gold not-">ACCOUNT</span></h2>
+                        <p className="text-sm font-bold text-coffee-brown/30 tracking-wide">Create an account to get started</p>
+                    </div>
                 </div>
 
-                <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-semibold text-brand-primary mb-1.5 ml-1">
+                <form className="space-y-8" onSubmit={handleSubmit}>
+                    <div className="space-y-6">
+                        <div className="space-y-3">
+                            <label className="text-sm font-medium text-coffee-brown/70 ml-1">
                                 Full Name
                             </label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <User className="h-5 w-5 text-gray-400 group-focus-within:text-brand-accent transition-colors" />
+                                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                    <User className="h-4 w-4 text-coffee-brown/20 group-focus-within:text-accent-gold transition-colors" strokeWidth={1.5} />
                                 </div>
                                 <input
                                     type="text"
                                     required
-                                    className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-brand-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-accent/20 focus:border-brand-accent/40 focus:bg-white transition-all"
+                                    className="block w-full pl-14 pr-6 py-3 bg-white border border-coffee-brown/5 rounded-full text-coffee-brown text-sm placeholder-coffee-brown/10 focus:outline-none focus:ring-4 focus:ring-accent-gold/5 focus:border-accent-gold/20 transition-all shadow-inner"
                                     placeholder="John Doe"
                                     value={formData.fullName}
                                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
@@ -77,37 +79,37 @@ const Register = () => {
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-semibold text-brand-primary mb-1.5 ml-1">
-                                Email Address
+                        <div className="space-y-3">
+                            <label className="text-sm font-medium text-coffee-brown/70 ml-1">
+                                Email
                             </label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-gray-400 group-focus-within:text-brand-accent transition-colors" />
+                                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                    <Mail className="h-4 w-4 text-coffee-brown/20 group-focus-within:text-accent-gold transition-colors" strokeWidth={1.5} />
                                 </div>
                                 <input
                                     type="email"
                                     required
-                                    className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-brand-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-accent/20 focus:border-brand-accent/40 focus:bg-white transition-all"
-                                    placeholder="name@example.com"
+                                    className="block w-full pl-14 pr-6 py-3 bg-white border border-coffee-brown/5 rounded-full text-coffee-brown text-sm placeholder-coffee-brown/10 focus:outline-none focus:ring-4 focus:ring-accent-gold/5 focus:border-accent-gold/20 transition-all shadow-inner"
+                                    placeholder="email@example.com"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 />
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-semibold text-brand-primary mb-1.5 ml-1">
+                        <div className="space-y-3">
+                            <label className="text-sm font-medium text-coffee-brown/70 ml-1">
                                 Password
                             </label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-gray-400 group-focus-within:text-brand-accent transition-colors" />
+                                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                    <Lock className="h-4 w-4 text-coffee-brown/20 group-focus-within:text-accent-gold transition-colors" strokeWidth={1.5} />
                                 </div>
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     required
-                                    className="block w-full pl-11 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-brand-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-accent/20 focus:border-brand-accent/40 focus:bg-white transition-all"
+                                    className="block w-full pl-14 pr-14 py-3 bg-white border border-coffee-brown/5 rounded-full text-coffee-brown text-sm placeholder-coffee-brown/10 focus:outline-none focus:ring-4 focus:ring-accent-gold/5 focus:border-accent-gold/20 transition-all shadow-inner"
                                     placeholder="••••••••"
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -115,44 +117,44 @@ const Register = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-brand-primary transition-colors"
+                                    className="absolute inset-y-0 right-0 pr-5 flex items-center text-coffee-brown/20 hover:text-accent-gold transition-colors"
                                 >
-                                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-start space-x-2 py-2">
+                    <div className="flex items-start space-x-3 px-2">
                         <div className="relative flex items-center mt-1">
                             <input
                                 type="checkbox"
                                 required
-                                className="peer h-5 w-5 appearance-none rounded-lg border-2 border-gray-200 bg-white checked:bg-brand-accent checked:border-brand-accent transition-all cursor-pointer"
+                                className="peer h-5 w-5 appearance-none rounded-lg border-2 border-coffee-brown/10 bg-white checked:bg-coffee-brown checked:border-coffee-brown transition-all cursor-pointer"
                                 checked={formData.agreeTerms}
                                 onChange={(e) => setFormData({ ...formData, agreeTerms: e.target.checked })}
                             />
-                            <ShieldCheck className="absolute h-3.5 w-3.5 text-white opacity-0 peer-checked:opacity-100 left-1 transition-opacity pointer-events-none" />
+                            <ShieldCheck className="absolute h-3.5 w-3.5 text-accent-gold opacity-0 peer-checked:opacity-100 left-[3px] transition-opacity pointer-events-none" />
                         </div>
-                        <span className="text-sm text-gray-600 leading-tight">
-                            I agree to the <Link className="text-brand-accent font-semibold hover:underline underline-offset-4">Terms of Service</Link> and <Link className="text-brand-accent font-semibold hover:underline underline-offset-4">Privacy Policy</Link>
+                        <span className="text-sm font-bold text-coffee-brown/40 tracking-widest leading-normal">
+                            I accept the <Link className="text-accent-gold hover:text-coffee-brown border-b border-accent-gold/30">Terms of Service</Link> and <Link className="text-accent-gold hover:text-coffee-brown border-b border-accent-gold/30">Privacy Policy</Link>
                         </span>
                     </div>
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-2xl text-white bg-brand-primary hover:bg-brand-primary/95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary transition-all active:scale-[0.98] shadow-lg shadow-brand-primary/20 disabled:opacity-70 disabled:cursor-not-allowed"
+                        className="group relative w-full h-12 flex justify-center items-center gap-4 bg-coffee-brown text-white rounded-full font-bold text-sm tracking-wide hover:bg-accent-gold focus:outline-none transition-all active:scale-[0.98] shadow-2xl shadow-coffee-brown/20 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                        {loading ? "Creating Account..." : "Create Account"}
-                        {!loading && <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />}
+                        {loading ? "ESTABLISHING..." : "REGISTER"}
+                        {!loading && <ArrowRight className="h-4 w-4 group-hover:translate-x-3 transition-transform duration-500" />}
                     </button>
 
-                    <div className="text-center">
-                        <p className="text-sm text-gray-500">
+                    <div className="text-center pt-4">
+                        <p className="text-sm font-bold text-coffee-brown/30 tracking-wide">
                             Already have an account?{" "}
-                            <Link to="/login" className="font-bold text-brand-accent hover:text-brand-accent/80 transition-colors underline-offset-4 hover:underline">
-                                Sign in here
+                            <Link to="/login" className="text-accent-gold hover:text-coffee-brown transition-colors underline-offset-8 border-b border-accent-gold/30 hover:border-coffee-brown">
+                                LOGIN
                             </Link>
                         </p>
                     </div>
