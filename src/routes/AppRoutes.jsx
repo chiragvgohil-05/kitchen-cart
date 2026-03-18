@@ -29,6 +29,9 @@ import ProductFormPage from "../pages/admin/ProductFormPage";
 import Categories from "../pages/admin/Categories";
 import CategoryFormPage from "../pages/admin/CategoryFormPage";
 import AdminUsers from "../pages/admin/Users";
+import AdminTables from "../pages/admin/Tables";
+import AdminBookings from "../pages/admin/Bookings";
+import BookTable from "../pages/BookTable";
 import ProtectedRoute from "../components/ProtectedRoute";
 import UserRoute from "../components/UserRoute";
 import { ShopProvider } from "../context/ShopContext";
@@ -125,6 +128,14 @@ const router = createBrowserRouter([
                         ),
                     },
                     {
+                        path: "book-table",
+                        element: (
+                            <ProtectedRoute>
+                                <BookTable />
+                            </ProtectedRoute>
+                        ),
+                    },
+                    {
                         path: "*",
                         element: <NotFound />,
                     },
@@ -193,6 +204,14 @@ const router = createBrowserRouter([
                         element: <AdminUsers />,
                     },
                     {
+                        path: "tables",
+                        element: <AdminTables />,
+                    },
+                    {
+                        path: "bookings",
+                        element: <AdminBookings />,
+                    },
+                    {
                         path: "profile",
                         element: <Profile />,
                     },
@@ -213,6 +232,10 @@ const router = createBrowserRouter([
                     {
                         path: "orders",
                         element: <KitchenPanel />,
+                    },
+                    {
+                        path: "bookings",
+                        element: <AdminBookings />,
                     },
                 ],
             },

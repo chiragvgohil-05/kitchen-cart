@@ -3,7 +3,7 @@ import { NavLink, Outlet, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
     ChefHat, ClipboardList, LayoutDashboard,
-    LogOut, Menu, X, Bell
+    LogOut, Menu, X, Bell, Calendar
 } from "lucide-react";
 
 const StaffLayout = () => {
@@ -19,6 +19,7 @@ const StaffLayout = () => {
     const sidebarLinks = [
         { to: "/staff", label: "Kitchen Overview", icon: LayoutDashboard, end: true },
         { to: "/staff/orders", label: "Live Orders", icon: ClipboardList },
+        { to: "/staff/bookings", label: "Reservations", icon: Calendar },
     ];
 
     return (

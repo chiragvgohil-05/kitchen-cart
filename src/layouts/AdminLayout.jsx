@@ -13,7 +13,9 @@ import {
     Bell,
     Search,
     User as UserIcon,
-    LayoutGrid
+    LayoutGrid,
+    CalendarDays,
+    Coffee
 } from "lucide-react";
 import logo from "../assets/logo.png";
 
@@ -32,6 +34,8 @@ const AdminLayout = () => {
         { to: "/admin/categories", label: "Menu Categories", icon: LayoutGrid },
         { to: "/admin/products", label: "Menu Items", icon: Package },
         { to: "/admin/orders", label: "Recent Orders", icon: ShoppingCart },
+        { to: "/admin/bookings", label: "Reservations", icon: CalendarDays },
+        { to: "/admin/tables", label: "Table Layout", icon: Coffee },
         { to: "/admin/users", label: "Staff & Users", icon: UserIcon },
         { to: "/admin/profile", label: "Store Info", icon: Settings },
     ];

@@ -14,7 +14,7 @@ const Home = () => {
             <section className="relative pt-20 pb-20 lg:pt-28 lg:pb-28">
                 <div className="container mx-auto px-6 lg:px-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 1, ease: "easeOut" }}
@@ -24,7 +24,7 @@ const Home = () => {
                                 <Sparkles className="text-accent-gold animate-pulse" size={14} />
                                 <span className="text-sm font-bold tracking-wide text-coffee-brown/80">A New Coffee Experience</span>
                             </div>
-                            
+
                             <h1 className="text-5xl lg:text-[120px] xl:text-[140px] font-bold text-coffee-brown leading-[0.8] tracking-[-0.05em]">
                                 PURE <br />
                                 <span className="text-accent-gold not-">ESSENCE</span> <br />
@@ -56,7 +56,7 @@ const Home = () => {
                             </div>
                         </motion.div>
 
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
                             animate={{ opacity: 1, scale: 1, rotate: 0 }}
                             transition={{ duration: 1.5, ease: "circOut" }}
@@ -64,10 +64,10 @@ const Home = () => {
                         >
                             <div className="absolute -inset-20 bg-accent-gold/20 rounded-full blur-[120px] animate-pulse" />
                             <div className="relative aspect-[4/5] rounded-[80px] overflow-hidden border-[16px] border-white shadow-2xl transform hover:scale-[1.02] transition-transform duration-1000">
-                                <img 
-                                    src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=2070" 
-                                    alt="Premium Coffee" 
-                                    className="w-full h-full object-cover transition-transform duration-[2s] hover:scale-110" 
+                                <img
+                                    src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=2070"
+                                    alt="Premium Coffee"
+                                    className="w-full h-full object-cover transition-transform duration-[2s] hover:scale-110"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-coffee-brown/80 via-transparent to-transparent" />
                                 <div className="absolute bottom-12 left-12 right-12 p-6 glass-card rounded-2xl border border-white/20 backdrop-blur-xl translate-y-4 opacity-0 animate-slide-up-fade" style={{ animationDelay: '1s', animationFillMode: 'forwards' }}>
@@ -95,8 +95,8 @@ const Home = () => {
                         { icon: Clock, title: "FRESHLY ROASTED", desc: "Small batches, daily roasting" },
                         { icon: MapPin, title: "PREMIUM LOCATION", desc: "Ambient spaces for work & rest" }
                     ].map((feature, i) => (
-                        <motion.div 
-                            key={i} 
+                        <motion.div
+                            key={i}
                             whileHover={{ y: -10 }}
                             className="flex items-center gap-6 lg:gap-8 group"
                         >
@@ -128,7 +128,7 @@ const Home = () => {
                         <ProductCard key={prod._id} product={prod} />
                     ))}
                 </div>
-                
+
                 <div className="mt-16 lg:mt-24 text-center">
                     <Link to="/menu" className="group inline-flex items-center gap-4 text-xs font-bold text-coffee-brown tracking-wide hover:text-accent-gold transition-all">
                         VIEW ENTIRE GALLERY
@@ -142,7 +142,7 @@ const Home = () => {
                 <div className="relative bg-coffee-brown rounded-[40px] lg:rounded-[80px] p-12 lg:p-32 overflow-hidden text-center shadow-[0_50px_120px_-30px_rgba(78,52,46,0.4)] group">
                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/coffee-beans.png')] opacity-10 scale-125 group-hover:rotate-12 transition-transform duration-[10s]" />
                     <div className="absolute top-0 left-0 w-full h-full bg-linear-to-b from-transparent via-transparent to-black/20" />
-                    
+
                     <div className="relative z-10 space-y-12">
                         <div className="flex justify-center mb-12">
                             <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/20 animate-bounce">

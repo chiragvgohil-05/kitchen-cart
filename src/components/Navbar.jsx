@@ -49,7 +49,7 @@ const Navbar = () => {
 
     const mainNavigation = [
         { name: "Menu", href: "/menu" },
-        { name: "Table Booking", href: "/booking" },
+        { name: "Table Booking", href: "/book-table" },
         { name: "Offers", href: "/offers" },
         { name: "About Us", href: "/about" },
     ];
