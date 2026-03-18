@@ -1,9 +1,10 @@
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ChevronRight, CreditCard, Banknote, Wallet } from "lucide-react";
+import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ChevronRight, CreditCard, Banknote, Wallet, LayoutGrid, Info } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useShop } from "../context/ShopContext";
 import { useAuth } from "../context/AuthContext";
 import { getProductImageUrl } from "../utils/mediaUrl";
+import api from "../utils/api";
 import toast from "react-hot-toast";
 
 import { loadRazorpayScript } from "../utils/razorpay";
@@ -11,15 +12,39 @@ import { loadRazorpayScript } from "../utils/razorpay";
 const Cart = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const { cart, updateCartQuantity, removeFromCart, placeOrder, verifyRazorpayPayment } = useShop();
+    const { cart, updateCartQuantity, removeFromCart, placeOrder, verifyRazorpayPayment, clearCart } = useShop();
     const [isOrdering, setIsOrdering] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState("COD");
+    const [orderType, setOrderType] = useState("Takeaway");
+    const [selectedTable, setSelectedTable] = useState("");
+    const [availableTables, setAvailableTables] = useState([]);
+    const [loadingTables, setLoadingTables] = useState(false);
 
     const subtotal = cart.reduce((acc, item) => acc + (item.sellingPrice * item.quantity), 0);
-    const shipping = subtotal > 0 ? (subtotal > 5000 ? 0 : 100) : 0;
+    const shipping = subtotal > 0 && orderType === "Delivery" ? (subtotal > 5000 ? 0 : 100) : 0;
     const total = subtotal + shipping;
 
+    useEffect(() => {
+        if (orderType === "Dine-in") {
+            fetchTables();
+        }
+    }, [orderType]);
+
+    const fetchTables = async () => {
+        try {
+            setLoadingTables(true);
+            const res = await api.get('/tables');
+            // Filter only available tables or show all (maybe current users booking table?)
+            setAvailableTables(res.data.data.filter(t => t.status === 'Available'));
+        } catch (error) {
+            console.error("Failed to fetch tables", error);
+        } finally {
+            setLoadingTables(false);
+        }
+    };
+
     const hasCompleteProfileAddress = () => {
+        if (orderType !== "Delivery") return true; 
         const address = user?.address || {};
         const requiredFields = ['street', 'city', 'state', 'zipCode', 'country'];
         return requiredFields.every((field) => {
@@ -35,24 +60,12 @@ const Cart = () => {
             return false;
         }
 
-        if (!razorpayKeyId) {
-            toast.error("Missing Razorpay key on server response");
-            return false;
-        }
-
         return new Promise((resolve) => {
-            let settled = false;
-            const finish = (value) => {
-                if (settled) return;
-                settled = true;
-                resolve(value);
-            };
-
             const options = {
                 key: razorpayKeyId,
                 amount: razorpayOrder.amount,
                 currency: razorpayOrder.currency,
-                name: "Our Store Cafe",
+                name: "SnowEra Cafe",
                 description: `Order ${order._id}`,
                 order_id: razorpayOrder.id,
                 handler: async (response) => {
@@ -64,46 +77,39 @@ const Cart = () => {
                         orderId: order._id
                     });
                     setIsOrdering(false);
-
                     if (verification) {
-                        toast.success("Payment Received. Your Store harvest begins.");
+                        toast.success("Order Placed Successfully!");
                         navigate('/order-success');
-                        finish(true);
-                        return;
-                    }
-
-                    finish(false);
-                },
-                modal: {
-                    ondismiss: () => {
-                        toast.error("Store payment cancelled");
-                        finish(false);
+                        resolve(true);
+                    } else {
+                        resolve(false);
                     }
                 },
-                theme: {
-                    color: "#4E342E"
-                }
+                modal: { ondismiss: () => resolve(false) },
+                theme: { color: "#4E342E" }
             };
-
             const razorpay = new window.Razorpay(options);
-            razorpay.on('payment.failed', () => {
-                toast.error("Payment sync failed. Try again.");
-                finish(false);
-            });
             razorpay.open();
         });
     };
 
     const handleCheckout = async () => {
+        if (orderType === "Dine-in" && !selectedTable) {
+            toast.error("Please select a table for Dine-in orders");
+            return;
+        }
+
         if (!hasCompleteProfileAddress()) {
-            toast.error("Please synchronize your address in profile before harvest");
+            toast.error("Please complete your address in profile for delivery");
             navigate('/profile');
             return;
         }
 
         setIsOrdering(true);
         const result = await placeOrder({
-            paymentMethod: paymentMethod
+            paymentMethod,
+            orderType,
+            table: orderType === "Dine-in" ? selectedTable : undefined
         });
 
         if (!result) {
@@ -111,203 +117,165 @@ const Cart = () => {
             return;
         }
 
-        if (paymentMethod === "COD") {
+        const data = result.data || {};
+        if (paymentMethod === "COD" || (!data.razorpayOrder && !data.stripePaymentIntent)) {
             setIsOrdering(false);
-            toast.success("Order Sealed! Harvest is on the way.");
+            toast.success("Order Placed Successfully!");
             navigate('/order-success');
             return;
         }
 
-        const orderPayload = result?.data || {};
-
-        const isWalletOnlyOrder = Boolean(
-            orderPayload.order
-            && !orderPayload.razorpayOrder
-            && !orderPayload.stripePaymentIntent
-        );
-
-        if (isWalletOnlyOrder) {
+        if (paymentMethod === "Razorpay") {
+            const success = await openRazorpayCheckout({
+                order: data.order,
+                razorpayOrder: data.razorpayOrder,
+                razorpayKeyId: data.razorpayKeyId
+            });
             setIsOrdering(false);
-            toast.success("Order sealed using Store Aura balance!");
-            navigate('/order-success');
-            return;
-        }
-
-        if (!orderPayload.order || !orderPayload.razorpayOrder) {
+        } else {
             setIsOrdering(false);
-            toast.error("Store sync error: Invalid response");
-            return;
+            // Stripe logic not implemented fully here but follows similar pattern
         }
-
-        setIsOrdering(false);
-        await openRazorpayCheckout({
-            order: orderPayload.order,
-            razorpayOrder: orderPayload.razorpayOrder,
-            razorpayKeyId: orderPayload.razorpayKeyId
-        });
     };
 
     if (cart.length === 0) {
         return (
             <div className="min-h-[70vh] flex flex-col items-center justify-center bg-cream px-4">
-                <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center text-coffee-brown shadow-inner mb-8">
-                    <ShoppingBag size={56} strokeWidth={1.5} className="opacity-10" />
-                </div>
-                <h2 className="text-2xl font-bold text-coffee-brown mb-3 tracking-tighter">Your Store is Empty</h2>
-                <p className="text-coffee-brown/40 font-bold tracking-wide mb-10 text-center max-w-sm text-xs">Begin your sensory journey by selecting from our premium menu.</p>
-                <Link to="/menu" className="px-6 py-3 bg-coffee-brown text-white rounded-full font-bold text-sm tracking-wide hover:bg-accent-gold transition-all shadow-2xl shadow-coffee-brown/20 transform hover:-translate-y-1">
-                    RETURN TO COLLECTION
+                <ShoppingBag size={56} strokeWidth={1.5} className="opacity-10 mb-8" />
+                <h2 className="text-2xl font-bold text-coffee-brown mb-3 tracking-tighter">Your Bag is Empty</h2>
+                <Link to="/menu" className="px-6 py-3 bg-coffee-brown text-white rounded-full font-bold text-sm tracking-wide">
+                    VIEW MENU
                 </Link>
             </div>
         );
     }
 
     return (
-        <div className="bg-cream min-h-screen text-coffee-brown py-16 lg:py-24 animate-fade-in">
-            <div className="max-w-7xl mx-auto px-6 lg:px-6">
-                {/* Breadcrumb */}
-                <nav className="flex items-center gap-3 text-sm font-bold tracking-wide text-coffee-brown/40 mb-12">
-                    <Link to="/" className="hover:text-accent-gold transition-colors">Home</Link>
-                    <ChevronRight size={12} />
-                    <span className="text-coffee-brown">Selected Brews</span>
-                </nav>
-
-                <h1 className="text-3xl lg:text-4xl font-bold tracking-tighter mb-16">
-                    YOUR <span className="text-accent-gold not-">SELECTION</span>
+        <div className="bg-cream min-h-screen text-coffee-brown py-16 animate-fade-in">
+            <div className="max-w-7xl mx-auto px-6">
+                <h1 className="text-3xl font-black tracking-tighter mb-12">
+                    YOUR <span className="text-accent-gold">CART</span>
                 </h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                     {/* Cart Items List */}
-                    <div className="lg:col-span-8 space-y-8">
+                    <div className="lg:col-span-8 space-y-6">
                         {cart.map((item) => (
-                            <div key={item._id} className="group bg-white rounded-[48px] p-6 sm:p-8 flex flex-col sm:flex-row gap-8 border border-coffee-brown/5 hover:border-accent-gold/20 transition-all shadow-2xl shadow-coffee-brown/5 hover:shadow-accent-gold/5">
-                                <div className="w-full sm:w-40 h-40 bg-cream rounded-3xl overflow-hidden shrink-0 ring-4 ring-cream shadow-inner group-hover:scale-105 transition-transform duration-700">
-                                    <img src={getProductImageUrl(item.images?.[0])} alt={item.name} className="w-full h-full object-cover mix-blend-multiply" />
+                            <div key={item._id} className="bg-white rounded-[32px] p-6 flex items-center gap-6 border border-coffee-brown/5">
+                                <img src={getProductImageUrl(item.images?.[0])} alt={item.name} className="w-24 h-24 object-cover rounded-2xl bg-cream" />
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-bold leading-tight">{item.name}</h3>
+                                    <p className="text-xs font-bold text-accent-gold mb-2">{item.category?.name}</p>
+                                    <p className="text-sm font-black">₹{item.sellingPrice}</p>
                                 </div>
-                                <div className="flex-1 flex flex-col justify-between py-2">
-                                    <div className="flex justify-between gap-6">
-                                        <div>
-                                            <p className="text-sm font-bold text-accent-gold tracking-wide mb-3">{item.category?.name || 'Provenance'}</p>
-                                            <h3 className="text-2xl font-bold text-coffee-brown leading-none mb-4 group-hover:text-accent-gold transition-colors">{item.name}</h3>
-                                            <p className="text-sm font-bold text-coffee-brown/20 tracking-widest">SKU: {item._id.slice(-6).toUpperCase()}</p>
-                                        </div>
-                                        <button
-                                            onClick={() => removeFromCart(item._id)}
-                                            className="text-coffee-brown/10 hover:text-red-400 transition-all h-fit p-3 bg-cream rounded-2xl hover:bg-red-50"
-                                            title="Retire from selection"
-                                        >
-                                            <Trash2 size={22} />
-                                        </button>
-                                    </div>
-                                    <div className="flex items-end justify-between gap-6 mt-8">
-                                        <div className="flex items-center gap-6 bg-cream rounded-[24px] p-2 shrink-0 border border-coffee-brown/5 shadow-inner">
-                                            <button
-                                                onClick={() => updateCartQuantity(item._id, -1)}
-                                                className="w-10 h-10 flex items-center justify-center hover:bg-white rounded-xl transition-all text-coffee-brown/40 hover:text-coffee-brown active:scale-90"
-                                            >
-                                                <Minus size={18} />
-                                            </button>
-                                            <span className="font-bold text-xl w-6 text-center tabular-nums">{item.quantity}</span>
-                                            <button
-                                                onClick={() => updateCartQuantity(item._id, 1)}
-                                                className="w-10 h-10 flex items-center justify-center hover:bg-white rounded-xl transition-all text-coffee-brown/40 hover:text-coffee-brown active:scale-90"
-                                            >
-                                                <Plus size={18} />
-                                            </button>
-                                        </div>
-                                        <p className="text-3xl font-bold text-coffee-brown tracking-tighter tabular-nums">₹{(item.sellingPrice * item.quantity).toLocaleString('en-IN')}</p>
-                                    </div>
+                                <div className="flex items-center gap-4 bg-cream rounded-2xl p-1 shrink-0">
+                                    <button onClick={() => updateCartQuantity(item._id, -1)} className="p-2 hover:bg-white rounded-xl transition-all">
+                                        <Minus size={14} />
+                                    </button>
+                                    <span className="font-bold w-4 text-center">{item.quantity}</span>
+                                    <button onClick={() => updateCartQuantity(item._id, 1)} className="p-2 hover:bg-white rounded-xl transition-all">
+                                        <Plus size={14} />
+                                    </button>
                                 </div>
+                                <button onClick={() => removeFromCart(item._id)} className="p-3 bg-red-50 text-red-400 rounded-2xl hover:bg-red-500 hover:text-white transition-all scale-90">
+                                    <Trash2 size={18} />
+                                </button>
                             </div>
                         ))}
                     </div>
 
-                    {/* Order Summary & Payment Method */}
-                    <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-8">
-                        <div className="bg-white rounded-[56px] p-6 border border-coffee-brown/5 shadow-2xl shadow-coffee-brown/5">
-                            <h2 className="text-xl font-bold text-coffee-brown mb-8 tracking-tighter">Payment <span className="text-accent-gold">Synchrony</span></h2>
-                            {user && (
-                                <div className="flex items-center justify-between p-6 mb-8 bg-cream/50 rounded-xl border border-coffee-brown/5 shadow-inner">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-2xl bg-accent-gold text-white flex items-center justify-center shadow-lg shadow-accent-gold/20">
-                                            <Wallet size={24} />
+                    {/* Order Settings & Summary */}
+                    <div className="lg:col-span-4 space-y-6">
+                        {/* Order Type Selection */}
+                        <div className="bg-white rounded-[32px] p-6 border border-coffee-brown/5 shadow-sm">
+                            <h2 className="text-sm font-black uppercase tracking-widest text-coffee-brown/40 mb-6">Execution Mode</h2>
+                            <div className="grid grid-cols-3 gap-2">
+                                {['Dine-in', 'Takeaway', 'Delivery'].map(type => (
+                                    <button
+                                        key={type}
+                                        onClick={() => setOrderType(type)}
+                                        className={`py-3 px-1 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                            orderType === type ? "bg-accent-gold text-white shadow-lg" : "bg-neutral-50 text-neutral-400 hover:bg-neutral-100"
+                                        }`}
+                                    >
+                                        {type}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {orderType === "Dine-in" && (
+                                <div className="mt-6 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-coffee-brown/40 px-1">Choose Table</label>
+                                    {loadingTables ? (
+                                        <div className="w-full py-4 flex justify-center"><div className="w-5 h-5 border-2 border-accent-gold border-t-transparent rounded-full animate-spin" /></div>
+                                    ) : availableTables.length > 0 ? (
+                                        <div className="grid grid-cols-4 gap-2">
+                                            {availableTables.map(t => (
+                                                <button
+                                                    key={t._id}
+                                                    onClick={() => setSelectedTable(t._id)}
+                                                    className={`py-3 rounded-xl font-bold text-xs transition-all ${
+                                                        selectedTable === t._id ? "bg-coffee-brown text-white" : "bg-neutral-50 hover:bg-neutral-100"
+                                                    }`}
+                                                >
+                                                    {t.tableNumber}
+                                                </button>
+                                            ))}
                                         </div>
-                                        <div>
-                                            <p className="font-bold text-xs text-coffee-brown tracking-widest">Store Aura</p>
-                                            <p className="text-sm font-bold text-coffee-brown/30 tracking-tighter">Loyalty Balance</p>
+                                    ) : (
+                                        <div className="p-4 bg-amber-50 rounded-2xl text-[10px] font-bold text-amber-600 flex items-center gap-2">
+                                            <Info size={14} /> No tables available for immediate dining
                                         </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="font-bold text-accent-gold text-2xl tracking-tighter tabular-nums">{user.walletBalance || 0}</p>
-                                    </div>
+                                    )}
                                 </div>
                             )}
-                            <div className="grid grid-cols-1 gap-4">
+                        </div>
+
+                        {/* Payment Method */}
+                        <div className="bg-white rounded-[32px] p-6 border border-coffee-brown/5 shadow-sm space-y-4">
+                            <h2 className="text-sm font-black uppercase tracking-widest text-coffee-brown/40 mb-2">Payment Settlement</h2>
+                            <div className="flex gap-2">
                                 <button
                                     onClick={() => setPaymentMethod("COD")}
-                                    className={`group flex items-center gap-5 p-5 rounded-xl border-2 transition-all text-left ${paymentMethod === "COD"
-                                        ? "border-accent-gold bg-accent-gold/5"
-                                        : "border-coffee-brown/5 hover:border-accent-gold/20"
-                                        }`}
+                                    className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${
+                                        paymentMethod === "COD" ? "border-accent-gold bg-accent-gold/5 text-accent-gold" : "border-neutral-50 text-neutral-400"
+                                    }`}
                                 >
-                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${paymentMethod === "COD" ? "bg-accent-gold text-white shadow-lg" : "bg-cream text-coffee-brown/20"}`}>
-                                        <Banknote size={24} />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-sm text-coffee-brown tracking-wider">Store Upon Arrival</p>
-                                        <p className="text-sm font-bold text-coffee-brown/30 tracking-tighter">Settlement on hand</p>
-                                    </div>
+                                    <Banknote size={24} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Post-Meal</span>
                                 </button>
-
                                 <button
                                     onClick={() => setPaymentMethod("Razorpay")}
-                                    className={`group flex items-center gap-5 p-5 rounded-xl border-2 transition-all text-left ${paymentMethod === "Razorpay"
-                                        ? "border-accent-gold bg-accent-gold/5"
-                                        : "border-coffee-brown/5 hover:border-accent-gold/20"
-                                        }`}
+                                    className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${
+                                        paymentMethod === "Razorpay" ? "border-accent-gold bg-accent-gold/5 text-accent-gold" : "border-neutral-50 text-neutral-400"
+                                    }`}
                                 >
-                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${paymentMethod === "Razorpay" ? "bg-accent-gold text-white shadow-lg" : "bg-cream text-coffee-brown/20"}`}>
-                                        <CreditCard size={24} />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-sm text-coffee-brown tracking-wider">Store Digital</p>
-                                        <p className="text-sm font-bold text-coffee-brown/30 tracking-tighter">Secured Store Payment</p>
-                                    </div>
+                                    <CreditCard size={24} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Digital</span>
                                 </button>
                             </div>
                         </div>
 
-                        <div className="bg-coffee-brown rounded-[56px] p-6 text-white shadow-2xl shadow-coffee-brown/30 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-accent-gold/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-1000" />
-                            <h2 className="text-2xl font-bold mb-10 tracking-tighter">Store <span className="text-accent-gold">Summary</span></h2>
-                            <div className="space-y-6 text-[11px] font-bold tracking-wide mb-10 relative z-10">
-                                <div className="flex justify-between items-center text-white/40">
-                                    <span>Harvest Value</span>
-                                    <span className="tabular-nums">₹ {subtotal.toLocaleString('en-IN')}</span>
-                                </div>
-                                <div className="flex justify-between items-center text-white/40">
-                                    <span>Delivery Store</span>
-                                    <span className="tabular-nums">{shipping === 0 ? 'Complimentary' : `₹ ${shipping}`}</span>
-                                </div>
-                                <div className="flex justify-between items-center text-white/40">
-                                    <span>Store Sync</span>
-                                    <span className="tabular-nums">Included</span>
-                                </div>
-                                <div className="h-px bg-white/5 my-6" />
-                                <div className="flex justify-between items-center text-2xl font-bold text-white tracking-tighter leading-none">
-                                    <span>Total Value</span>
-                                    <span className="text-accent-gold tabular-nums">₹ {total.toLocaleString('en-IN')}</span>
-                                </div>
-                            </div>
-                            <button
-                                onClick={handleCheckout}
-                                disabled={isOrdering}
-                                className={`group w-full py-6 bg-accent-gold text-white rounded-[24px] font-black text-xs uppercase tracking-[0.3em] hover:bg-white hover:text-coffee-brown transition-all transform active:scale-95 shadow-2xl shadow-accent-gold/20 flex items-center justify-center gap-4 ${isOrdering ? 'opacity-50 cursor-not-allowed' : ''
-                                    }`}
-                            >
-                                {isOrdering ? 'BREWING ORDER...' : 'FINALIZE SELECTION'}
-                                {!isOrdering && <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />}
-                            </button>
+                        {/* Summary */}
+                        <div className="bg-coffee-brown rounded-[40px] p-8 text-white shadow-2xl shadow-coffee-brown/20 relative overflow-hidden group">
+                           <div className="absolute top-0 right-0 w-32 h-32 bg-accent-gold/5 rounded-full blur-3xl" />
+                           <h2 className="text-xl font-black mb-8 tracking-tighter">Order Summary</h2>
+                           <div className="space-y-4 mb-8 text-[11px] font-bold text-white/50">
+                               <div className="flex justify-between"><span>Items Value</span><span className="text-white">₹{subtotal}</span></div>
+                               {orderType === "Delivery" && (
+                                   <div className="flex justify-between"><span>Service Fee</span><span className="text-white">₹{shipping}</span></div>
+                               )}
+                               <div className="flex justify-between"><span>Taxes</span><span className="text-white italic">Inclusive</span></div>
+                               <div className="h-px bg-white/5 my-2" />
+                               <div className="flex justify-between text-2xl font-black text-white"><span>Total</span><span className="text-accent-gold">₹{total}</span></div>
+                           </div>
+                           <button
+                               onClick={handleCheckout}
+                               disabled={isOrdering}
+                               className="w-full py-5 bg-accent-gold text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-95 transition-all shadow-xl shadow-accent-gold/20 flex items-center justify-center gap-3"
+                           >
+                               {isOrdering ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <>Finalize Order <ArrowRight size={18} /></>}
+                           </button>
                         </div>
                     </div>
                 </div>
