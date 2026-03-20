@@ -13,7 +13,7 @@ const Wishlist = () => {
                 <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center text-coffee-brown shadow-inner mb-8">
                     <Heart size={56} strokeWidth={1.5} className="opacity-10" />
                 </div>
-                <h2 className="text-2xl font-bold text-coffee-brown mb-3 tracking-tighter">Your Store is Silent</h2>
+                <h2 className="text-2xl font-bold text-coffee-brown mb-3 tracking-tighter">Your Wishlist is Empty</h2>
                 <p className="text-coffee-brown/40 font-bold tracking-wide mb-10 text-center max-w-sm text-xs">Save your most desired blends for future sensory experiences.</p>
                 <Link to="/menu" className="px-6 py-3 bg-coffee-brown text-white rounded-full font-bold text-sm tracking-wide hover:bg-accent-gold transition-all shadow-2xl shadow-coffee-brown/20 transform hover:-translate-y-1">
                     EXPLORE COLLECTION

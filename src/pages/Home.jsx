@@ -34,7 +34,7 @@ const Home = () => {
                             <div className="flex items-center gap-8 pl-1">
                                 <div className="h-12 w-1 bg-accent-gold rounded-full" />
                                 <p className="text-lg font-bold text-coffee-brown/50 max-w-sm leading-relaxed tracking-tight">
-                                    Welcome to our store, where quality meets taste.
+                                    Welcome to SnowEra Cafe, where quality meets taste.
                                 </p>
                             </div>
 
@@ -63,13 +63,13 @@ const Home = () => {
                             className="relative lg:block hidden"
                         >
                             <div className="absolute -inset-20 bg-accent-gold/20 rounded-full blur-[120px] animate-pulse" />
-                            <div className="relative aspect-[4/5] rounded-[80px] overflow-hidden border-[16px] border-white shadow-2xl transform hover:scale-[1.02] transition-transform duration-1000">
+                            <div className="relative aspect-4/5 rounded-[80px] overflow-hidden border-16 border-white shadow-2xl transform hover:scale-[1.02] transition-transform duration-1000">
                                 <img
                                     src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=2070"
                                     alt="Premium Coffee"
                                     className="w-full h-full object-cover transition-transform duration-[2s] hover:scale-110"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-coffee-brown/80 via-transparent to-transparent" />
+                                <div className="absolute inset-0 bg-linear-to-t from-coffee-brown/80 via-transparent to-transparent" />
                                 <div className="absolute bottom-12 left-12 right-12 p-6 glass-card rounded-2xl border border-white/20 backdrop-blur-xl translate-y-4 opacity-0 animate-slide-up-fade" style={{ animationDelay: '1s', animationFillMode: 'forwards' }}>
                                     <div className="flex items-center gap-6">
                                         <div className="w-16 h-16 bg-accent-gold rounded-3xl flex items-center justify-center text-white shadow-xl">
@@ -105,7 +105,7 @@ const Home = () => {
                             </div>
                             <div>
                                 <h4 className="font-bold text-xs text-coffee-brown tracking-wide mb-2">{feature.title}</h4>
-                                <p className="text-sm font-bold text-coffee-brown/40 tracking-[0.1em] leading-relaxed">{feature.desc}</p>
+                                <p className="text-sm font-bold text-coffee-brown/40 tracking-widest leading-relaxed">{feature.desc}</p>
                             </div>
                         </motion.div>
                     ))}

@@ -67,7 +67,7 @@ const AdminProducts = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
                 <div className="space-y-2">
                     <h1 className="text-2xl font-bold text-coffee-brown tracking-tighter">Master <span className="text-accent-gold">Inventory</span></h1>
-                    <p className="text-xs font-bold text-coffee-brown/40 tracking-wide">Precision management of Our Store's sensory assets</p>
+                    <p className="text-xs font-bold text-coffee-brown/40 tracking-wide">Precision management of SnowEra Cafe's sensory assets</p>
                 </div>
                 <Link
                     to="/admin/products/create"
@@ -97,7 +97,7 @@ const AdminProducts = () => {
                 {loading ? (
                     <div className="p-32 text-center">
                         <div className="animate-spin w-12 h-12 border-[6px] border-accent-gold border-t-transparent rounded-full mx-auto mb-6"></div>
-                        <p className="text-coffee-brown/40 font-medium text-sm">Scanning Store Inventory...</p>
+                        <p className="text-coffee-brown/40 font-medium text-sm">Scanning Cafe Inventory...</p>
                     </div>
                 ) : (
                     <table className="w-full text-left border-collapse min-w-[1000px]">

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, Facebook, Instagram, Twitter } from "lucide-react";
-import logo from "../assets/Logo.png";
+import logo from "/logo.png";
 
 const Footer = () => {
     return (
@@ -9,11 +9,14 @@ const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                     {/* Brand Section */}
                     <div className="space-y-8">
-                        <Link to="/" className="inline-block transform hover:scale-105 transition-transform">
-                            <img src={logo} alt="Kitchen Cart" className="h-12 w-auto object-contain" />
+                        <Link to="/" className="flex items-center gap-4 transform hover:scale-105 transition-transform group">
+                            <img src={logo} alt="SnowEra Cafe" className="h-14 w-auto object-contain" />
+                            <span className="text-3xl font-black tracking-tighter text-brand-primary group-hover:text-brand-accent transition-colors uppercase italic">
+                                SnowEra <span className="text-brand-accent not-italic">Cafe</span>
+                            </span>
                         </Link>
                         <p className="text-brand-primary/40 text-[13px] leading-relaxed max-w-sm font-medium">
-                            The ultimate destination for professional-grade culinary tools. We bring craftsman-quality kitchenware to the modern home chef, ensuring every meal is a masterpiece.
+                            The ultimate destination for premium coffee and artisanal treats. SnowEra Cafe brings the finest beans and modern coffee culture to your cup, ensuring every sip is a masterpiece.
                         </p>
                         <div className="space-y-4">
                             <div className="flex items-center gap-4 text-brand-primary">
@@ -26,7 +29,7 @@ const Footer = () => {
                                 <div className="w-10 h-10 rounded-xl bg-brand-primary/5 flex items-center justify-center">
                                     <Mail size={16} />
                                 </div>
-                                <span className="text-sm font-bold tracking-tight">concierge@kitchencart.com</span>
+                                <span className="text-sm font-bold tracking-tight">hello@snoweracafe.com</span>
                             </div>
                         </div>
                         <div className="flex items-center gap-4 pt-2">
@@ -103,7 +106,7 @@ const Footer = () => {
                 {/* Bottom Bar */}
                 <div className="mt-20 pt-10 border-t border-brand-primary/5 flex flex-col md:flex-row justify-between items-center gap-6">
                     <p className="text-brand-primary/30 text-sm font-bold tracking-widest">
-                        &copy; {new Date().getFullYear()} KITCHEN CART. ALL RIGHTS RESERVED.
+                        &copy; {new Date().getFullYear()} SNOWERA CAFE. ALL RIGHTS RESERVED.
                     </p>
                     <div className="flex items-center gap-8">
                         <Link to="#" className="text-brand-primary/30 hover:text-brand-primary text-sm font-bold tracking-widest transition-colors">Privacy Policy</Link>

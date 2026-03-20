@@ -5,6 +5,7 @@ import {
     ChefHat, ClipboardList, LayoutDashboard,
     LogOut, Menu, X, Bell, Calendar
 } from "lucide-react";
+import logo from "/logo.png";
 
 const StaffLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -36,11 +37,9 @@ const StaffLayout = () => {
                 <div className="flex flex-col h-full">
                     <div className="p-6">
                         <Link to="/" className="flex items-center gap-3 group">
-                            <div className="w-8 h-8 bg-accent-gold rounded-full flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
-                                <ChefHat className="text-white h-5 w-5" />
-                            </div>
-                            <span className="text-2xl font-bold tracking-tighter text-white">
-                                Staff <span className="text-accent-gold">Panel</span>
+                            <img src={logo} alt="SnowEra Logo" className="w-10 h-10 object-contain group-hover:scale-110 transition-transform duration-300" />
+                            <span className="text-2xl font-black tracking-tighter text-white uppercase italic">
+                                SnowEra <span className="text-accent-gold not-italic">Staff</span>
                             </span>
                         </Link>
                     </div>
@@ -100,7 +99,7 @@ const StaffLayout = () => {
                             <Menu size={22} />
                         </button>
                         <div className="max-lg:hidden">
-                            <h2 className="text-lg font-bold text-coffee-brown tracking-wide">Kitchen Dashboard</h2>
+                            <h2 className="text-lg font-bold text-coffee-brown tracking-wide">SnowEra Kitchen</h2>
                             <p className="text-xs font-bold text-coffee-brown/40 tracking-widest mt-0.5">Live order management & status updates</p>
                         </div>
                     </div>

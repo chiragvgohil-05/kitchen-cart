@@ -89,7 +89,7 @@ const KitchenPanel = () => {
                 <div>
                     <h1 className="text-3xl font-black text-coffee-brown tracking-tighter flex items-center gap-3">
                         <ChefHat size={32} className="text-accent-gold" />
-                        KITCHEN <span className="text-accent-gold">COMMAND</span>
+                        SNOWERA <span className="text-accent-gold">KITCHEN</span>
                     </h1>
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-coffee-brown/30 mt-1 pl-1">
                         Real-time order synchronization & fulfillment
@@ -152,7 +152,7 @@ const KitchenPanel = () => {
             ) : displayOrders.length === 0 ? (
                 <div className="py-32 text-center bg-white/50 rounded-[48px] border-2 border-dashed border-coffee-brown/10">
                     <Package2 size={48} className="text-coffee-brown/10 mx-auto mb-6" />
-                    <p className="text-xs font-black uppercase tracking-widest text-coffee-brown/20 italic">The kitchen is currently tranquil</p>
+                    <p className="text-xs font-black uppercase tracking-widest text-coffee-brown/20 italic">SnowEra Kitchen is currently tranquil</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

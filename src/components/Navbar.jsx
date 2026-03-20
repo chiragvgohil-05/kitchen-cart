@@ -4,7 +4,7 @@ import { Menu, X, ShoppingCart, User, Heart, Search, ChevronDown, ChevronRight, 
 import { useAuth } from "../context/AuthContext";
 import { useShop } from "../context/ShopContext";
 
-import logo from "../assets/Logo.png";
+import logo from "/logo.png";
 
 const Navbar = () => {
     const { user, logout } = useAuth();
@@ -60,14 +60,11 @@ const Navbar = () => {
             <div className="py-4">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between gap-8">
-                        {/* Logo */}
                         <div className="shrink-0">
-                            <Link to="/" className="flex items-center gap-2 group">
-                                <div className="w-10 h-10 bg-accent-gold rounded-full flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
-                                    <ShoppingCart className="text-white h-6 w-6" />
-                                </div>
-                                <span className="text-2xl font-bold tracking-tighter text-white">
-                                    Our Store <span className="text-accent-gold">Cafe</span>
+                            <Link to="/" className="flex items-center gap-3 group">
+                                <img src={logo} alt="SnowEra Cafe" className="w-12 h-12 object-contain group-hover:scale-110 transition-transform duration-300" />
+                                <span className="text-2xl font-black tracking-tighter text-white uppercase italic">
+                                    SnowEra <span className="text-accent-gold not-italic">Cafe</span>
                                 </span>
                             </Link>
                         </div>

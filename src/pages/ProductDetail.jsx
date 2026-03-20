@@ -70,7 +70,7 @@ const ProductDetail = () => {
                 <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-inner mb-8">
                     <Coffee size={64} className="text-coffee-brown/10" />
                 </div>
-                <h1 className="text-3xl font-bold text-coffee-brown mb-4 tracking-tighter">Store Unknown</h1>
+                <h1 className="text-3xl font-bold text-coffee-brown mb-4 tracking-tighter">Product Unknown</h1>
                 <p className="text-coffee-brown/40 mb-10 font-bold tracking-widest text-center max-w-md">The product you are seeking has vanished from our collection.</p>
                 <Link
                     to="/menu"
@@ -176,7 +176,7 @@ const ProductDetail = () => {
                             <div className="flex items-center gap-3 mt-4">
                                 <div className={`w-3 h-3 rounded-full ${stock > 0 ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)] animate-pulse' : 'bg-red-500'}`} />
                                 <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${stock > 0 ? 'text-coffee-brown' : 'text-red-400'}`}>
-                                    {stock > 0 ? `Available in Store (${stock} Units)` : "Temporarily Out of Stock"}
+                                    {stock > 0 ? `Available in Cafe (${stock} Units)` : "Temporarily Out of Stock"}
                                 </span>
                             </div>
                         </div>
@@ -185,7 +185,7 @@ const ProductDetail = () => {
 
                         <div className="space-y-8">
                             <p className="text-lg text-coffee-brown/60 font-bold leading-relaxed">
-                                {description || "A masterfully curated selection, designed to elevate your Our Store experience."}
+                                {description || "A masterfully curated selection, designed to elevate your SnowEra Cafe experience."}
                             </p>
 
                             <div className="grid grid-cols-1 gap-4">
@@ -236,7 +236,7 @@ const ProductDetail = () => {
                                     }`}
                             >
                                 <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
-                                {isWishlisted ? "Saved to Store" : "Save for Later"}
+                                {isWishlisted ? "Saved to Favorites" : "Save for Later"}
                             </button>
                         </div>
 
@@ -244,14 +244,14 @@ const ProductDetail = () => {
                             <div className="p-6 bg-white rounded-xl border border-coffee-brown/5 flex flex-col gap-4 shadow-sm group hover:shadow-xl transition-all">
                                 <Truck size={24} className="text-accent-gold group-hover:-translate-x-1 transition-transform" />
                                 <div className="space-y-1">
-                                    <p className="text-sm font-bold tracking-widest text-coffee-brown">Store Express</p>
+                                    <p className="text-sm font-bold tracking-widest text-coffee-brown">Cafe Express</p>
                                     <p className="text-[9px] font-bold text-coffee-brown/30 tracking-tighter">Fast local delivery</p>
                                 </div>
                             </div>
                             <div className="p-6 bg-white rounded-xl border border-coffee-brown/5 flex flex-col gap-4 shadow-sm group hover:shadow-xl transition-all">
                                 <Shield size={24} className="text-accent-gold group-hover:scale-110 transition-transform" />
                                 <div className="space-y-1">
-                                    <p className="text-sm font-bold tracking-widest text-coffee-brown">Store Guarantee</p>
+                                    <p className="text-sm font-bold tracking-widest text-coffee-brown">Cafe Guarantee</p>
                                     <p className="text-[9px] font-bold text-coffee-brown/30 tracking-tighter">Secured premium quality</p>
                                 </div>
                             </div>

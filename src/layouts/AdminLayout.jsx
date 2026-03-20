@@ -17,7 +17,7 @@ import {
     CalendarDays,
     Coffee
 } from "lucide-react";
-import logo from "../assets/logo.png";
+import logo from "/logo.png";
 
 const AdminLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -58,11 +58,9 @@ const AdminLayout = () => {
                 <div className="flex flex-col h-full">
                     <div className="p-6">
                         <Link to="/" className="flex items-center gap-3 group">
-                            <div className="w-8 h-8 bg-accent-gold rounded-full flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
-                                <ShoppingCart className="text-white h-5 w-5" />
-                            </div>
-                            <span className="text-2xl font-bold tracking-tighter text-white">
-                                Our Store <span className="text-accent-gold">Admin</span>
+                            <img src={logo} alt="SnowEra Logo" className="w-10 h-10 object-contain group-hover:scale-110 transition-transform duration-300" />
+                            <span className="text-2xl font-black tracking-tighter text-white uppercase italic">
+                                SnowEra <span className="text-accent-gold not-italic">Admin</span>
                             </span>
                         </Link>
                     </div>

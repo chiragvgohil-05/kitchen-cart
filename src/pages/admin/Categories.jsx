@@ -58,7 +58,7 @@ const AdminCategories = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
                 <div className="space-y-2">
                     <h1 className="text-2xl font-bold text-coffee-brown tracking-tighter">Menu <span className="text-accent-gold">Collections</span></h1>
-                    <p className="text-xs font-bold text-coffee-brown/40 tracking-wide">Architect the sensory experience of Our Store</p>
+                    <p className="text-xs font-bold text-coffee-brown/40 tracking-wide">Architect the sensory experience of SnowEra Cafe</p>
                 </div>
                 <Link
                     to="/admin/categories/create"
@@ -151,7 +151,7 @@ const AdminCategories = () => {
                                         <div className="inline-flex items-center justify-center w-24 h-24 bg-cream rounded-full mb-8">
                                             <Search size={40} className="text-coffee-brown/10" />
                                         </div>
-                                        <h2 className="text-2xl font-bold text-coffee-brown tracking-tighter">No store found</h2>
+                                        <h2 className="text-2xl font-bold text-coffee-brown tracking-tighter">No collections found</h2>
                                         <p className="text-sm font-bold text-coffee-brown/30 tracking-wide mt-2">Adjust your search parameters</p>
                                     </td>
                                 </tr>
