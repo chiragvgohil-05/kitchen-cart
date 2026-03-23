@@ -9,7 +9,9 @@ const ShopContext = createContext();
 export const ShopProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [settings, setSettings] = useState(null);
     const [loadingProducts, setLoadingProducts] = useState(true);
+
     const [loadingCategories, setLoadingCategories] = useState(true);
     const [cart, setCart] = useState([]);
     const [wishlist, setWishlist] = useState([]);
@@ -53,10 +55,12 @@ export const ShopProvider = ({ children }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [prodRes, catRes] = await Promise.all([
+                const [prodRes, catRes, setRes] = await Promise.all([
                     api.get('/products'),
-                    api.get('/categories')
+                    api.get('/categories'),
+                    api.get('/settings')
                 ]);
+
 
                 if (prodRes.data.success) {
                     setProducts(prodRes.data.data.products || []);
@@ -64,6 +68,10 @@ export const ShopProvider = ({ children }) => {
                 if (catRes.data.success) {
                     setCategories(catRes.data.data || []);
                 }
+                if (setRes.data) {
+                    setSettings(setRes.data);
+                }
+
 
                 const token = localStorage.getItem('token');
                 if (token) {
@@ -259,8 +267,9 @@ export const ShopProvider = ({ children }) => {
 
     return (
         <ShopContext.Provider value={{
-            products, categories, loadingProducts, loadingCategories,
-            cart, wishlist, addToCart, toggleWishlist, removeFromCart, updateCartQuantity, clearCart, placeOrder, verifyRazorpayPayment, retryPayment
+            products, categories, settings, loadingProducts, loadingCategories,
+            cart, wishlist, addToCart, toggleWishlist, removeFromCart, updateCartQuantity, clearCart, placeOrder, verifyRazorpayPayment, retryPayment, setSettings
+
         }}>
             {children}
         </ShopContext.Provider>

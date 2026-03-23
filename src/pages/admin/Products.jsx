@@ -66,16 +66,18 @@ const AdminProducts = () => {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
                 <div className="space-y-2">
-                    <h1 className="text-2xl font-bold text-coffee-brown tracking-tighter">Master <span className="text-accent-gold">Inventory</span></h1>
-                    <p className="text-xs font-bold text-coffee-brown/40 tracking-wide">Precision management of SnowEra Cafe's sensory assets</p>
+                    <h1 className="text-2xl font-bold text-coffee-brown tracking-tighter">Product <span className="text-accent-gold">Management</span></h1>
+                    <p className="text-xs font-bold text-coffee-brown/40 tracking-wide">Manage and organize your café's menu offerings</p>
                 </div>
+
                 <Link
                     to="/admin/products/create"
                     className="flex items-center justify-center gap-3 px-6 py-3 bg-coffee-brown text-white rounded-[24px] font-bold text-sm tracking-wide hover:bg-accent-gold transition-all shadow-xl shadow-coffee-brown/20 group"
                 >
                     <Plus size={18} className="group-hover:rotate-90 transition-transform" />
-                    Register New Asset
+                    Add New Product
                 </Link>
+
             </div>
 
             {/* Filters and Search */}
@@ -84,10 +86,11 @@ const AdminProducts = () => {
                     <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-coffee-brown/20 group-focus-within:text-accent-gold transition-colors" size={20} />
                     <input
                         type="text"
-                        placeholder="Search assets by name or collection..."
+                        placeholder="Search products by name or category..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-16 pr-8 py-3 bg-white border border-coffee-brown/5 rounded-[24px] focus:outline-none focus:ring-4 focus:ring-accent-gold/5 focus:border-accent-gold/20 transition-all font-bold text-coffee-brown tracking-widest text-xs placeholder-coffee-brown/20"
+
                     />
                 </div>
             </div>
@@ -97,19 +100,21 @@ const AdminProducts = () => {
                 {loading ? (
                     <div className="p-32 text-center">
                         <div className="animate-spin w-12 h-12 border-[6px] border-accent-gold border-t-transparent rounded-full mx-auto mb-6"></div>
-                        <p className="text-coffee-brown/40 font-medium text-sm">Scanning Cafe Inventory...</p>
+                        <p className="text-coffee-brown/40 font-medium text-sm">Loading Product Inventory...</p>
                     </div>
+
                 ) : (
                     <table className="w-full text-left border-collapse min-w-[1000px]">
                         <thead>
                             <tr className="bg-cream/50 border-b border-coffee-brown/5">
-                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30">Asset Identity</th>
-                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30">Collection</th>
-                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30">Financial Context</th>
-                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30">Stock Velocity</th>
-                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30 text-right">Opstoretions</th>
+                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30">Product Details</th>
+                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30">Category</th>
+                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30">Pricing</th>
+                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30">Stock Status</th>
+                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30 text-right">Actions</th>
                             </tr>
                         </thead>
+
                         <tbody className="divide-y divide-coffee-brown/5">
                             {filteredProducts.length > 0 ? (
                                 filteredProducts.map((product) => {
@@ -136,7 +141,8 @@ const AdminProducts = () => {
                                         </td>
                                         <td className="px-6 py-8">
                                             <span className="px-4 py-2 bg-cream rounded-full text-sm font-bold text-coffee-brown tracking-widest border border-coffee-brown/5">
-                                                {product.category?.name || "Independent"}
+                                                {product.category?.name || "Uncategorized"}
+
                                             </span>
                                         </td>
                                         <td className="px-6 py-8">
@@ -154,7 +160,8 @@ const AdminProducts = () => {
                                             <div className="flex items-center gap-3">
                                                 <div className={`w-2.5 h-2.5 rounded-full ${product.stock > 0 ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)]' : 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]'}`} />
                                                 <span className={`text-[10px] font-black uppercase tracking-widest ${product.stock > 0 ? 'text-coffee-brown' : 'text-red-400'}`}>
-                                                    {product.stock > 0 ? `${product.stock} Units` : "Depleted"}
+                                                    {product.stock > 0 ? `${product.stock} Units` : "Out of Stock"}
+
                                                 </span>
                                             </div>
                                         </td>
@@ -163,17 +170,18 @@ const AdminProducts = () => {
                                                 <Link
                                                     to={`/admin/products/edit/${product._id}`}
                                                     className="p-4 bg-cream text-coffee-brown rounded-2xl hover:bg-accent-gold hover:text-white transition-all shadow-sm"
-                                                    title="Modify Asset"
+                                                    title="Edit Product"
                                                 >
                                                     <Edit2 size={20} />
                                                 </Link>
                                                 <button
                                                     onClick={() => handleDeleteClick(product)}
                                                     className="p-4 bg-cream text-red-400 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-sm"
-                                                    title="Retire Asset"
+                                                    title="Delete Product"
                                                 >
                                                     <Trash2 size={20} />
                                                 </button>
+
                                             </div>
                                         </td>
                                     </tr>
@@ -185,10 +193,11 @@ const AdminProducts = () => {
                                         <div className="inline-flex items-center justify-center w-24 h-24 bg-cream rounded-full mb-8">
                                             <Search size={40} className="text-coffee-brown/10" />
                                         </div>
-                                        <h2 className="text-2xl font-bold text-coffee-brown tracking-tighter">Asset database empty</h2>
-                                        <p className="text-sm font-bold text-coffee-brown/30 tracking-wide mt-2">Initialize new assets above</p>
+                                        <h2 className="text-2xl font-bold text-coffee-brown tracking-tighter">No products found</h2>
+                                        <p className="text-sm font-bold text-coffee-brown/30 tracking-wide mt-2">Try adding new items using the button above</p>
                                     </td>
                                 </tr>
+
                             )}
                         </tbody>
                     </table>

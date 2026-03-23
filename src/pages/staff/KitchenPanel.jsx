@@ -71,6 +71,20 @@ const KitchenPanel = () => {
         return null;
     };
 
+    const getActionLabel = (next) => {
+        switch(next) {
+            case 'Confirmed': return "ACCEPT ORDER";
+            case 'Preparing': return "START COOKING";
+            case 'Ready':     return "MARK AS READY";
+            case 'Served':    return "SERVE TO TABLE";
+            case 'Shipped':   return "DISPATCH ORDER";
+            case 'Delivered': return "MARK DELIVERED";
+            default:          return `PROCEED TO ${next || 'NEXT STEP'}`;
+        }
+    };
+
+
+
     const activeStatuses = ["Pending", "Confirmed", "Preparing", "Ready", "Shipped"];
     const displayOrders = filterStatus === "active"
         ? orders.filter(o => activeStatuses.includes(o.status))
@@ -212,22 +226,38 @@ const KitchenPanel = () => {
                                 </div>
 
                                 {/* Actions */}
-                                <div className="p-6 bg-neutral-50/50 border-t border-coffee-brown/5 mt-auto">
+                                <div className="p-6 bg-neutral-50/50 border-t border-coffee-brown/5 mt-auto flex flex-col gap-3">
                                     {next ? (
-                                        <button
-                                            onClick={() => updateOrderStatus(order._id, next)}
-                                            disabled={isUpdating}
-                                            className="w-full py-4 bg-coffee-brown text-white rounded-[20px] text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-accent-gold transition-all shadow-xl shadow-coffee-brown/10 active:scale-95 disabled:opacity-50"
-                                        >
-                                            {isUpdating ? <RefreshCw size={14} className="animate-spin" /> : <UserCheck size={14} />}
-                                            Proceed to {next}
-                                        </button>
+                                        <>
+                                            <button
+                                                onClick={() => updateOrderStatus(order._id, next)}
+                                                disabled={isUpdating}
+                                                className={`w-full py-4 rounded-[20px] text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition-all shadow-xl active:scale-95 disabled:opacity-50 ${
+                                                    next === 'Confirmed' ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/10' :
+                                                    next === 'Preparing' ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/10' :
+                                                    'bg-coffee-brown hover:bg-accent-gold shadow-coffee-brown/10'
+                                                } text-white`}
+                                            >
+                                                {isUpdating ? <RefreshCw size={14} className="animate-spin" /> : <UserCheck size={14} />}
+                                                {getActionLabel(next)}
+                                            </button>
+                                            
+                                            {order.status === 'Pending' && (
+                                                <button
+                                                    onClick={() => updateOrderStatus(order._id, 'Cancelled')}
+                                                    className="w-full py-2 text-[8px] font-black uppercase tracking-widest text-red-400 hover:text-red-500 transition-all"
+                                                >
+                                                    DECLINE ORDER
+                                                </button>
+                                            )}
+                                        </>
                                     ) : (
                                         <div className="w-full py-4 text-center rounded-[20px] border border-coffee-brown/10 text-[10px] font-black uppercase tracking-widest text-coffee-brown/30 italic">
                                             {order.status === "Cancelled" ? "Order Terminated" : "Cycle Complete"}
                                         </div>
                                     )}
                                 </div>
+
                             </div>
                         );
                     })}

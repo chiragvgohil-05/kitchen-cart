@@ -57,16 +57,18 @@ const AdminCategories = () => {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
                 <div className="space-y-2">
-                    <h1 className="text-2xl font-bold text-coffee-brown tracking-tighter">Menu <span className="text-accent-gold">Collections</span></h1>
-                    <p className="text-xs font-bold text-coffee-brown/40 tracking-wide">Architect the sensory experience of SnowEra Cafe</p>
+                    <h1 className="text-2xl font-bold text-coffee-brown tracking-tighter">Menu <span className="text-accent-gold">Categories</span></h1>
+                    <p className="text-xs font-bold text-coffee-brown/40 tracking-wide">Manage and organize your café's menu collections</p>
                 </div>
+
                 <Link
                     to="/admin/categories/create"
                     className="flex items-center justify-center gap-3 px-6 py-3 bg-coffee-brown text-white rounded-[24px] font-bold text-sm tracking-wide hover:bg-accent-gold transition-all shadow-xl shadow-coffee-brown/20 group"
                 >
                     <Plus size={18} className="group-hover:rotate-90 transition-transform" />
-                    New Signature Category
+                    Create New Category
                 </Link>
+
             </div>
 
             {/* Filters and Search */}
@@ -75,7 +77,8 @@ const AdminCategories = () => {
                     <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-coffee-brown/20 group-focus-within:text-accent-gold transition-colors" size={20} />
                     <input
                         type="text"
-                        placeholder="Search for a collection..."
+                        placeholder="Search for a category..."
+
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-16 pr-8 py-3 bg-white border border-coffee-brown/5 rounded-[24px] focus:outline-none focus:ring-4 focus:ring-accent-gold/5 focus:border-accent-gold/20 transition-all font-bold text-coffee-brown tracking-widest text-xs placeholder-coffee-brown/20"
@@ -94,12 +97,13 @@ const AdminCategories = () => {
                     <table className="w-full text-left border-collapse min-w-[800px]">
                         <thead>
                             <tr className="bg-cream/50 border-b border-coffee-brown/5">
-                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30">Collection Historerchy</th>
-                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30">Abstract/Narrative</th>
-                                <th className="px-6 py-8 text-[10px) font-bold tracking-wide text-coffee-brown/30">Store Entry</th>
-                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30 text-right">Opstoretional Actions</th>
+                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30">Category Name</th>
+                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30">Description</th>
+                                <th className="px-6 py-8 text-[10px] font-bold tracking-wide text-coffee-brown/30">Date Created</th>
+                                <th className="px-6 py-8 text-sm font-bold tracking-wide text-coffee-brown/30 text-right">Actions</th>
                             </tr>
                         </thead>
+
                         <tbody className="divide-y divide-coffee-brown/5">
                             {filteredCategories.length > 0 ? (
                                 filteredCategories.map((category) => (
@@ -130,17 +134,18 @@ const AdminCategories = () => {
                                                 <Link
                                                     to={`/admin/categories/edit/${category._id}`}
                                                     className="p-4 bg-cream text-coffee-brown rounded-2xl hover:bg-accent-gold hover:text-white transition-all shadow-sm"
-                                                    title="Refine Collection"
+                                                    title="Edit Category"
                                                 >
                                                     <Edit2 size={20} />
                                                 </Link>
                                                 <button
                                                     onClick={() => handleDeleteClick(category)}
                                                     className="p-4 bg-cream text-red-400 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-sm"
-                                                    title="Dissolve Collection"
+                                                    title="Delete Category"
                                                 >
                                                     <Trash2 size={20} />
                                                 </button>
+
                                             </div>
                                         </td>
                                     </tr>
@@ -151,8 +156,9 @@ const AdminCategories = () => {
                                         <div className="inline-flex items-center justify-center w-24 h-24 bg-cream rounded-full mb-8">
                                             <Search size={40} className="text-coffee-brown/10" />
                                         </div>
-                                        <h2 className="text-2xl font-bold text-coffee-brown tracking-tighter">No collections found</h2>
-                                        <p className="text-sm font-bold text-coffee-brown/30 tracking-wide mt-2">Adjust your search parameters</p>
+                                        <h2 className="text-2xl font-bold text-coffee-brown tracking-tighter">No categories found</h2>
+                                        <p className="text-sm font-bold text-coffee-brown/30 tracking-wide mt-2">Try adjusting your search filters</p>
+
                                     </td>
                                 </tr>
                             )}

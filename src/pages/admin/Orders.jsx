@@ -14,8 +14,15 @@ import {
     User,
     CreditCard,
     Banknote,
-    Wallet
+    Wallet,
+    MoreVertical,
+    Check,
+    Play,
+    Bell,
+    CheckCircle,
+    X
 } from "lucide-react";
+
 import api from "../../utils/api";
 import toast from "react-hot-toast";
 
@@ -116,12 +123,13 @@ const AdminOrders = () => {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
                     <h1 className="text-4xl font-black text-coffee-brown tracking-tighter">
-                        ORDER <span className="text-accent-gold">CONTROL</span>
+                        ORDER <span className="text-accent-gold">MANAGEMENT</span>
                     </h1>
                     <p className="text-[10px] font-black uppercase tracking-[0.25em] text-coffee-brown/30 mt-2 pl-1">
-                        Global transaction & fulfillment management
+                        Overview of all cafe transactions and order status
                     </p>
                 </div>
+
                 <button 
                    onClick={fetchOrders}
                    className="p-4 bg-white border border-coffee-brown/5 rounded-2xl hover:bg-cream transition-all group"
@@ -133,12 +141,13 @@ const AdminOrders = () => {
             {/* Metrics Dashboard */}
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 {[
-                    { label: "Total Volume", value: orders.length, icon: Package2, color: "text-coffee-brown" },
-                    { label: "Pipeline", value: orders.filter(o => ["Pending", "Confirmed", "Preparing"].includes(o.status)).length, icon: Clock, color: "text-amber-500" },
+                    { label: "Total Orders", value: orders.length, icon: Package2, color: "text-coffee-brown" },
+                    { label: "In Progress", value: orders.filter(o => ["Pending", "Confirmed", "Preparing"].includes(o.status)).length, icon: Clock, color: "text-amber-500" },
                     { label: "Ready", value: orders.filter(o => o.status === "Ready").length, icon: Coffee, color: "text-blue-500" },
-                    { label: "Delivered", value: orders.filter(o => ["Delivered", "Served"].includes(o.status)).length, icon: CheckCircle2, color: "text-emerald-500" },
+                    { label: "Fulfilled", value: orders.filter(o => ["Delivered", "Served"].includes(o.status)).length, icon: CheckCircle2, color: "text-emerald-500" },
                     { label: "Revenue", value: `₹${orders.reduce((acc, o) => acc + (o.status !== 'Cancelled' ? o.totalAmount : 0), 0).toLocaleString()}`, icon: Wallet, color: "text-accent-gold" }
                 ].map((stat, i) => (
+
                     <div key={i} className="bg-white p-6 rounded-[32px] border border-coffee-brown/5 shadow-sm hover:shadow-md transition-all">
                         <stat.icon size={18} className={`${stat.color} mb-4`} />
                         <p className="text-[9px] font-black uppercase tracking-widest text-coffee-brown/30 mb-1">{stat.label}</p>
@@ -153,7 +162,7 @@ const AdminOrders = () => {
                     <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-coffee-brown/20" size={20} />
                     <input
                         type="text"
-                        placeholder="Scan Order ID or Customer intelligence..."
+                        placeholder="Search by Order ID or Customer name..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-14 pr-6 py-5 bg-white border border-coffee-brown/5 rounded-[24px] focus:outline-none focus:ring-4 focus:ring-accent-gold/5 transition-all font-bold text-coffee-brown shadow-sm text-sm"
@@ -165,7 +174,8 @@ const AdminOrders = () => {
                         onChange={(e) => setStatusFilter(e.target.value)}
                         className="px-6 py-3 bg-transparent text-[10px] font-black uppercase tracking-widest text-coffee-brown outline-none cursor-pointer min-w-[180px]"
                     >
-                        <option value="All">All Operations</option>
+                        <option value="All">All Statuses</option>
+
                         {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                 </div>
@@ -177,14 +187,15 @@ const AdminOrders = () => {
                     <table className="w-full text-left border-collapse min-w-[1000px]">
                         <thead>
                             <tr className="bg-neutral-50/50 border-b border-coffee-brown/5">
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-coffee-brown/30">Entity ID</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-coffee-brown/30">Origin</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-coffee-brown/30">Allocation</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-coffee-brown/30">Financials</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-coffee-brown/30">Phase</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-coffee-brown/30">Action</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-coffee-brown/30">Order ID</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-coffee-brown/30">Customer</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-coffee-brown/30">Order Type</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-coffee-brown/30">Price</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-coffee-brown/30">Status</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-coffee-brown/30">Update Status</th>
                             </tr>
                         </thead>
+
                         <tbody className="divide-y divide-coffee-brown/5 text-xs">
                             {filteredOrders.map((order) => (
                                 <tr key={order._id} className="hover:bg-cream/30 transition-all group">
@@ -223,35 +234,105 @@ const AdminOrders = () => {
                                         </div>
                                     </td>
                                     <td className="px-8 py-6">
-                                        <span className={`inline-flex items-center px-4 py-2 rounded-full border text-[9px] font-black uppercase tracking-widest whitespace-nowrap ${getStatusColor(order.status)}`}>
-                                            {order.status}
-                                        </span>
+                                        <div className="flex flex-col gap-2">
+                                            <span className={`inline-flex items-center px-4 py-2 rounded-full border text-[9px] font-black uppercase tracking-widest whitespace-nowrap ${getStatusColor(order.status)}`}>
+                                                {order.status}
+                                            </span>
+                                            {/* Status Progression Bar */}
+                                            <div className="flex gap-1 h-1 px-1">
+                                                {['Confirmed', 'Preparing', 'Ready', 'Delivered/Served'].map((step, idx) => {
+                                                    const steps = {
+                                                        'Pending': -1,
+                                                        'Confirmed': 0,
+                                                        'Preparing': 1,
+                                                        'Ready': 2,
+                                                        'Served': 3,
+                                                        'Delivered': 3,
+                                                        'Shipped': 2.5
+                                                    };
+                                                    const currentStep = steps[order.status] || 0;
+                                                    const isComplete = idx <= currentStep;
+                                                    return (
+                                                        <div key={idx} className={`flex-1 rounded-full transition-all duration-500 ${isComplete ? 'bg-accent-gold' : 'bg-neutral-100'}`} />
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
                                     </td>
                                     <td className="px-8 py-6">
-                                        <div className="flex items-center gap-3">
-                                           <div className="relative group/select">
-                                                <select
-                                                    onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
-                                                    value={order.status}
-                                                    className="pl-3 pr-8 py-2.5 bg-neutral-50 border border-coffee-brown/5 rounded-xl text-[10px] font-black uppercase tracking-widest text-coffee-brown outline-none appearance-none cursor-pointer hover:border-accent-gold/30 transition-all"
+
+                                        <div className="flex items-center gap-2">
+                                            {/* Action Buttons based on status */}
+                                            {order.status === 'Pending' && (
+                                                <button
+                                                    onClick={() => handleStatusUpdate(order._id, 'Confirmed')}
+                                                    className="px-4 py-2.5 bg-emerald-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/20"
                                                 >
-                                                    {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-                                                </select>
-                                                <Filter size={10} className="absolute right-3 top-1/2 -translate-y-1/2 text-coffee-brown/20 pointer-events-none" />
-                                           </div>
-                                           <button
-                                                onClick={() => handleInvoiceDownload(order._id)}
-                                                disabled={downloadingInvoiceId === order._id}
-                                                className="p-3 bg-coffee-brown text-white rounded-xl hover:bg-accent-gold transition-all shadow-lg shadow-coffee-brown/20 active:scale-90 disabled:opacity-50"
-                                                title="Generate Invoice Data"
-                                            >
-                                                {downloadingInvoiceId === order._id ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />}
-                                            </button>
+                                                    <Check size={12} /> Confirm
+                                                </button>
+                                            )}
+                                            {order.status === 'Confirmed' && (
+                                                <button
+                                                    onClick={() => handleStatusUpdate(order._id, 'Preparing')}
+                                                    className="px-4 py-2.5 bg-amber-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-amber-600 transition-all flex items-center gap-2 shadow-lg shadow-amber-500/20"
+                                                >
+                                                    <Play size={12} /> Prepare
+                                                </button>
+                                            )}
+                                            {order.status === 'Preparing' && (
+                                                <button
+                                                    onClick={() => handleStatusUpdate(order._id, 'Ready')}
+                                                    className="px-4 py-2.5 bg-blue-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20"
+                                                >
+                                                    <Bell size={12} /> Ready
+                                                </button>
+                                            )}
+                                            {order.status === 'Ready' && (
+                                                <button
+                                                    onClick={() => handleStatusUpdate(order._id, order.orderType === 'Delivery' ? 'Shipped' : 'Served')}
+                                                    className="px-4 py-2.5 bg-indigo-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/20"
+                                                >
+                                                    <CheckCircle size={12} /> {order.orderType === 'Delivery' ? 'Dispatch' : 'Complete'}
+                                                </button>
+                                            )}
+                                            {order.status === 'Shipped' && (
+                                                <button
+                                                    onClick={() => handleStatusUpdate(order._id, 'Delivered')}
+                                                    className="px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all flex items-center gap-2 shadow-lg shadow-emerald-600/20"
+                                                >
+                                                    <CheckCircle size={12} /> Delivered
+                                                </button>
+                                            )}
+
+                                            {/* Dropdown for other options */}
+                                            <div className="relative group/more">
+                                                <button className="p-2.5 bg-neutral-50 border border-coffee-brown/5 rounded-xl text-coffee-brown/40 hover:bg-cream transition-all">
+                                                    <MoreVertical size={16} />
+                                                </button>
+                                                <div className="absolute right-0 bottom-full mb-2 w-48 bg-white rounded-2xl shadow-2xl border border-coffee-brown/5 opacity-0 invisible group-hover/more:opacity-100 group-hover/more:visible transition-all z-50 p-2 space-y-1">
+                                                    <p className="px-3 py-2 text-[9px] font-black text-coffee-brown/30 uppercase tracking-[0.2em] border-b border-coffee-brown/5 mb-1">Manual Controls</p>
+                                                    {['Pending', 'Cancelled', 'Confirmed'].includes(order.status) && (
+                                                        <button 
+                                                            onClick={() => handleStatusUpdate(order._id, 'Cancelled')}
+                                                            className="w-full text-left px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-50 transition-all flex items-center gap-2"
+                                                        >
+                                                            <X size={12} /> Cancel Order
+                                                        </button>
+                                                    )}
+                                                    <button 
+                                                        onClick={() => handleInvoiceDownload(order._id)}
+                                                        className="w-full text-left px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-coffee-brown hover:bg-neutral-50 transition-all flex items-center gap-2"
+                                                    >
+                                                        <Download size={12} /> Download Invoice
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
+
                     </table>
                 </div>
                 {filteredOrders.length === 0 && (

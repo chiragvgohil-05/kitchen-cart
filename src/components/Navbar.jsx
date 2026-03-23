@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Menu, X, ShoppingCart, User, Heart, Search, ChevronDown, ChevronRight, LayoutGrid, LogOut, Package, Settings, Wallet } from "lucide-react";
+import { Menu, X, ShoppingCart, User, Heart, Search, ChevronDown, ChevronRight, LayoutGrid, LogOut, Package, Settings, Wallet, Trophy, Gift } from "lucide-react";
+
 import { useAuth } from "../context/AuthContext";
 import { useShop } from "../context/ShopContext";
 
@@ -50,9 +51,12 @@ const Navbar = () => {
     const mainNavigation = [
         { name: "Menu", href: "/menu" },
         { name: "Table Booking", href: "/book-table" },
+        { name: "Loyalty", href: "/loyalty" },
+        { name: "Rewards", href: "/rewards" },
         { name: "Offers", href: "/offers" },
         { name: "About Us", href: "/about" },
     ];
+
 
     return (
         <header className="bg-coffee-brown sticky top-0 z-50 shadow-2xl border-b border-white/10 backdrop-blur-md">
@@ -114,6 +118,15 @@ const Navbar = () => {
                                             <User size={16} />
                                             My Profile
                                         </Link>
+                                        <Link to="/loyalty" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-5 py-2.5 text-xs font-bold text-cream/70 hover:text-accent-gold hover:bg-white/5 transition-all tracking-widest">
+                                            <Trophy size={16} />
+                                            Loyalty Program
+                                        </Link>
+                                        <Link to="/rewards" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-5 py-2.5 text-xs font-bold text-cream/70 hover:text-accent-gold hover:bg-white/5 transition-all tracking-widest">
+                                            <Gift size={16} />
+                                            Redeem Rewards
+                                        </Link>
+
                                         <button onClick={handleLogout} className="flex items-center gap-3 w-full px-5 py-2.5 text-xs font-bold text-red-400 hover:bg-red-400/10 transition-all tracking-widest text-left">
                                             <LogOut size={16} />
                                             Logout

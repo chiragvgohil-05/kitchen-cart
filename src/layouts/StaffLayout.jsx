@@ -3,8 +3,9 @@ import { NavLink, Outlet, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
     ChefHat, ClipboardList, LayoutDashboard,
-    LogOut, Menu, X, Bell, Calendar
+    LogOut, Menu, X, Bell, Calendar, Trophy, Gift
 } from "lucide-react";
+
 import logo from "/logo.png";
 
 const StaffLayout = () => {
@@ -19,9 +20,12 @@ const StaffLayout = () => {
 
     const sidebarLinks = [
         { to: "/staff", label: "Kitchen Overview", icon: LayoutDashboard, end: true },
-        { to: "/staff/orders", label: "Live Orders", icon: ClipboardList },
+        { to: "/staff/orders", label: "Manage Orders", icon: ClipboardList },
         { to: "/staff/bookings", label: "Reservations", icon: Calendar },
+        { to: "/staff/loyalty", label: "Loyalty Program", icon: Trophy },
     ];
+
+
 
     return (
         <div className="flex h-screen bg-cream text-soft-black overflow-hidden font-sans">
@@ -36,13 +40,14 @@ const StaffLayout = () => {
             <aside className={`fixed inset-y-0 left-0 w-72 text-cream bg-coffee-brown border-r border-white/5 transform transition-transform duration-500 ease-in-out z-50 lg:translate-x-0 lg:static lg:h-screen ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
                 <div className="flex flex-col h-full">
                     <div className="p-6">
-                        <Link to="/" className="flex items-center gap-3 group">
+                        <Link to="/staff" className="flex items-center gap-3 group">
                             <img src={logo} alt="SnowEra Logo" className="w-10 h-10 object-contain group-hover:scale-110 transition-transform duration-300" />
                             <span className="text-2xl font-black tracking-tighter text-white uppercase italic">
                                 SnowEra <span className="text-accent-gold not-italic">Staff</span>
                             </span>
                         </Link>
                     </div>
+
 
                     <nav className="flex-1 px-8 space-y-2 mt-6">
                         <p className="text-[10px] font-bold text-white/30 tracking-widest uppercase ml-4 mb-4">Kitchen Tools</p>

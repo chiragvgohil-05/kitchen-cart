@@ -83,14 +83,16 @@ const CategoryFormPage = () => {
                         className="inline-flex items-center gap-3 text-sm font-bold tracking-wide text-coffee-brown/40 hover:text-accent-gold transition-colors mb-4 group"
                     >
                         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                        RETURN TO COLLECTIONS
+                        BACK TO CATEGORIES
                     </Link>
+
                     <h1 className="text-3xl md:text-4xl font-bold text-coffee-brown tracking-tighter leading-[0.85]">
                         {isEditMode ? <>EDIT <br /><span className="text-accent-gold not-">CATEGORY</span></> : <>ADD <br /><span className="text-accent-gold not-">CATEGORY</span></>}
                     </h1>
                     <p className="text-sm font-bold text-coffee-brown/30 tracking-wide leading-relaxed">
-                        {isEditMode ? "Editing an existing category." : "Adding a new category."}
+                        {isEditMode ? "Modify the details of an existing menu category below." : "Create a new category for the SnowEra Cafe menu."}
                     </p>
+
                 </div>
             </div>
 

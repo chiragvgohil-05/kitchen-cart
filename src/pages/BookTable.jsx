@@ -116,7 +116,9 @@ const BookTable = () => {
                     specialRequests: ""
                 });
                 fetchMyBookings();
+                fetchAvailableTables();
             }
+
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to book table");
         } finally {
@@ -136,8 +138,10 @@ const BookTable = () => {
             if (response.data.success) {
                 toast.success("Booking cancelled successfully!");
                 fetchMyBookings();
+                fetchAvailableTables();
                 setConfirmCancelId(null);
             }
+
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to cancel booking");
         } finally {

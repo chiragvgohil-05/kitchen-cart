@@ -63,9 +63,10 @@ const AdminBookings = () => {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-black text-coffee-brown tracking-tight">Reservations</h1>
-                    <p className="text-sm font-bold text-coffee-brown/30 uppercase tracking-widest">Guest Table Management</p>
+                    <h1 className="text-3xl font-black text-coffee-brown tracking-tight">Table Reservations</h1>
+                    <p className="text-sm font-bold text-coffee-brown/30 uppercase tracking-widest">Manage customer table bookings</p>
                 </div>
+
             </div>
 
             {/* Controls */}
@@ -105,7 +106,8 @@ const AdminBookings = () => {
             ) : filteredBookings.length > 0 ? (
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                     {filteredBookings.map((booking) => (
-                        <div key={booking._id} className="bg-white rounded-[2rem] p-8 border border-coffee-brown/5 shadow-sm hover:shadow-xl transition-all group relative">
+                        <div key={booking._id} className="bg-white rounded-4xl p-8 border border-coffee-brown/5 shadow-sm hover:shadow-xl transition-all group relative">
+
                             <div className="flex flex-col md:flex-row gap-8">
                                 {/* Left Side: Guest Info */}
                                 <div className="space-y-6 flex-1">
@@ -185,8 +187,9 @@ const AdminBookings = () => {
                                         {(booking.status === 'Completed' || booking.status === 'Cancelled') && (
                                             <div className="text-center py-4 text-coffee-brown/20">
                                                 <CheckCircle2 size={24} className="mx-auto mb-2 opacity-50" />
-                                                <span className="text-[10px] font-black uppercase tracking-widest">Process Fine</span>
+                                                <span className="text-[10px] font-black uppercase tracking-widest">Completed</span>
                                             </div>
+
                                         )}
                                     </div>
                                 </div>
@@ -204,7 +207,8 @@ const AdminBookings = () => {
                     ))}
                 </div>
             ) : (
-                <div className="bg-white rounded-[2rem] p-24 text-center border-2 border-dashed border-coffee-brown/5">
+                <div className="bg-white rounded-4xl p-24 text-center border-2 border-dashed border-coffee-brown/5">
+
                     <Info size={48} className="text-coffee-brown/10 mx-auto mb-4" />
                     <h3 className="text-xl font-black text-coffee-brown mb-2 tracking-tight">No reservations found</h3>
                     <p className="text-sm font-bold text-coffee-brown/20 uppercase tracking-widest">Adjust your filters or search terms</p>

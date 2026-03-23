@@ -82,8 +82,9 @@ const Profile = () => {
                                     <p className="text-sm font-bold text-accent-gold tracking-wide mb-3">{user?.role}</p>
                                     <div className="flex items-center gap-2 text-sm font-bold text-coffee-brown/60 bg-white px-4 py-2 rounded-full border border-coffee-brown/5 shadow-sm">
                                         <Wallet size={12} className="text-accent-gold" />
-                                        <span>{user?.walletBalance || 0} AURA</span>
+                                        <span>{user?.walletBalance || 0} POINTS</span>
                                     </div>
+
                                 </div>
                             </div>
                         </div>

@@ -10,6 +10,8 @@ import ProductDetail from "../pages/ProductDetail";
 import Dashboard from "../pages/admin/Dashboard";
 import Products from "../pages/admin/Products";
 import Orders from "../pages/admin/Orders";
+import Settings from "../pages/admin/Settings";
+
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Cart from "../pages/Cart";
@@ -24,6 +26,9 @@ import OrderSuccess from "../pages/OrderSuccess";
 import UserOrders from "../pages/UserOrders";
 import Profile from "../pages/Profile";
 import KitchenPanel from "../pages/staff/KitchenPanel";
+import Loyalty from "../pages/Loyalty";
+import Rewards from "../pages/Rewards";
+
 
 import ProductFormPage from "../pages/admin/ProductFormPage";
 import Categories from "../pages/admin/Categories";
@@ -31,6 +36,9 @@ import CategoryFormPage from "../pages/admin/CategoryFormPage";
 import AdminUsers from "../pages/admin/Users";
 import AdminTables from "../pages/admin/Tables";
 import AdminBookings from "../pages/admin/Bookings";
+import AdminRewards from "../pages/admin/AdminRewards";
+import AdminLoyalty from "../pages/admin/AdminLoyalty";
+
 import BookTable from "../pages/BookTable";
 import ProtectedRoute from "../components/ProtectedRoute";
 import UserRoute from "../components/UserRoute";
@@ -136,6 +144,23 @@ const router = createBrowserRouter([
                         ),
                     },
                     {
+                        path: "loyalty",
+                        element: (
+                            <ProtectedRoute>
+                                <Loyalty />
+                            </ProtectedRoute>
+                        ),
+                    },
+                    {
+                        path: "rewards",
+                        element: (
+                            <ProtectedRoute>
+                                <Rewards />
+                            </ProtectedRoute>
+                        ),
+                    },
+
+                    {
                         path: "*",
                         element: <NotFound />,
                     },
@@ -212,9 +237,23 @@ const router = createBrowserRouter([
                         element: <AdminBookings />,
                     },
                     {
+                        path: "settings",
+                        element: <Settings />,
+                    },
+                    {
+                        path: "rewards",
+                        element: <AdminRewards />,
+                    },
+                    {
+                        path: "loyalty",
+                        element: <AdminLoyalty />,
+                    },
+
+                    {
                         path: "profile",
                         element: <Profile />,
                     },
+
                 ],
             },
             {
@@ -231,14 +270,19 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "orders",
-                        element: <KitchenPanel />,
+                        element: <Orders />,
                     },
                     {
                         path: "bookings",
                         element: <AdminBookings />,
                     },
+                    {
+                        path: "loyalty",
+                        element: <AdminLoyalty />,
+                    },
                 ],
             },
+
         ],
     },
 ]);

@@ -15,8 +15,11 @@ import {
     User as UserIcon,
     LayoutGrid,
     CalendarDays,
-    Coffee
+    Coffee,
+    Trophy,
+    Gift
 } from "lucide-react";
+
 import logo from "/logo.png";
 
 const AdminLayout = () => {
@@ -29,16 +32,46 @@ const AdminLayout = () => {
         navigate("/");
     };
 
-    const sidebarLinks = [
-        { to: "/admin", label: "Analytics", icon: LayoutDashboard, end: true },
-        { to: "/admin/categories", label: "Menu Categories", icon: LayoutGrid },
-        { to: "/admin/products", label: "Menu Items", icon: Package },
-        { to: "/admin/orders", label: "Recent Orders", icon: ShoppingCart },
-        { to: "/admin/bookings", label: "Reservations", icon: CalendarDays },
-        { to: "/admin/tables", label: "Table Layout", icon: Coffee },
-        { to: "/admin/users", label: "Staff & Users", icon: UserIcon },
-        { to: "/admin/profile", label: "Store Info", icon: Settings },
+    const groupedLinks = [
+        {
+            title: "Insights",
+            links: [
+                { to: "/admin", label: "Analytics", icon: LayoutDashboard, end: true },
+            ]
+        },
+        {
+            title: "Management",
+            links: [
+                { to: "/admin/categories", label: "Categories", icon: LayoutGrid },
+                { to: "/admin/products", label: "Menu Items", icon: Package },
+            ]
+        },
+        {
+            title: "Operations",
+            links: [
+                { to: "/admin/orders", label: "Live Orders", icon: ShoppingCart },
+                { to: "/admin/bookings", label: "Reservations", icon: CalendarDays },
+                { to: "/admin/tables", label: "Table Layout", icon: Coffee },
+            ]
+        },
+        {
+            title: "Loyalty & CRM",
+            links: [
+                { to: "/admin/users", label: "Staff & Users", icon: UserIcon },
+                { to: "/admin/loyalty", label: "Program Stats", icon: Trophy },
+                { to: "/admin/rewards", label: "Promotions", icon: Gift },
+            ]
+        },
+        {
+            title: "System",
+            links: [
+                { to: "/admin/settings", label: "Site Settings", icon: Settings },
+                { to: "/admin/profile", label: "My Profile", icon: UserIcon },
+            ]
+        }
     ];
+
+
 
     return (
         <div className="flex h-screen bg-cream text-soft-black overflow-hidden font-sans">
@@ -57,7 +90,7 @@ const AdminLayout = () => {
             >
                 <div className="flex flex-col h-full">
                     <div className="p-6">
-                        <Link to="/" className="flex items-center gap-3 group">
+                        <Link to="/admin" className="flex items-center gap-3 group">
                             <img src={logo} alt="SnowEra Logo" className="w-10 h-10 object-contain group-hover:scale-110 transition-transform duration-300" />
                             <span className="text-2xl font-black tracking-tighter text-white uppercase italic">
                                 SnowEra <span className="text-accent-gold not-italic">Admin</span>
@@ -65,26 +98,37 @@ const AdminLayout = () => {
                         </Link>
                     </div>
 
-                    <nav className="flex-1 px-8 space-y-2 mt-6">
-                        <p className="text-sm font-bold text-white/30 tracking-wide ml-4 mb-4">Management</p>
-                        {sidebarLinks.map((link) => (
-                            <NavLink
-                                key={link.to}
-                                to={link.to}
-                                end={link.end}
-                                onClick={() => setIsSidebarOpen(false)}
-                                className={({ isActive }) =>
-                                    `flex items-center gap-4 px-5 py-4 rounded-full transition-all text-xs font-black uppercase tracking-widest ${isActive
-                                        ? "bg-accent-gold text-white shadow-2xl shadow-accent-gold/20 -translate-y-1"
-                                        : "text-white/40 hover:bg-white/5 hover:text-white"
-                                    }`
-                                }
-                            >
-                                <link.icon size={18} strokeWidth={2.5} />
-                                {link.label}
-                            </NavLink>
+
+
+                    <nav className="flex-1 px-8 space-y-8 mt-6 overflow-y-auto no-scrollbar pb-10">
+                        {groupedLinks.map((group) => (
+                            <div key={group.title} className="space-y-3">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 ml-5">
+                                    {group.title}
+                                </h3>
+                                <div className="space-y-1">
+                                    {group.links.map((link) => (
+                                        <NavLink
+                                            key={link.to}
+                                            to={link.to}
+                                            end={link.end}
+                                            onClick={() => setIsSidebarOpen(false)}
+                                            className={({ isActive }) =>
+                                                `flex items-center gap-4 px-5 py-4 rounded-full transition-all text-[10px] font-black uppercase tracking-widest ${isActive
+                                                    ? "bg-accent-gold text-white shadow-2xl shadow-accent-gold/20"
+                                                    : "text-white/40 hover:bg-white/5 hover:text-white"
+                                                }`
+                                            }
+                                        >
+                                            <link.icon size={16} strokeWidth={2.5} />
+                                            {link.label}
+                                        </NavLink>
+                                    ))}
+                                </div>
+                            </div>
                         ))}
                     </nav>
+
 
                     <div className="p-8 mt-auto">
                         <div className="bg-white/5 rounded-3xl p-6 border border-white/10">
@@ -122,7 +166,8 @@ const AdminLayout = () => {
                         </button>
                         <div className="max-lg:hidden">
                             <h2 className="text-xl font-bold text-coffee-brown tracking-wide">Operational Dashboard</h2>
-                            <p className="text-sm font-bold text-coffee-brown/40 tracking-widest mt-1">Welcome back to the Admin Command Center</p>
+                            <p className="text-sm font-bold text-coffee-brown/40 tracking-widest mt-1">Welcome back to the SnowEra Management Portal</p>
+
                         </div>
                     </div>
 

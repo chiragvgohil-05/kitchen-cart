@@ -32,7 +32,8 @@ const Search = () => {
         {
             id: 2,
             title: "Gold-Plated French Press",
-            brand: "Aura Collection",
+            brand: "SnowEra Premium",
+
             price: "34,900.00",
             oldPrice: "40,310.00",
             discount: "15%",
@@ -85,12 +86,14 @@ const Search = () => {
                 <div className="flex items-center gap-6">
                     <button className="flex items-center gap-3 text-sm font-bold text-coffee-brown tracking-widest hover:text-accent-gold transition-colors group">
                         <Filter size={16} className="text-accent-gold group-hover:rotate-180 transition-transform duration-700" />
-                        COLLECTIONS
+                        CATEGORIES
                     </button>
+
                     <button className="flex items-center gap-3 text-sm font-bold text-coffee-brown tracking-widest hover:text-accent-gold transition-colors group">
                         <SlidersHorizontal size={16} className="text-accent-gold group-hover:-translate-x-1 transition-transform" />
-                        CALIBRATE
+                        FILTER
                     </button>
+
                 </div>
                 <div className="text-sm font-bold text-coffee-brown/30 tracking-wide mt-4 sm:mt-0">
                     Showing 1-{query ? mockResults.length : 0} of {query ? mockResults.length : 0} products
@@ -112,7 +115,8 @@ const Search = () => {
                         </div>
                         <div className="space-y-4">
                             <h2 className="text-2xl font-bold text-coffee-brown tracking-tighter leading-none">START SEARCHING</h2>
-                            <p className="text-sm font-bold text-coffee-brown/30 tracking-wide max-w-xs mx-auto leading-relaxed">Search for products to discover our collections.</p>
+                            <p className="text-sm font-bold text-coffee-brown/30 tracking-wide max-w-xs mx-auto leading-relaxed">Search for products to discover our menu.</p>
+
                         </div>
                     </div>
                 )}
@@ -123,7 +127,8 @@ const Search = () => {
                 <div className="pt-20 space-y-12">
                     <h3 className="text-sm font-bold text-coffee-brown/30 tracking-[0.5em] text-center">Collections</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        {["Master Tools", "Signature Beans", "Ritual Cups", "Curation"].map((cat) => (
+                        {["Professional Tools", "Coffee Beans", "Mugs & Cups", "Featured"].map((cat) => (
+
                             <div key={cat} className="p-6 bg-white/40 backdrop-blur-xl rounded-[48px] border border-coffee-brown/5 hover:border-accent-gold hover:bg-white transition-all duration-700 cursor-pointer text-center group shadow-2xl shadow-coffee-brown/5">
                                 <p className="text-sm font-bold text-coffee-brown tracking-widest group-hover:text-accent-gold transition-colors">{cat}</p>
                             </div>

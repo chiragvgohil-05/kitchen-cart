@@ -1,6 +1,9 @@
 import { Mail, Phone, MapPin, Send, MessageSquare } from "lucide-react";
+import { useShop } from "../context/ShopContext";
 
 const Contact = () => {
+    const { settings } = useShop();
+
     return (
         <div className="bg-cream min-h-screen animate-fade-in">
             {/* Split Layout */}
@@ -29,7 +32,8 @@ const Contact = () => {
                                 </div>
                                 <div className="space-y-2">
                                     <p className="text-sm font-bold text-white/20 tracking-wide">Phone Number</p>
-                                    <p className="text-2xl font-bold tracking-tighter transition-colors group-hover/item:text-accent-gold">+91 (800) 123-4567</p>
+                                    <p className="text-2xl font-bold tracking-tighter transition-colors group-hover/item:text-accent-gold">{settings?.phone || '+91 (800) 123-4567'}</p>
+
                                 </div>
                             </div>
                             <div className="flex gap-8 group/item">
@@ -38,7 +42,8 @@ const Contact = () => {
                                 </div>
                                 <div className="space-y-2">
                                     <p className="text-sm font-bold text-white/20 tracking-wide">Email Address</p>
-                                    <p className="text-2xl font-bold tracking-tighter transition-colors group-hover/item:text-accent-gold">support@example.com</p>
+                                    <p className="text-2xl font-bold tracking-tighter transition-colors group-hover/item:text-accent-gold">{settings?.email || 'support@example.com'}</p>
+
                                 </div>
                             </div>
                             <div className="flex gap-8 group/item">
@@ -47,7 +52,8 @@ const Contact = () => {
                                 </div>
                                 <div className="space-y-2">
                                     <p className="text-sm font-bold text-white/20 tracking-wide">Our Address</p>
-                                    <p className="text-2xl font-bold tracking-tighter leading-tight transition-colors group-hover/item:text-accent-gold">123 STREET, <br />CITY, ST</p>
+                                    <p className="text-2xl font-bold tracking-tighter leading-tight transition-colors group-hover/item:text-accent-gold whitespace-pre-line">{settings?.address || '123 STREET, \nCITY, ST'}</p>
+
                                 </div>
                             </div>
                         </div>

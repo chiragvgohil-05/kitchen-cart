@@ -1,8 +1,13 @@
 import { Link } from "react-router-dom";
-import { Phone, Mail, Facebook, Instagram, Twitter } from "lucide-react";
+import { Phone, Mail, Facebook, Instagram, Twitter, MapPin } from "lucide-react";
+
 import logo from "/logo.png";
 
+import { useShop } from "../context/ShopContext";
+
 const Footer = () => {
+    const { settings } = useShop();
+
     return (
         <footer className="bg-brand-bg/80 border-t border-brand-primary pt-16 pb-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,26 +28,35 @@ const Footer = () => {
                                 <div className="w-10 h-10 rounded-xl bg-brand-primary/5 flex items-center justify-center">
                                     <Phone size={16} />
                                 </div>
-                                <span className="text-sm font-bold tracking-tight">+91 (800) 123-4567</span>
+                                <span className="text-sm font-bold tracking-tight">{settings?.phone || '+91 (800) 123-4567'}</span>
                             </div>
                             <div className="flex items-center gap-4 text-brand-primary">
                                 <div className="w-10 h-10 rounded-xl bg-brand-primary/5 flex items-center justify-center">
                                     <Mail size={16} />
                                 </div>
-                                <span className="text-sm font-bold tracking-tight">hello@snoweracafe.com</span>
+                                <span className="text-sm font-bold tracking-tight">{settings?.email || 'hello@snoweracafe.com'}</span>
                             </div>
+                            {settings?.address && (
+                                <div className="flex items-start gap-4 text-brand-primary">
+                                    <div className="w-10 h-10 rounded-xl bg-brand-primary/5 flex items-center justify-center mt-1">
+                                        <MapPin size={16} />
+                                    </div>
+                                    <span className="text-sm font-bold tracking-tight max-w-[200px]">{settings.address}</span>
+                                </div>
+                            )}
                         </div>
                         <div className="flex items-center gap-4 pt-2">
-                            <a href="#" className="p-2 bg-gray-50 rounded-full hover:bg-brand-primary hover:text-white transition-all">
+                            <a href={settings?.facebook || "#"} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full hover:bg-brand-primary hover:text-white transition-all">
                                 <Facebook size={20} strokeWidth={1.5} />
                             </a>
-                            <a href="#" className="p-2 bg-gray-50 rounded-full hover:bg-brand-primary hover:text-white transition-all">
+                            <a href={settings?.instagram || "#"} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full hover:bg-brand-primary hover:text-white transition-all">
                                 <Instagram size={20} strokeWidth={1.5} />
                             </a>
-                            <a href="#" className="p-2 bg-gray-50 rounded-full hover:bg-brand-primary hover:text-white transition-all">
+                            <a href={settings?.twitter || "#"} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full hover:bg-brand-primary hover:text-white transition-all">
                                 <Twitter size={20} strokeWidth={1.5} />
                             </a>
                         </div>
+
                     </div>
 
                     {/* Quick Links */}

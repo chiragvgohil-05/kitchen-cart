@@ -1,4 +1,5 @@
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ChevronRight, CreditCard, Banknote, Wallet, LayoutGrid, Info } from "lucide-react";
+import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ChevronRight, CreditCard, Banknote, Wallet, LayoutGrid, Info, Gift } from "lucide-react";
+
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useShop } from "../context/ShopContext";
@@ -18,7 +19,12 @@ const Cart = () => {
     const [orderType, setOrderType] = useState("Takeaway");
     const [selectedTable, setSelectedTable] = useState("");
     const [availableTables, setAvailableTables] = useState([]);
+
     const [loadingTables, setLoadingTables] = useState(false);
+    const [rewards, setRewards] = useState([]);
+    const [selectedReward, setSelectedReward] = useState(null);
+    const [isApplyingReward, setIsApplyingReward] = useState(false);
+
 
     const subtotal = cart.reduce((acc, item) => acc + (item.sellingPrice * item.quantity), 0);
     const shipping = subtotal > 0 && orderType === "Delivery" ? (subtotal > 5000 ? 0 : 100) : 0;
@@ -28,13 +34,16 @@ const Cart = () => {
         if (orderType === "Dine-in") {
             fetchTables();
         }
-    }, [orderType]);
+        if (user) {
+            fetchRewards();
+        }
+    }, [orderType, user]);
+
 
     const fetchTables = async () => {
         try {
             setLoadingTables(true);
             const res = await api.get('/tables');
-            // Filter only available tables or show all (maybe current users booking table?)
             setAvailableTables(res.data.data.filter(t => t.status === 'Available'));
         } catch (error) {
             console.error("Failed to fetch tables", error);
@@ -43,8 +52,20 @@ const Cart = () => {
         }
     };
 
+    const fetchRewards = async () => {
+        try {
+            const res = await api.get('/rewards');
+            // Show only active rewards user can afford
+            const userPoints = user?.loyaltyPoints || 0;
+            setRewards(res.data.data.filter(r => r.isActive && userPoints >= r.pointsRequired));
+        } catch (error) {
+            console.error("Failed to fetch rewards", error);
+        }
+    };
+
+
     const hasCompleteProfileAddress = () => {
-        if (orderType !== "Delivery") return true; 
+        if (orderType !== "Delivery") return true;
         const address = user?.address || {};
         const requiredFields = ['street', 'city', 'state', 'zipCode', 'country'];
         return requiredFields.every((field) => {
@@ -109,8 +130,10 @@ const Cart = () => {
         const result = await placeOrder({
             paymentMethod,
             orderType,
-            table: orderType === "Dine-in" ? selectedTable : undefined
+            table: orderType === "Dine-in" ? selectedTable : undefined,
+            rewardId: selectedReward?._id
         });
+
 
         if (!result) {
             setIsOrdering(false);
@@ -194,9 +217,8 @@ const Cart = () => {
                                     <button
                                         key={type}
                                         onClick={() => setOrderType(type)}
-                                        className={`py-3 px-1 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                                            orderType === type ? "bg-accent-gold text-white shadow-lg" : "bg-neutral-50 text-neutral-400 hover:bg-neutral-100"
-                                        }`}
+                                        className={`py-3 px-1 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${orderType === type ? "bg-accent-gold text-white shadow-lg" : "bg-neutral-50 text-neutral-400 hover:bg-neutral-100"
+                                            }`}
                                     >
                                         {type}
                                     </button>
@@ -214,9 +236,8 @@ const Cart = () => {
                                                 <button
                                                     key={t._id}
                                                     onClick={() => setSelectedTable(t._id)}
-                                                    className={`py-3 rounded-xl font-bold text-xs transition-all ${
-                                                        selectedTable === t._id ? "bg-coffee-brown text-white" : "bg-neutral-50 hover:bg-neutral-100"
-                                                    }`}
+                                                    className={`py-3 rounded-xl font-bold text-xs transition-all ${selectedTable === t._id ? "bg-coffee-brown text-white" : "bg-neutral-50 hover:bg-neutral-100"
+                                                        }`}
                                                 >
                                                     {t.tableNumber}
                                                 </button>
@@ -237,18 +258,16 @@ const Cart = () => {
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setPaymentMethod("COD")}
-                                    className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${
-                                        paymentMethod === "COD" ? "border-accent-gold bg-accent-gold/5 text-accent-gold" : "border-neutral-50 text-neutral-400"
-                                    }`}
+                                    className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${paymentMethod === "COD" ? "border-accent-gold bg-accent-gold/5 text-accent-gold" : "border-neutral-50 text-neutral-400"
+                                        }`}
                                 >
                                     <Banknote size={24} />
                                     <span className="text-[10px] font-black uppercase tracking-widest">Post-Meal</span>
                                 </button>
                                 <button
                                     onClick={() => setPaymentMethod("Razorpay")}
-                                    className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${
-                                        paymentMethod === "Razorpay" ? "border-accent-gold bg-accent-gold/5 text-accent-gold" : "border-neutral-50 text-neutral-400"
-                                    }`}
+                                    className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${paymentMethod === "Razorpay" ? "border-accent-gold bg-accent-gold/5 text-accent-gold" : "border-neutral-50 text-neutral-400"
+                                        }`}
                                 >
                                     <CreditCard size={24} />
                                     <span className="text-[10px] font-black uppercase tracking-widest">Digital</span>
@@ -256,26 +275,73 @@ const Cart = () => {
                             </div>
                         </div>
 
+                        {/* Rewards Selection */}
+                        {user && rewards.length > 0 && (
+                            <div className="bg-white rounded-[32px] p-6 border border-coffee-brown/5 shadow-sm space-y-4">
+                                <h2 className="text-sm font-black uppercase tracking-widest text-coffee-brown/40 mb-2">Exclusive Perks</h2>
+                                <div className="space-y-3">
+                                    {rewards.map(r => (
+                                        <button
+                                            key={r._id}
+                                            onClick={() => setSelectedReward(selectedReward?._id === r._id ? null : r)}
+                                            className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${selectedReward?._id === r._id ? "border-accent-gold bg-accent-gold/5" : "border-neutral-50 hover:bg-neutral-50"
+                                                }`}
+                                        >
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${selectedReward?._id === r._id ? "bg-accent-gold text-white" : "bg-cream text-accent-gold"}`}>
+                                                <Gift size={18} />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-coffee-brown">{r.name}</p>
+                                                <p className="text-[9px] font-bold text-coffee-brown/40 uppercase tracking-widest">{r.pointsRequired} Points Required</p>
+                                            </div>
+                                            {selectedReward?._id === r._id && (
+                                                <div className="w-2 h-2 bg-accent-gold rounded-full animate-ping" />
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Summary */}
+
                         <div className="bg-coffee-brown rounded-[40px] p-8 text-white shadow-2xl shadow-coffee-brown/20 relative overflow-hidden group">
-                           <div className="absolute top-0 right-0 w-32 h-32 bg-accent-gold/5 rounded-full blur-3xl" />
-                           <h2 className="text-xl font-black mb-8 tracking-tighter">Order Summary</h2>
-                           <div className="space-y-4 mb-8 text-[11px] font-bold text-white/50">
-                               <div className="flex justify-between"><span>Items Value</span><span className="text-white">₹{subtotal}</span></div>
-                               {orderType === "Delivery" && (
-                                   <div className="flex justify-between"><span>Service Fee</span><span className="text-white">₹{shipping}</span></div>
-                               )}
-                               <div className="flex justify-between"><span>Taxes</span><span className="text-white italic">Inclusive</span></div>
-                               <div className="h-px bg-white/5 my-2" />
-                               <div className="flex justify-between text-2xl font-black text-white"><span>Total</span><span className="text-accent-gold">₹{total}</span></div>
-                           </div>
-                           <button
-                               onClick={handleCheckout}
-                               disabled={isOrdering}
-                               className="w-full py-5 bg-accent-gold text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-95 transition-all shadow-xl shadow-accent-gold/20 flex items-center justify-center gap-3"
-                           >
-                               {isOrdering ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <>Finalize Order <ArrowRight size={18} /></>}
-                           </button>
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-accent-gold/5 rounded-full blur-3xl" />
+                            <h2 className="text-xl font-black mb-8 tracking-tighter">Order Summary</h2>
+                            <div className="space-y-4 mb-8 text-[11px] font-bold text-white/50">
+                                <div className="flex justify-between"><span>Items Value</span><span className="text-white">₹{subtotal}</span></div>
+                                {selectedReward && (
+                                    <div className="flex justify-between text-accent-gold animate-in fade-in zoom-in duration-300">
+                                        <span>Reward ({selectedReward.type === 'Discount' ? `${selectedReward.value}%` : 'Fixed'})</span>
+                                        <span>-₹{
+                                            selectedReward.type === 'Discount'
+                                                ? Math.round((subtotal * selectedReward.value) / 100)
+                                                : selectedReward.value
+                                        }</span>
+                                    </div>
+                                )}
+                                {orderType === "Delivery" && (
+                                    <div className="flex justify-between"><span>Service Fee</span><span className="text-white">₹{shipping}</span></div>
+                                )}
+                                <div className="flex justify-between"><span>Taxes</span><span className="text-white italic">Inclusive</span></div>
+                                <div className="h-px bg-white/5 my-2" />
+                                <div className="flex justify-between text-2xl font-black text-white">
+                                    <span>Total</span>
+                                    <span className="text-accent-gold">₹{
+                                        selectedReward
+                                            ? total - (selectedReward.type === 'Discount' ? Math.round((subtotal * selectedReward.value) / 100) : selectedReward.value)
+                                            : total
+                                    }</span>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={handleCheckout}
+                                disabled={isOrdering}
+                                className="w-full py-5 bg-accent-gold text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-95 transition-all shadow-xl shadow-accent-gold/20 flex items-center justify-center gap-3"
+                            >
+                                {isOrdering ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <>Finalize Order <ArrowRight size={18} /></>}
+                            </button>
                         </div>
                     </div>
                 </div>
