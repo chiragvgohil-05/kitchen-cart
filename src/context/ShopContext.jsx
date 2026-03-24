@@ -56,7 +56,7 @@ export const ShopProvider = ({ children }) => {
         const fetchData = async () => {
             try {
                 const [prodRes, catRes, setRes] = await Promise.all([
-                    api.get('/products'),
+                    api.get('/products?limit=100'),
                     api.get('/categories'),
                     api.get('/settings')
                 ]);

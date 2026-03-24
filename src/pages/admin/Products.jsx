@@ -14,18 +14,39 @@ const AdminProducts = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchProducts();
-    }, []);
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [limit, setLimit] = useState(10);
+    const [totalProducts, setTotalProducts] = useState(0);
 
-    const fetchProducts = async () => {
+    useEffect(() => {
+        // Debounce search to avoid too many API calls
+        const delayDebounceFn = setTimeout(() => {
+            fetchProducts(1);
+        }, 500);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchTerm]);
+
+    useEffect(() => {
+        fetchProducts(currentPage);
+    }, [currentPage, limit]);
+
+    const fetchProducts = async (page = 1) => {
         try {
             setLoading(true);
-            const response = await api.get("/products");
+            const response = await api.get(`/products?page=${page}&limit=${limit}&search=${searchTerm}`);
             if (response.status !== 200 || !response.data?.success) {
                 throw new Error(response.data?.message || "Unexpected response while fetching products");
             }
-            setProducts(response.data.data.products);
+            
+            const { products, pagination, total } = response.data.data;
+            setProducts(products);
+            setTotalProducts(total);
+            
+            // Backend provides pagination.next/prev, but we can also calculate totalPages
+            setTotalPages(Math.ceil(total / limit));
             setLoading(false);
         } catch (error) {
             console.error("Error fetching products:", error);
@@ -33,11 +54,6 @@ const AdminProducts = () => {
             setLoading(false);
         }
     };
-
-    const filteredProducts = products.filter(p =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (p.category?.name && p.category.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
 
     const handleDeleteClick = (product) => {
         setSelectedProduct(product);
@@ -51,7 +67,7 @@ const AdminProducts = () => {
                 throw new Error(response.data?.message || "Unexpected response while deleting product");
             }
             toast.success("Product deleted successfully");
-            fetchProducts();
+            fetchProducts(currentPage);
             setIsDeleteOpen(false);
             setSelectedProduct(null);
         } catch (error) {
@@ -61,13 +77,19 @@ const AdminProducts = () => {
         }
     };
 
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setCurrentPage(newPage);
+        }
+    };
+
     return (
         <div className="space-y-10 pb-12 animate-fade-in">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
                 <div className="space-y-2">
                     <h1 className="text-2xl font-bold text-coffee-brown tracking-tighter">Product <span className="text-accent-gold">Management</span></h1>
-                    <p className="text-xs font-bold text-coffee-brown/40 tracking-wide">Manage and organize your café's menu offerings</p>
+                    <p className="text-xs font-bold text-coffee-brown/40 tracking-wide">Manage and organize your café's menu offerings ({totalProducts} items)</p>
                 </div>
 
                 <Link
@@ -86,12 +108,28 @@ const AdminProducts = () => {
                     <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-coffee-brown/20 group-focus-within:text-accent-gold transition-colors" size={20} />
                     <input
                         type="text"
-                        placeholder="Search products by name or category..."
+                        placeholder="Search products by name..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-16 pr-8 py-3 bg-white border border-coffee-brown/5 rounded-[24px] focus:outline-none focus:ring-4 focus:ring-accent-gold/5 focus:border-accent-gold/20 transition-all font-bold text-coffee-brown tracking-widest text-xs placeholder-coffee-brown/20"
 
                     />
+                </div>
+                
+                <div className="bg-white border border-coffee-brown/5 rounded-[24px] px-6 py-3 flex items-center gap-3">
+                    <span className="text-[10px] font-black uppercase text-coffee-brown/30 tracking-widest">Show:</span>
+                    <select 
+                        value={limit}
+                        onChange={(e) => {
+                            setLimit(Number(e.target.value));
+                            setCurrentPage(1);
+                        }}
+                        className="bg-transparent text-xs font-bold text-coffee-brown focus:outline-none cursor-pointer"
+                    >
+                        <option value={10}>10 Items</option>
+                        <option value={20}>20 Items</option>
+                        <option value={50}>50 Items</option>
+                    </select>
                 </div>
             </div>
 
@@ -104,6 +142,7 @@ const AdminProducts = () => {
                     </div>
 
                 ) : (
+                    <>
                     <table className="w-full text-left border-collapse min-w-[1000px]">
                         <thead>
                             <tr className="bg-cream/50 border-b border-coffee-brown/5">
@@ -116,8 +155,8 @@ const AdminProducts = () => {
                         </thead>
 
                         <tbody className="divide-y divide-coffee-brown/5">
-                            {filteredProducts.length > 0 ? (
-                                filteredProducts.map((product) => {
+                            {products.length > 0 ? (
+                                products.map((product) => {
                                     const discount = calculateDiscountPercentage(product.mrp, product.sellingPrice);
 
                                     return (
@@ -201,6 +240,58 @@ const AdminProducts = () => {
                             )}
                         </tbody>
                     </table>
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div className="flex items-center justify-between px-10 py-8 bg-cream/10 border-t border-coffee-brown/5">
+                            <div className="text-xs font-bold text-coffee-brown/40 uppercase tracking-widest">
+                                Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, totalProducts)} of {totalProducts} items
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                                        currentPage === 1 
+                                        ? "bg-coffee-brown/5 text-coffee-brown/20 cursor-not-allowed" 
+                                        : "bg-coffee-brown text-white hover:bg-accent-gold shadow-lg shadow-coffee-brown/10"
+                                    }`}
+                                >
+                                    Previous
+                                </button>
+                                
+                                <div className="flex items-center gap-1 mx-2">
+                                    {[...Array(totalPages)].map((_, i) => (
+                                        <button
+                                            key={i + 1}
+                                            onClick={() => handlePageChange(i + 1)}
+                                            className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
+                                                currentPage === i + 1
+                                                ? "bg-accent-gold text-white" 
+                                                : "text-coffee-brown hover:bg-cream"
+                                            }`}
+                                        >
+                                            {i + 1}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <button
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                                        currentPage === totalPages
+                                        ? "bg-coffee-brown/5 text-coffee-brown/20 cursor-not-allowed" 
+                                        : "bg-coffee-brown text-white hover:bg-accent-gold shadow-lg shadow-coffee-brown/10"
+                                    }`}
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    </>
                 )}
             </div>
 
@@ -215,3 +306,4 @@ const AdminProducts = () => {
 };
 
 export default AdminProducts;
+
