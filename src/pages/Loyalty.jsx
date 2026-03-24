@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { 
     Trophy, Star, History, Gift, TrendingUp, 
-    ChevronRight, Award, Zap, Coins, Info 
+    Award, Zap, Coins, Info 
 } from "lucide-react";
 import api from "../utils/api";
 import toast from "react-hot-toast";
@@ -92,10 +92,10 @@ const Loyalty = () => {
                             {user?.loyaltyTier} Member
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none">
-                            YOUR REWARD <br /><span className="text-accent-gold">JOURNEY.</span>
+                            ELEVATE YOUR <br /><span className="text-accent-gold">EXPERIENCE.</span>
                         </h1>
-                        <p className="text-white/40 text-lg max-w-md font-medium">
-                            Every cup tells a story. Every point brings you closer to exclusive perks and free delights.
+                        <p className="text-white/40 text-lg max-w-md font-medium italic">
+                            Status isn't just a label, it's a lifestyle. Experience the height of hospitality with every point you earn.
                         </p>
                     </div>
                     
@@ -151,8 +151,8 @@ const Loyalty = () => {
                         <Zap size={24} />
                     </div>
                     <div>
-                        <h3 className="text-2xl font-black text-coffee-brown tracking-tight">Point Expiry</h3>
-                        <p className="text-sm font-bold text-coffee-brown/30 mt-1">Your points are active for 365 days from earning.</p>
+                        <h3 className="text-2xl font-black text-coffee-brown tracking-tight">Redeem Value</h3>
+                        <p className="text-sm font-bold text-coffee-brown/30 mt-1">1 Loyalty Point = ₹1. Use points for discounts at checkout.</p>
                     </div>
                 </div>
             </div>
@@ -203,67 +203,64 @@ const Loyalty = () => {
                     </div>
                 </div>
 
+                {/* How to Earn Points Section */}
                 <div className="lg:col-span-4 space-y-8">
-                    <h2 className="text-3xl font-black text-coffee-brown tracking-tighter">Exclusive Perks</h2>
-                    <div className="space-y-4">
-                        {rewards.length > 0 ? (
-                            rewards.slice(0, 5).map((p) => {
-                                const userPoints = user?.loyaltyPoints || 0;
-                                const canClaim = userPoints >= p.pointsRequired;
-                                const rewardProgress = Math.min(100, (userPoints / p.pointsRequired) * 100);
-                                
-                                return (
-                                    <div key={p._id} className={`bg-cream rounded-3xl p-6 border transition-all relative overflow-hidden group ${canClaim ? 'border-accent-gold/40 bg-white' : 'border-coffee-brown/5 opacity-80'}`}>
-                                        {!canClaim && (
-                                            <div className="absolute bottom-0 left-0 h-1 bg-coffee-brown/5 w-full">
-                                                <div 
-                                                    className="h-full bg-accent-gold/20 transition-all duration-1000" 
-                                                    style={{ width: `${rewardProgress}%` }}
-                                                />
-                                            </div>
-                                        )}
-                                        
-                                        <div className="flex items-center gap-4 relative z-10">
-                                            <div className={`w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm transition-all ${canClaim ? 'text-accent-gold group-hover:bg-accent-gold group-hover:text-white' : 'text-coffee-brown/20'}`}>
-                                                <Gift size={20} />
-                                            </div>
-                                            <div className="flex-1">
-                                                <h4 className="font-black text-coffee-brown text-sm">{p.name}</h4>
-                                                <p className="text-[10px] font-bold text-coffee-brown/40 uppercase tracking-widest">{p.pointsRequired} Points Required</p>
-                                            </div>
-                                            {canClaim ? (
-                                                <button 
-                                                    onClick={() => handleClaimReward(p)}
-                                                    disabled={claimLoading}
-                                                    className="px-5 py-2.5 bg-accent-gold text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:scale-110 active:scale-95 transition-all shadow-xl shadow-accent-gold/20 disabled:opacity-50"
-                                                >
-                                                    Claim
-                                                </button>
-                                            ) : (
-                                                <div className="flex flex-col items-end gap-1">
-                                                    <span className="text-[9px] font-black text-accent-gold uppercase tracking-widest">
-                                                        {rewardProgress.toFixed(0)}%
-                                                    </span>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <p className="mt-4 text-[11px] font-bold text-coffee-brown/40 leading-relaxed uppercase tracking-wide">
-                                            {p.description}
-                                        </p>
-                                        {!canClaim && (
-                                            <div className="mt-3 flex items-center gap-2 text-[9px] font-bold text-coffee-brown/20 uppercase tracking-widest">
-                                                <div className="w-1 h-1 rounded-full bg-accent-gold/40 animate-pulse" />
-                                                Need {p.pointsRequired - userPoints} more points
-                                            </div>
-                                        )}
+                    <h2 className="text-3xl font-black text-coffee-brown tracking-tighter flex items-center gap-4">
+                        <TrendingUp className="text-accent-gold" />
+                        How to Earn
+                    </h2>
+                    <div className="space-y-6">
+                        {/* Task 1: Spend */}
+                        <div className="bg-white rounded-[32px] p-8 border border-coffee-brown/5 shadow-xl shadow-coffee-brown/5 hover:border-accent-gold/20 transition-all group">
+                            <div className="flex items-start gap-5">
+                                <div className="w-14 h-14 bg-accent-gold/10 text-accent-gold rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                    <Coins size={28} />
+                                </div>
+                                <div className="space-y-2">
+                                    <h4 className="text-xl font-black text-coffee-brown tracking-tight">Dine & Earn</h4>
+                                    <p className="text-sm font-bold text-coffee-brown/40 leading-relaxed">
+                                        Earn <span className="text-accent-gold">1 Point</span> for every <span className="text-coffee-brown">₹10</span> spent. Points are added automatically after every successful order.
+                                    </p>
+                                    <div className="pt-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-accent-gold">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-accent-gold animate-pulse" />
+                                        Instant Credit
                                     </div>
-                                );
-                            })
-                        ) : (
-                            <div className="p-10 text-center border border-dashed border-coffee-brown/10 rounded-3xl">
-                                <p className="text-sm font-bold text-coffee-brown/20">No rewards available</p>
+                                </div>
                             </div>
-                        )}
+                        </div>
+
+                        {/* Task 2: Tier Bonus */}
+                        <div className="bg-linear-to-br from-coffee-brown to-black rounded-[32px] p-8 text-white shadow-2xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+                            <div className="relative z-10 flex items-start gap-5">
+                                <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center shrink-0 backdrop-blur-sm group-hover:rotate-12 transition-transform">
+                                    <Star className="text-accent-gold fill-accent-gold" size={28} />
+                                </div>
+                                <div className="space-y-2">
+                                    <h4 className="text-xl font-black tracking-tight">Tier Multiplier</h4>
+                                    <p className="text-sm font-medium text-white/50 leading-relaxed">
+                                        Climb tiers to accelerate your earnings. {user?.loyaltyTier === 'Gold' ? 'You are currently earning 1.2x points!' : 'Upgrade to Silver for 1.1x boost.'}
+                                    </p>
+                                    <div className="flex flex-wrap gap-2 pt-2">
+                                        {['Bronze: 1x', 'Silver: 1.1x', 'Gold: 1.2x', 'Plat: 1.5x'].map((tier, idx) => (
+                                            <span key={idx} className="px-2 py-1 bg-white/5 rounded-lg text-[9px] font-black uppercase tracking-tight text-white/40">
+                                                {tier}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        {/* Tip */}
+                        <div className="bg-accent-gold/5 rounded-2xl p-6 flex gap-4 items-center">
+                            <Info size={20} className="text-accent-gold shrink-0" />
+                            <p className="text-[11px] font-bold text-coffee-brown/60 uppercase tracking-wide leading-tight">
+                                Points are valid for 12 months. Keep dining to maintain your premium status.
+                            </p>
+                        </div>
                     </div>
                 </div>
 

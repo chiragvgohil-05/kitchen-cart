@@ -67,7 +67,7 @@ const Navbar = () => {
                         <div className="shrink-0">
                             <Link to="/" className="flex items-center gap-3 group">
                                 <img src={logo} alt="SnowEra Cafe" className="w-12 h-12 object-contain group-hover:scale-110 transition-transform duration-300" />
-                                <span className="text-2xl font-black tracking-tighter text-white uppercase italic">
+                                <span className="md:text-2xl text-xl font-black tracking-tighter text-white uppercase italic">
                                     SnowEra <span className="text-accent-gold not-italic">Cafe</span>
                                 </span>
                             </Link>
