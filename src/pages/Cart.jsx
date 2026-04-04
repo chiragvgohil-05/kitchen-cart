@@ -1,4 +1,4 @@
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ChevronRight, CreditCard, Banknote, Wallet, LayoutGrid, Info, Gift } from "lucide-react";
+import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ChevronRight, CreditCard, Banknote, Wallet, LayoutGrid, Info, Gift, CheckCircle2 } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -13,7 +13,10 @@ import { loadRazorpayScript } from "../utils/razorpay";
 const Cart = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const { cart, updateCartQuantity, removeFromCart, placeOrder, verifyRazorpayPayment, clearCart } = useShop();
+    const { 
+        cart, updateCartQuantity, removeFromCart, placeOrder, 
+        verifyRazorpayPayment, clearCart, selectedReward, setSelectedReward 
+    } = useShop();
     const [isOrdering, setIsOrdering] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState("COD");
     const [orderType, setOrderType] = useState("Takeaway");
@@ -22,13 +25,20 @@ const Cart = () => {
 
     const [loadingTables, setLoadingTables] = useState(false);
     const [rewards, setRewards] = useState([]);
-    const [selectedReward, setSelectedReward] = useState(null);
     const [isApplyingReward, setIsApplyingReward] = useState(false);
 
 
     const subtotal = cart.reduce((acc, item) => acc + (item.sellingPrice * item.quantity), 0);
     const shipping = subtotal > 0 && orderType === "Delivery" ? (subtotal > 5000 ? 0 : 100) : 0;
-    const total = subtotal + shipping;
+    
+    // Calculate Reward Discount
+    const rewardDiscount = selectedReward ? (
+        selectedReward.type === 'Discount' 
+        ? Math.round((subtotal * selectedReward.value) / 100) 
+        : (selectedReward.type === 'Voucher' ? selectedReward.value : 0)
+    ) : 0;
+
+    const total = subtotal + shipping - rewardDiscount;
 
     useEffect(() => {
         if (orderType === "Dine-in") {
@@ -279,15 +289,19 @@ const Cart = () => {
                         {user && rewards.length > 0 && (
                             <div className="bg-white rounded-[32px] p-6 border border-coffee-brown/5 shadow-sm space-y-4">
                                 <h2 className="text-sm font-black uppercase tracking-widest text-coffee-brown/40 mb-2">Exclusive Perks</h2>
-                                <div className="space-y-3">
-                                    {rewards.map(r => (
+                                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                                    {[...rewards].sort((a, b) => {
+                                        if (selectedReward?._id === a._id) return -1;
+                                        if (selectedReward?._id === b._id) return 1;
+                                        return 0;
+                                    }).map(r => (
                                         <button
                                             key={r._id}
                                             onClick={() => setSelectedReward(selectedReward?._id === r._id ? null : r)}
-                                            className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${selectedReward?._id === r._id ? "border-accent-gold bg-accent-gold/5" : "border-neutral-50 hover:bg-neutral-50"
+                                            className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${selectedReward?._id === r._id ? "border-emerald-500 bg-emerald-50 shadow-md" : "border-neutral-50 hover:bg-neutral-50"
                                                 }`}
                                         >
-                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${selectedReward?._id === r._id ? "bg-accent-gold text-white" : "bg-cream text-accent-gold"}`}>
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${selectedReward?._id === r._id ? "bg-emerald-500 text-white" : "bg-cream text-accent-gold"}`}>
                                                 <Gift size={18} />
                                             </div>
                                             <div className="flex-1">
@@ -295,7 +309,9 @@ const Cart = () => {
                                                 <p className="text-[9px] font-bold text-coffee-brown/40 uppercase tracking-widest">{r.pointsRequired} Points Required</p>
                                             </div>
                                             {selectedReward?._id === r._id && (
-                                                <div className="w-2 h-2 bg-accent-gold rounded-full animate-ping" />
+                                                <div className="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center text-white">
+                                                    <CheckCircle2 size={12} />
+                                                </div>
                                             )}
                                         </button>
                                     ))}
@@ -312,12 +328,8 @@ const Cart = () => {
                                 <div className="flex justify-between"><span>Items Value</span><span className="text-white">₹{subtotal}</span></div>
                                 {selectedReward && (
                                     <div className="flex justify-between text-accent-gold animate-in fade-in zoom-in duration-300">
-                                        <span>Reward ({selectedReward.type === 'Discount' ? `${selectedReward.value}%` : 'Fixed'})</span>
-                                        <span>-₹{
-                                            selectedReward.type === 'Discount'
-                                                ? Math.round((subtotal * selectedReward.value) / 100)
-                                                : selectedReward.value
-                                        }</span>
+                                        <span>Reward ({selectedReward.name})</span>
+                                        <span>-₹{rewardDiscount}</span>
                                     </div>
                                 )}
                                 {orderType === "Delivery" && (
@@ -327,11 +339,7 @@ const Cart = () => {
                                 <div className="h-px bg-white/5 my-2" />
                                 <div className="flex justify-between text-2xl font-black text-white">
                                     <span>Total</span>
-                                    <span className="text-accent-gold">₹{
-                                        selectedReward
-                                            ? total - (selectedReward.type === 'Discount' ? Math.round((subtotal * selectedReward.value) / 100) : selectedReward.value)
-                                            : total
-                                    }</span>
+                                    <span className="text-accent-gold">₹{total}</span>
                                 </div>
                             </div>
 

@@ -15,6 +15,7 @@ export const ShopProvider = ({ children }) => {
     const [loadingCategories, setLoadingCategories] = useState(true);
     const [cart, setCart] = useState([]);
     const [wishlist, setWishlist] = useState([]);
+    const [selectedReward, setSelectedReward] = useState(null);
     const navigate = useNavigate();
     const { user } = useAuth();
 
@@ -68,8 +69,8 @@ export const ShopProvider = ({ children }) => {
                 if (catRes.data.success) {
                     setCategories(catRes.data.data || []);
                 }
-                if (setRes.data) {
-                    setSettings(setRes.data);
+                if (setRes.data && setRes.data.success) {
+                    setSettings(setRes.data.data);
                 }
 
 
@@ -214,6 +215,7 @@ export const ShopProvider = ({ children }) => {
 
     const clearCart = () => {
         setCart([]);
+        setSelectedReward(null);
         localStorage.removeItem('kitchenCart');
     };
 
@@ -268,8 +270,8 @@ export const ShopProvider = ({ children }) => {
     return (
         <ShopContext.Provider value={{
             products, categories, settings, loadingProducts, loadingCategories,
-            cart, wishlist, addToCart, toggleWishlist, removeFromCart, updateCartQuantity, clearCart, placeOrder, verifyRazorpayPayment, retryPayment, setSettings
-
+            cart, wishlist, addToCart, toggleWishlist, removeFromCart, updateCartQuantity, clearCart, placeOrder, verifyRazorpayPayment, retryPayment, setSettings,
+            selectedReward, setSelectedReward
         }}>
             {children}
         </ShopContext.Provider>

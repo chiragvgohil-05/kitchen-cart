@@ -36,34 +36,6 @@ const OrderSuccess = () => {
                     </p>
                 </div>
 
-                {/* Progress Tracking */}
-                <div className="bg-white rounded-[40px] p-8 border border-coffee-brown/5 shadow-2xl shadow-coffee-brown/5 space-y-8">
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="flex flex-col items-center gap-4">
-                            <div className="w-14 h-14 bg-accent-gold rounded-2xl flex items-center justify-center text-white shadow-xl shadow-accent-gold/20">
-                                <ShoppingBag size={24} />
-                            </div>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-accent-gold">Confirmed</span>
-                        </div>
-                        <div className="h-1 flex-1 bg-accent-gold/10 rounded-full relative overflow-hidden">
-                            <div className="absolute inset-y-0 left-0 bg-accent-gold w-1/3 animate-progress-flow" />
-                        </div>
-                        <div className="flex flex-col items-center gap-4">
-                            <div className="w-14 h-14 bg-cream rounded-2xl flex items-center justify-center text-coffee-brown/20 border border-coffee-brown/5">
-                                <Coffee size={24} />
-                            </div>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-coffee-brown/20">Kitchen</span>
-                        </div>
-                        <div className="h-1 flex-1 bg-coffee-brown/5 rounded-full" />
-                        <div className="flex flex-col items-center gap-4">
-                            <div className="w-14 h-14 bg-cream rounded-2xl flex items-center justify-center text-coffee-brown/10 border border-coffee-brown/5">
-                                <Package size={24} />
-                            </div>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-coffee-brown/10">Arrival</span>
-                        </div>
-                    </div>
-                </div>
-
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                     <Link
                         to="/user/orders"

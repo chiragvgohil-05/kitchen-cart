@@ -2,13 +2,16 @@ import { useState, useEffect } from "react";
 import { Gift, Zap, TrendingUp, Info, CheckCircle2, XCircle, ChevronRight, Bookmark } from "lucide-react";
 import api from "../utils/api";
 import toast from "react-hot-toast";
+import { useShop } from "../context/ShopContext";
+import { useNavigate } from "react-router-dom";
 
 const Rewards = () => {
+    const { selectedReward, setSelectedReward, cart } = useShop();
     const [rewards, setRewards] = useState([]);
     const [userLoyalty, setUserLoyalty] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [redeemingId, setRedeemingId] = useState(null);
     const [confirmationReward, setConfirmationReward] = useState(null);
+    const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -32,16 +35,24 @@ const Rewards = () => {
 
     const handleConfirmRedeem = async () => {
         if (!confirmationReward) return;
-        try {
-            setRedeemingId(confirmationReward._id);
+        
+        if (cart.length === 0) {
+            toast.error("Add items to your cart first to apply this reward!");
             setConfirmationReward(null);
-            await api.post(`/rewards/${confirmationReward._id}/redeem`);
-            toast.success("Reward claimed successfully!");
-            fetchData();
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Redemption failed");
-        } finally {
-            setRedeemingId(null);
+            return;
+        }
+
+        setSelectedReward(confirmationReward);
+        setConfirmationReward(null);
+        toast.success(`"${confirmationReward.name}" applied to cart!`);
+        navigate('/cart');
+    };
+
+    const handleRemoveReward = (e, rewardId) => {
+        e.stopPropagation();
+        if (selectedReward?._id === rewardId) {
+            setSelectedReward(null);
+            toast.success("Reward removed from cart");
         }
     };
 
@@ -99,24 +110,37 @@ const Rewards = () => {
                             </div>
 
                             <button 
-                                onClick={() => setConfirmationReward(r)}
-                                disabled={redeemingId === r._id || (userLoyalty?.loyaltyPoints < r.pointsRequired)}
+                                onClick={() => {
+                                    if (selectedReward?._id === r._id) {
+                                        setSelectedReward(null);
+                                        toast.success("Reward removed");
+                                    } else if (!selectedReward) {
+                                        setConfirmationReward(r);
+                                    }
+                                }}
+                                disabled={(selectedReward && selectedReward._id !== r._id) || (userLoyalty?.loyaltyPoints < r.pointsRequired)}
                                 className={`w-full py-5 rounded-[24px] text-xs font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 ${
                                     userLoyalty?.loyaltyPoints < r.pointsRequired 
                                     ? "bg-neutral-50 text-neutral-300 border border-neutral-100 cursor-not-allowed" 
+                                    : selectedReward?._id === r._id
+                                    ? "bg-emerald-500 text-white shadow-xl shadow-emerald-500/20"
+                                    : (selectedReward && selectedReward._id !== r._id)
+                                    ? "bg-neutral-100 text-neutral-400 cursor-not-allowed grayscale"
                                     : "bg-coffee-brown text-white shadow-xl shadow-coffee-brown/20 hover:scale-[1.02] active:scale-[0.98] hover:bg-black"
                                 }`}
                             >
 
-                                {redeemingId === r._id ? (
-                                    <div className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full" />
+                                {selectedReward?._id === r._id ? (
+                                    <>Applied <CheckCircle2 size={16} /></>
+                                ) : (selectedReward && selectedReward._id !== r._id) ? (
+                                    <>Locked <Info size={16} /></>
                                 ) : userLoyalty?.loyaltyPoints < r.pointsRequired ? (
                                     <div className="flex flex-col items-center">
-                                        <div className="flex items-center gap-2">Locked <XCircle size={16} /></div>
+                                        <div className="flex items-center gap-2">Points Locked <XCircle size={16} /></div>
                                         <span className="text-[8px] font-bold mt-1 text-red-400 normal-case tracking-tight">Need {r.pointsRequired - (userLoyalty?.loyaltyPoints || 0)} more points</span>
                                     </div>
                                 ) : (
-                                    <>Redeem Now <CheckCircle2 size={16} /></>
+                                    <>Redeem & Apply <CheckCircle2 size={16} /></>
                                 )}
 
                             </button>

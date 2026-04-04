@@ -28,7 +28,12 @@ const Footer = () => {
                                 <div className="w-10 h-10 rounded-xl bg-brand-primary/5 flex items-center justify-center">
                                     <Phone size={16} />
                                 </div>
-                                <span className="text-sm font-bold tracking-tight">{settings?.phone || '+91 (800) 123-4567'}</span>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-bold tracking-tight">{settings?.phone || '+91 (800) 123-4567'}</span>
+                                    {settings?.mobile && (
+                                        <span className="text-[11px] font-bold text-brand-primary/40 tracking-tight">M: {settings.mobile}</span>
+                                    )}
+                                </div>
                             </div>
                             <div className="flex items-center gap-4 text-brand-primary">
                                 <div className="w-10 h-10 rounded-xl bg-brand-primary/5 flex items-center justify-center">
@@ -46,15 +51,21 @@ const Footer = () => {
                             )}
                         </div>
                         <div className="flex items-center gap-4 pt-2">
-                            <a href={settings?.facebook || "#"} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full hover:bg-brand-primary hover:text-white transition-all">
-                                <Facebook size={20} strokeWidth={1.5} />
-                            </a>
-                            <a href={settings?.instagram || "#"} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full hover:bg-brand-primary hover:text-white transition-all">
-                                <Instagram size={20} strokeWidth={1.5} />
-                            </a>
-                            <a href={settings?.twitter || "#"} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full hover:bg-brand-primary hover:text-white transition-all">
-                                <Twitter size={20} strokeWidth={1.5} />
-                            </a>
+                            {settings?.facebook && settings.facebook !== "#" && (
+                                <a href={settings.facebook} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full hover:bg-brand-primary hover:text-white transition-all">
+                                    <Facebook size={20} strokeWidth={1.5} />
+                                </a>
+                            )}
+                            {settings?.instagram && settings.instagram !== "#" && (
+                                <a href={settings.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full hover:bg-brand-primary hover:text-white transition-all">
+                                    <Instagram size={20} strokeWidth={1.5} />
+                                </a>
+                            )}
+                            {settings?.twitter && settings.twitter !== "#" && (
+                                <a href={settings.twitter} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full hover:bg-brand-primary hover:text-white transition-all">
+                                    <Twitter size={20} strokeWidth={1.5} />
+                                </a>
+                            )}
                         </div>
 
                     </div>
@@ -68,7 +79,6 @@ const Footer = () => {
                             {[
                                 { name: "Our Menu", href: "/menu" },
                                 { name: "Offer Zone", href: "/offers" },
-                                { name: "New Arrivals", href: "/new-arrivals" },
                                 { name: "Search", href: "/menu" },
                             ].map((item) => (
                                 <li key={item.name}>

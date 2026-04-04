@@ -33,7 +33,9 @@ const Contact = () => {
                                 <div className="space-y-2">
                                     <p className="text-sm font-bold text-white/20 tracking-wide">Phone Number</p>
                                     <p className="text-2xl font-bold tracking-tighter transition-colors group-hover/item:text-accent-gold">{settings?.phone || '+91 (800) 123-4567'}</p>
-
+                                    {settings?.mobile && (
+                                        <p className="text-xs font-bold text-white/40 tracking-widest uppercase">Mobile: {settings.mobile}</p>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex gap-8 group/item">

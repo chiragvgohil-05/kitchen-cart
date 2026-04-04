@@ -9,6 +9,7 @@ const Settings = () => {
     const [formData, setFormData] = useState({
         address: '',
         phone: '',
+        mobile: '',
         email: '',
         facebook: '',
         instagram: '',
@@ -21,6 +22,7 @@ const Settings = () => {
             setFormData({
                 address: settings.address || '',
                 phone: settings.phone || '',
+                mobile: settings.mobile || '',
                 email: settings.email || '',
                 facebook: settings.facebook || '',
                 instagram: settings.instagram || '',
@@ -38,8 +40,8 @@ const Settings = () => {
         setLoading(true);
         try {
             const res = await api.put('/settings', formData);
-            if (res.data) {
-                setSettings(res.data);
+            if (res.data && res.data.success) {
+                setSettings(res.data.data);
                 toast.success('Settings updated successfully');
             }
         } catch (error) {
@@ -91,6 +93,22 @@ const Settings = () => {
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 rounded-xl border border-coffee-brown/10 focus:ring-2 focus:ring-accent-gold/20 focus:border-accent-gold transition-all outline-none font-medium"
                                 placeholder="+91 1234567890"
+                            />
+                        </div>
+
+                        {/* Mobile */}
+                        <div>
+                            <label className="text-sm font-semibold text-coffee-brown/60 mb-2 flex items-center gap-2">
+                                <Phone size={16} className="text-accent-gold rotate-12" />
+                                Contact Mobile
+                            </label>
+                            <input
+                                type="text"
+                                name="mobile"
+                                value={formData.mobile}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 rounded-xl border border-coffee-brown/10 focus:ring-2 focus:ring-accent-gold/20 focus:border-accent-gold transition-all outline-none font-medium"
+                                placeholder="+91 9876543210"
                             />
                         </div>
 

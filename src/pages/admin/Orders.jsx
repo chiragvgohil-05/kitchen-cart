@@ -226,10 +226,20 @@ const AdminOrders = () => {
                                     </td>
                                     <td className="px-8 py-6">
                                         <div className="space-y-1">
-                                            <p className="font-black text-coffee-brown text-sm">₹{order.totalAmount}</p>
-                                            <div className="flex items-center gap-1.5">
-                                                {order.paymentMethod === 'COD' ? <Banknote size={10} className="text-amber-500" /> : <CreditCard size={10} className="text-emerald-500" />}
+                                            <div className="flex items-baseline gap-2">
+                                                <p className="font-black text-coffee-brown text-sm">₹{order.totalAmount}</p>
+                                                {order.discountAmount > 0 && (
+                                                    <p className="text-[10px] font-bold text-coffee-brown/30 line-through tracking-tighter">₹{order.totalAmount + order.discountAmount}</p>
+                                                )}
+                                            </div>
+                                            <div className="flex flex-wrap items-center gap-1.5">
+                                                {order.paymentMethod === 'COD' ? <Banknote size={10} className="text-amber-500" /> : order.paymentMethod === 'Wallet' ? <Wallet size={10} className="text-purple-500" /> : <CreditCard size={10} className="text-emerald-500" />}
                                                 <span className="text-[9px] font-black uppercase tracking-widest text-coffee-brown/30">{order.paymentMethod}</span>
+                                                {order.discountAmount > 0 && (
+                                                    <span className="text-[8px] font-black bg-emerald-50 text-emerald-500 px-1.5 py-0.5 rounded-md uppercase tracking-tighter">
+                                                        -{order.reward?.name || 'Discount'}
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                     </td>

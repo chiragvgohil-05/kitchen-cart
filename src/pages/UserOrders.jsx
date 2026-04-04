@@ -194,7 +194,17 @@ const UserOrders = () => {
                                             </div>
                                             <div>
                                                 <p className="text-[9px] font-black uppercase tracking-widest text-coffee-brown/20 mb-2">Total Value</p>
-                                                <p className="text-2xl font-black text-coffee-brown tracking-tighter">₹{order.totalAmount}</p>
+                                                <div className="flex items-baseline gap-3">
+                                                    <p className="text-2xl font-black text-coffee-brown tracking-tighter">₹{order.totalAmount}</p>
+                                                    {order.discountAmount > 0 && (
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-[10px] font-bold text-coffee-brown/30 line-through">₹{order.totalAmount + order.discountAmount}</span>
+                                                            <span className="text-[9px] font-black bg-emerald-50 text-emerald-500 px-2 py-0.5 rounded-full uppercase tracking-tighter">
+                                                                {order.reward?.name || 'Discount Applied'} (-₹{order.discountAmount})
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="flex gap-3">
