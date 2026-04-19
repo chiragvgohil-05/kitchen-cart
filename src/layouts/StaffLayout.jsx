@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { NavLink, Outlet, Link, useNavigate } from "react-router-dom";
+import PageLoader from "../components/PageLoader";
 import { useAuth } from "../context/AuthContext";
 import {
     ChefHat, ClipboardList, LayoutDashboard,
@@ -118,7 +119,9 @@ const StaffLayout = () => {
 
                 <main className="flex-1 overflow-y-auto p-6 lg:p-8">
                     <div className="max-w-7xl mx-auto pb-12">
-                        <Outlet />
+                        <Suspense fallback={<PageLoader message="Loading Service Panel..." />}>
+                            <Outlet />
+                        </Suspense>
                     </div>
                 </main>
             </div>

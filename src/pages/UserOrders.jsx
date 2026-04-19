@@ -9,14 +9,14 @@ import { useAuth } from "../context/AuthContext";
 import { loadRazorpayScript } from "../utils/razorpay";
 
 const STATUS_CONFIG = {
-    Pending:    { label: "Pending",    color: "text-slate-400 bg-slate-50 border-slate-100", icon: Clock },
-    Confirmed:  { label: "Confirmed",  color: "text-blue-500 bg-blue-50/50 border-blue-100 shadow-[0_0_15px_rgba(59,130,246,0.1)]", icon: CheckCircle2 },
-    Preparing:  { label: "Preparing",  color: "text-amber-500 bg-amber-50/50 border-amber-100 shadow-[0_0_15px_rgba(245,158,11,0.1)] animate-pulse", icon: Coffee },
-    Ready:      { label: "Ready",      color: "text-emerald-500 bg-emerald-50/50 border-emerald-100 shadow-[0_0_15px_rgba(16,185,129,0.1)]", icon: CheckCircle2 },
-    Served:     { label: "Served",     color: "text-coffee-brown bg-coffee-brown/5 border-coffee-brown/10", icon: CheckCircle2 },
-    Shipped:    { label: "Shipped",    color: "text-indigo-500 bg-indigo-50/50 border-indigo-100", icon: Truck },
-    Delivered:  { label: "Delivered",  color: "text-neutral-400 bg-neutral-50/50 border-neutral-100", icon: CheckCircle2 },
-    Cancelled:  { label: "Cancelled",  color: "text-red-400 bg-red-50/50 border-red-100", icon: XCircle },
+    Pending: { label: "Pending", color: "text-slate-400 bg-slate-50 border-slate-100", icon: Clock },
+    Confirmed: { label: "Confirmed", color: "text-blue-500 bg-blue-50/50 border-blue-100 shadow-[0_0_15px_rgba(59,130,246,0.1)]", icon: CheckCircle2 },
+    Preparing: { label: "Preparing", color: "text-amber-500 bg-amber-50/50 border-amber-100 shadow-[0_0_15px_rgba(245,158,11,0.1)] animate-pulse", icon: Coffee },
+    Ready: { label: "Ready", color: "text-emerald-500 bg-emerald-50/50 border-emerald-100 shadow-[0_0_15px_rgba(16,185,129,0.1)]", icon: CheckCircle2 },
+    Served: { label: "Served", color: "text-coffee-brown bg-coffee-brown/5 border-coffee-brown/10", icon: CheckCircle2 },
+    Shipped: { label: "Shipped", color: "text-indigo-500 bg-indigo-50/50 border-indigo-100", icon: Truck },
+    Delivered: { label: "Delivered", color: "text-neutral-400 bg-neutral-50/50 border-neutral-100", icon: CheckCircle2 },
+    Cancelled: { label: "Cancelled", color: "text-red-400 bg-red-50/50 border-red-100", icon: XCircle },
 };
 
 const UserOrders = () => {
@@ -122,15 +122,15 @@ const UserOrders = () => {
         <div className="bg-cream min-h-screen py-20 animate-fade-in">
             <div className="max-w-6xl mx-auto px-6">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20">
-                   <div>
+                    <div>
                         <h1 className="text-4xl font-black text-coffee-brown tracking-tighter leading-none">
                             MY <span className="text-accent-gold">JOURNEY</span>
                         </h1>
                         <p className="text-[10px] font-black uppercase tracking-[0.25em] text-coffee-brown/30 mt-3 pl-1">A chronicle of your cafe experiences</p>
-                   </div>
-                   <div className="px-8 py-4 bg-white/50 backdrop-blur-xl rounded-full border border-coffee-brown/5 shadow-sm text-[10px] font-black uppercase tracking-widest">
-                       {orders.length} TOTAL VISITS
-                   </div>
+                    </div>
+                    <div className="px-8 py-4 bg-white/50 backdrop-blur-xl rounded-full border border-coffee-brown/5 shadow-sm text-[10px] font-black uppercase tracking-widest">
+                        {orders.length} TOTAL VISITS
+                    </div>
                 </div>
 
                 {orders.length === 0 ? (

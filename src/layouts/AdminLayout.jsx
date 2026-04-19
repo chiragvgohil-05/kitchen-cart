@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { NavLink, Outlet, Link, useNavigate } from "react-router-dom";
+import PageLoader from "../components/PageLoader";
 import { useAuth } from "../context/AuthContext";
 import {
     LayoutDashboard,
@@ -190,7 +191,9 @@ const AdminLayout = () => {
                 {/* Content */}
                 <main className="flex-1 overflow-y-auto p-8 lg:p-6 scrollbar-coffee">
                     <div className="max-w-7xl mx-auto pb-12">
-                        <Outlet />
+                        <Suspense fallback={<PageLoader message="Initializing Admin Suite..." />}>
+                            <Outlet />
+                        </Suspense>
                     </div>
                 </main>
             </div>
