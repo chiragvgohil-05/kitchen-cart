@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api', // Update this if your backend port is different
+    baseURL: 'https://kitchen-cart-backend-production-ded7.up.railway.app/api', // Update this if your backend port is different
     headers: {
         'Content-Type': 'application/json',
     },
