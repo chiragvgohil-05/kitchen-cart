@@ -13,9 +13,9 @@ import { loadRazorpayScript } from "../utils/razorpay";
 const Cart = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const { 
-        cart, updateCartQuantity, removeFromCart, placeOrder, 
-        verifyRazorpayPayment, clearCart, selectedReward, setSelectedReward 
+    const {
+        cart, updateCartQuantity, removeFromCart, placeOrder,
+        verifyRazorpayPayment, clearCart, selectedReward, setSelectedReward
     } = useShop();
     const [isOrdering, setIsOrdering] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState("COD");
@@ -30,12 +30,12 @@ const Cart = () => {
 
     const subtotal = cart.reduce((acc, item) => acc + (item.sellingPrice * item.quantity), 0);
     const shipping = subtotal > 0 && orderType === "Delivery" ? (subtotal > 5000 ? 0 : 100) : 0;
-    
+
     // Calculate Reward Discount
     const rewardDiscount = selectedReward ? (
-        selectedReward.type === 'Discount' 
-        ? Math.round((subtotal * selectedReward.value) / 100) 
-        : (selectedReward.type === 'Voucher' ? selectedReward.value : 0)
+        selectedReward.type === 'Discount'
+            ? Math.round((subtotal * selectedReward.value) / 100)
+            : (selectedReward.type === 'Voucher' ? selectedReward.value : 0)
     ) : 0;
 
     const total = subtotal + shipping - rewardDiscount;

@@ -42,13 +42,13 @@ const ProductCard = ({ product }) => {
                         )}
                     </div>
 
-                    <div className={`absolute top-4 right-4 z-20 transition-all duration-500 transform ${isHovered ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}>
+                    <div className={`absolute top-4 right-4 z-20 transition-all duration-500 transform max-lg:opacity-100 max-lg:translate-x-0 ${isHovered ? "translate-x-0 opacity-100" : "lg:translate-x-4 lg:opacity-0"}`}>
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
                                 toggleWishlist(product);
                             }}
-                            className={`p-3 rounded-2xl backdrop-blur-md transition-all duration-300 shadow-xl ${isWishlisted
+                            className={`p-3 rounded-2xl backdrop-blur-md transition-all duration-300 shadow-xl cursor-pointer ${isWishlisted
                                 ? "bg-red-50 text-red-500"
                                 : "bg-white/90 text-coffee-brown hover:bg-white"
                                 }`}
@@ -68,11 +68,11 @@ const ProductCard = ({ product }) => {
                         loop={images?.length > 1}
                     >
                         {images?.map((img, idx) => (
-                            <SwiperSlide key={idx} className="flex items-center justify-center p-8">
+                            <SwiperSlide key={idx} className="flex items-center justify-center">
                                 <img
                                     src={getProductImageUrl(img)}
                                     alt={`${name} - ${idx + 1}`}
-                                    className="h-full w-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-1000 ease-out"
+                                    className="h-full w-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-1000 ease-out"
                                 />
                             </SwiperSlide>
                         ))}
@@ -96,7 +96,7 @@ const ProductCard = ({ product }) => {
                         <span className="text-sm font-bold text-accent-gold tracking-wide">{brand || 'Brewed in Store'}</span>
                     </div>
 
-                    <h3 className="text-lg font-bold text-coffee-brown leading-tight line-clamp-2 min-h-14 group-hover:text-accent-gold transition-colors duration-300">
+                    <h3 className="text-lg font-bold text-coffee-brown leading-tight line-clamp-2 group-hover:text-accent-gold transition-colors duration-300">
                         {name}
                     </h3>
 
@@ -111,15 +111,14 @@ const ProductCard = ({ product }) => {
                                 </span>
                             )}
                         </div>
-                        
-                        <button 
+
+                        <button
                             onClick={handleAddToCart}
                             disabled={stock <= 0}
-                            className={`p-3 rounded-2xl transition-all duration-300 group ${
-                                stock > 0
-                                    ? 'bg-coffee-brown text-white hover:bg-accent-gold shadow-lg shadow-coffee-brown/10'
-                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            }`}
+                            className={`p-3 rounded-2xl transition-all duration-300 group cursor-pointer ${stock > 0
+                                ? 'bg-coffee-brown text-white hover:bg-accent-gold shadow-lg shadow-coffee-brown/10'
+                                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                }`}
                         >
                             <ShoppingCart size={20} className="group-hover:scale-110 transition-transform" />
                         </button>

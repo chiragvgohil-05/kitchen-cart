@@ -6,6 +6,7 @@ import { Heart, ShoppingCart, ArrowLeft, Truck, Shield, RotateCcw, Star, Chevron
 import { Link } from "react-router-dom";
 import { useShop } from "../context/ShopContext";
 import ProductCard from "../components/ProductCard";
+import PageLoader from "../components/PageLoader";
 import { getProductImageUrl } from "../utils/mediaUrl";
 import api from "../utils/api";
 
@@ -54,21 +55,14 @@ const ProductDetail = () => {
     }, [productId]);
 
     if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-cream">
-                <div className="relative w-20 h-12">
-                    <div className="absolute inset-0 border-8 border-coffee-brown/10 rounded-full" />
-                    <div className="absolute inset-0 border-8 border-accent-gold border-t-transparent rounded-full animate-spin" />
-                </div>
-            </div>
-        );
+        return <PageLoader message="Curating Product Details..." />;
     }
 
     if (!product) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-cream px-4">
                 <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-inner mb-8">
-                    <Coffee size={64} className="text-coffee-brown/10" />
+                    <ChefHat size={64} className="text-coffee-brown/10" />
                 </div>
                 <h1 className="text-3xl font-bold text-coffee-brown mb-4 tracking-tighter">Product Unknown</h1>
                 <p className="text-coffee-brown/40 mb-10 font-bold tracking-widest text-center max-w-md">The product you are seeking has vanished from our collection.</p>
@@ -218,7 +212,7 @@ const ProductDetail = () => {
                                 <button
                                     onClick={() => addToCart(product, quantity)}
                                     disabled={stock <= 0}
-                                    className={`flex-1 rounded-[24px] font-black text-xs flex items-center justify-center gap-4 uppercase tracking-[0.3em] transition-all transform active:scale-95 group ${stock > 0
+                                    className={`flex-1 rounded-[24px] font-black text-xs flex items-center justify-center gap-4 uppercase tracking-[0.3em] transition-all transform active:scale-95 group cursor-pointer ${stock > 0
                                             ? 'bg-coffee-brown text-white hover:bg-accent-gold shadow-2xl shadow-coffee-brown/20'
                                             : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                         }`}
@@ -230,7 +224,7 @@ const ProductDetail = () => {
 
                             <button
                                 onClick={() => toggleWishlist(product)}
-                                className={`w-full py-5 rounded-[24px] font-black text-[10px] tracking-[0.3em] uppercase transition-all flex items-center justify-center gap-3 active:scale-95 ${isWishlisted
+                                className={`w-full py-5 rounded-[24px] font-black text-[10px] tracking-[0.3em] uppercase transition-all flex items-center justify-center gap-3 active:scale-95 cursor-pointer ${isWishlisted
                                     ? "bg-red-50 text-red-500 border border-red-100 shadow-lg shadow-red-500/5"
                                     : "bg-white border border-coffee-brown/10 text-coffee-brown/40 hover:border-accent-gold hover:text-accent-gold shadow-sm"
                                     }`}
