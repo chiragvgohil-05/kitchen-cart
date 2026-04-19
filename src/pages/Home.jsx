@@ -52,7 +52,7 @@ const Home = () => {
                                 <span className="text-sm font-bold tracking-widest text-coffee-brown/80 uppercase">A New Coffee Standard</span>
                             </div>
 
-                            <h1 className="text-6xl lg:text-[140px] xl:text-[160px] font-black text-coffee-brown leading-[0.75] tracking-[-0.06em]">
+                            <h1 className="text-6xl lg:text-[100px] xl:text-[120px] font-black text-coffee-brown leading-[0.75] tracking-[-0.06em]">
                                 PURE <br />
                                 <span className="text-accent-gold italic">ESSENCE</span> <br />
                                 <span className="text-coffee-brown/10 stroke-text">OF BREW</span>
@@ -231,7 +231,7 @@ const Home = () => {
                     <img src={cafeInterior} alt="Cafe Atmosphere" className="w-full h-full object-cover scale-105" />
                     <div className="absolute inset-0 bg-coffee-brown/70 backdrop-blur-[2px]" />
                 </div>
-                
+
                 <div className="container mx-auto px-6 lg:px-8 relative z-10">
                     <div className="max-w-4xl mx-auto text-center space-y-12">
                         <motion.div
@@ -310,7 +310,7 @@ const Home = () => {
 
                     <div className="relative z-10 space-y-12">
                         <div className="flex justify-center mb-8">
-                            <motion.div 
+                            <motion.div
                                 animate={{ y: [0, -20, 0] }}
                                 transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
                                 className="w-28 h-28 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-xl border border-white/20"

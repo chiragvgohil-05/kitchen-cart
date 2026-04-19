@@ -172,20 +172,7 @@ const AdminLayout = () => {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-6">
-                        <div className="hidden sm:flex items-center bg-white border border-coffee-brown/5 rounded-full px-6 py-3 w-80 shadow-sm focus-within:shadow-md transition-all">
-                            <Search size={18} className="text-coffee-brown/40 mr-3" />
-                            <input
-                                type="text"
-                                placeholder="Search analytics..."
-                                className="bg-transparent border-none text-xs focus:ring-0 w-full placeholder:text-coffee-brown/30 font-bold text-coffee-brown tracking-widest"
-                            />
-                        </div>
-                        <button className="relative p-3 bg-white text-coffee-brown rounded-full shadow-sm hover:shadow-md transition-all">
-                            <Bell size={20} />
-                            <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
-                        </button>
-                    </div>
+
                 </header>
 
                 {/* Content */}
