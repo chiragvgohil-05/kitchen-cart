@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'https://noncleistogamic-unridiculously-adonis.ngrok-free.dev/api',
+    baseURL: 'https://headed-body-attest.ngrok-free.dev/api',
     headers: {
         'Content-Type': 'application/json',
     },
