@@ -124,11 +124,11 @@ const Dashboard = () => {
                                         0{i + 1}
                                     </div>
                                     <div>
-                                        <p className="text-[11px] font-black uppercase tracking-tight line-clamp-1">{p._id.name}</p>
-                                        <p className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em]">{p.totalQty} Units sold</p>
+                                        <p className="text-[11px] font-black uppercase tracking-tight line-clamp-1">{p?._id?.name}</p>
+                                        <p className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em]">{p?.totalQty} Units sold</p>
                                     </div>
                                 </div>
-                                <p className="text-[10px] font-black text-accent-gold tabular-nums">₹{p._id.sellingPrice}</p>
+                                <p className="text-[10px] font-black text-accent-gold tabular-nums">₹{p?._id?.sellingPrice}</p>
                             </div>
                         ))}
                         {stats.topSellingProducts.length === 0 && <p className="text-white/20 text-[10px] italic">Awaiting initial sales data...</p>}
@@ -196,8 +196,8 @@ const Dashboard = () => {
                         </div>
                         <div className="relative z-10 mt-10 pt-6 border-t border-white/10 space-y-3">
                             {stats.lowStockProducts.map(p => (
-                                <div key={p._id} className="flex justify-between items-center bg-white/5 p-2 rounded-xl text-[10px] font-black uppercase tracking-tight">
-                                    <span>{p.name}</span>
+                                <div key={p?._id} className="flex justify-between items-center bg-white/5 p-2 rounded-xl text-[10px] font-black uppercase tracking-tight">
+                                    <span>{p?.name}</span>
                                     <span className="text-white/60">{p.stock} Left</span>
                                 </div>
                             ))}
