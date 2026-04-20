@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://kitchen-cart-backend-production-ded7.up.railway.app/api' || 'http://localhost:5000/api',
+    baseURL: import.meta.env.VITE_API_URL || 'https://noncleistogamic-unridiculously-adonis.ngrok-free.dev/api',
     headers: {
         'Content-Type': 'application/json',
     },
